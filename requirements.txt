@@ -1,0 +1,8 @@
+mysql-connector-python
+flask
+flask-cors
+itsdangerous
+flask-restx
+marshmallow
+flask-wtf
+PyJWT

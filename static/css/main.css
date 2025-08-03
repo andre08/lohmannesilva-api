@@ -1,0 +1,124 @@
+body {
+  background-color: #F2F2F2;
+  font-family: Tahoma, sans-serif;
+  color: #0D0D0D;
+}
+
+h1, .logo-font {
+  font-family: Tahoma, sans-serif;
+  color: #03588C;
+}
+
+.navbar, 
+.navbar * {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.navbar-brand img {
+  height: 45px;
+}
+
+.nav-link {
+  color: #C2B279 !important;
+}
+
+.nav-link:hover {
+  color: #03588C !important;
+}
+
+.dropdown-item{
+  color: #C2B279 !important;
+  background-color: #F2F2F2;
+}
+
+.dropdown-item:focus, 
+.dropdown-item:active, 
+.dropdown-item:focus-visible{
+  color: #03588C !important;
+  background-color: #F2F2F2;
+  outline: none !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+}
+
+.nav-link-area {
+  color: #03588C !important;
+}
+
+.hero {
+  background-color: #03588C;
+  color: #F2F2F2;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.variable-card {
+  background-color: white;
+  border: 1px solid #C2B279;
+  border-radius: 10px;
+  padding: 15px;
+  height: 100%;
+}
+
+.number {
+  font-family: 'DIN', sans-serif;
+  font-weight: bold;
+  color: #8D7033;
+}
+
+footer {
+  background-color: #0D0D0D;
+  color: #F2F2F2;
+  padding: 20px 0;
+  text-align: center;
+}
+
+.btn-primary {
+  background-color: #A6823F;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #8D7033;
+}
+
+@font-face {
+  font-family: 'DeFontePlus';
+  src: url('/static/fonts/DeFontePlus-Normale.woff2') format('woff2'),
+        url('/static/fonts/DeFontePlus-Normale.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'DIN';
+  src: url('/static/fonts/DINPro-Regular.ttf') format('ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.login-container {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+}
+
+.registro-container {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  width: 100%;
+}
+
+.form-text-font {
+  font-family: 'DIN';
+}
+
