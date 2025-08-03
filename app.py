@@ -5,6 +5,7 @@ import traceback
 
 # Importando rotas
 from routes_web.routes_web_usuario import routes_web_usuario
+from routes_web.routes_web_token import routes_web_token
 from routes_api.routes_api_usuario import routes_api_usuario
 
 app = Flask(__name__)
@@ -13,6 +14,7 @@ CORS(app)
 
 # Registrando as rotas para os modulos WEB
 app.register_blueprint(routes_web_usuario, url_prefix='/')
+app.register_blueprint(routes_web_token, url_prefix='/')
 
 # Registrando as rotas para os modulos API
 app.register_blueprint(routes_api_usuario, url_prefix='/api')

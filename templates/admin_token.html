@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Feature Store</title>
+  <title>Feature Store - Tokens</title>
   <meta name="description" content="City Feature Store - Conhecendo de Cidades em detalhes">
   <meta name="keywords" content="Feature Store;Cidades">
 
@@ -50,12 +50,12 @@
 
           <!-- Menu dropdown do usuário -->
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-link dropdown-toggle nav-link-user" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               {{ session["usuario_nome"] }}
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
               <li><a class="dropdown-item" href="#">Perfil</a></li>
-              <li><a class="dropdown-item" href="{{ url_for('routes_web_token.admin_token')}}">Tokens</a></li>
+              <li><a class="dropdown-item active" href="{{ url_for('routes_web_token.admin_token')}}">Tokens</a></li>
               <li><a class="dropdown-item" href="{{ url_for('routes_web_usuario.logout') }}">Sair</a></li>
             </ul>
           </li>
@@ -66,10 +66,41 @@
 
     <!-- Conteúdo principal -->
     <div style="padding: 20px;">
-        <h1>Bem-vindo à Administração</h1>
-        <p>Aqui vai o conteúdo da sua página de administração.</p>
+        <h3>Gerenciamento de Token de acesso</h3>
+        <p>Aqui vai encontrar o histório de TOKEM válidos e gerar um novo TOKEN. {{ session["usuario_nome"] }}</p>
     </div>
-    
+
+    <div class="row justify-content-md-center">
+
+      <div class="col">
+        <div class="row justify-content-md-center" style="padding: 20px;">
+          <div class="col-md-auto"></div>
+          <div class="col col-12 registro-container ">
+            <div class="mb-3">
+              <h5 style="font-family: 'DIN';"><b>Cria um novo TOKEN de acesso</b></h5>
+              <p style="font-family: 'DIN';">Para acessar os dados via API ou integrar com outros sistemas é necessário ter um token valido e ativo.</p>
+            </div> 
+
+          </div>
+          <div class="col-md-auto"></div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="row justify-content-md-center" style="padding: 20px;">
+          <div class="col-md-auto"></div>
+          <div class="col col-12 registro-container ">
+            <div class="mb-3">
+              <h5 style="font-family: 'DIN';"><b>Histórico de TOKEN de acesso</b></h5>
+              <p style="font-family: 'DIN';">Lista de TOKEN gerados e o numero de acesso, indicação de TOKEN valido e disponível.</p>
+            </div>
+          </div>
+          <div class="col-md-auto"></div>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 
 </body>

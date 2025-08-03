@@ -63,5 +63,7 @@ def logon_usuario(email, senha):
             
     cur.close()
     conn.close()
-
-    return detalhe_usuario(id)
+    if id:
+        return detalhe_usuario(id)
+    else:
+        return []

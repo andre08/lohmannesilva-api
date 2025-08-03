@@ -36,7 +36,7 @@ def logon():
         session["token_id"] = usuario.token_ativo    # ID do token que foi gerado (para controlar no banco)
         session["autenticado"] = True
         
-        return jsonify({'success': True, 'mensagem':'Login realizado com sucesso!', 'redirect': url_for('home')})
+        return jsonify({'success': True, 'mensagem':'Login realizado com sucesso!', 'redirect': url_for('admin')})
     
     else:
         return jsonify({'success': False, 'mensagem':'Email e/ou senha invalído!.', 'redirect': url_for('routes_web_usuario.login')})

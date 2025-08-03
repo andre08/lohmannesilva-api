@@ -25,6 +25,10 @@ h1, .logo-font {
   color: #C2B279 !important;
 }
 
+.nav-link-user {
+  color: #03588C !important;
+}
+
 .nav-link:hover {
   color: #03588C !important;
 }
