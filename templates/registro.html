@@ -155,6 +155,7 @@
       .then(res => res.json())
       .then(data => {
         if (data.success) {
+          btn.innerText = "Confirmar";
           divAlerta.classList.remove('d-none');
           divAlerta.classList.add('alert-success');
           divAlerta.innerHTML = "<div class='alert  alert-dismissible fade show' role='alert'" +

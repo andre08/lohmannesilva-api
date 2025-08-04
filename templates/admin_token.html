@@ -72,7 +72,7 @@
 
     <div class="row justify-content-md-center">
 
-      <div class="col">
+      <div class="col col-4">
         <div class="row justify-content-md-center" style="padding: 20px;">
           <div class="col-md-auto"></div>
           <div class="col col-12 registro-container ">
@@ -80,6 +80,26 @@
               <h5 style="font-family: 'DIN';"><b>Cria um novo TOKEN de acesso</b></h5>
               <p style="font-family: 'DIN';">Para acessar os dados via API ou integrar com outros sistemas é necessário ter um token valido e ativo.</p>
             </div> 
+
+            <form name="frmToken" id="frmToken">
+
+              <div class="form-check mb-2" style="font-family: 'Plus Normale';">
+                <input class="form-check-input" type="checkbox" id="aceite">
+                <label class="form-check-label" for="aceite">
+                  Assine o termo concordando as normas de utilização de token da plataforma
+                </label>
+              </div>
+              <div class="d-grid">
+                <button type="submit" id="btnEnviar" class="btn btn-primary">Confirmar</button>
+              </div>
+
+            </form>
+
+            <div class="container mt-4", id="divbaseAlerta">
+              <div id="mensagem-alerta" class="alert d-none" role="alert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            </div>
 
           </div>
           <div class="col-md-auto"></div>
@@ -94,6 +114,21 @@
               <h5 style="font-family: 'DIN';"><b>Histórico de TOKEN de acesso</b></h5>
               <p style="font-family: 'DIN';">Lista de TOKEN gerados e o numero de acesso, indicação de TOKEN valido e disponível.</p>
             </div>
+            <br>
+            <div class="mb-3">
+              <!-- Lista de token -->
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Token</th>
+                    <th>Dt. Validade</th>
+                    <th>Ativo</th>
+                  </tr>
+                </thead>
+                <tbody id="listaTokens"></tbody>
+              </table>
+            </div>
           </div>
           <div class="col-md-auto"></div>
         </div>
@@ -103,5 +138,89 @@
 
   </div>
 
+  <script>
+    const API_URL_NOVO = "/gerar_token";
+    const API_URL_LISTA = "/tokens";
+    const frmToken = document.getElementById("frmToken");
+    const btn = document.getElementById("btnEnviar");
+    const divAlerta = document.getElementById("mensagem-alerta");
+    const listaTokens = document.getElementById("listaTokens");
+
+    // Enviar novo ou atualizar
+    frmToken.onsubmit = async (e) => {
+      e.preventDefault();
+      const aceite = document.getElementById("aceite").value;
+
+      // Desativa os campos
+      document.getElementById("aceite").disabled = true;
+      btn.disabled = true;      
+      btn.innerText = "Validando...";
+
+      await fetch(API_URL_NOVO, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({aceite})
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          btn.innerText = "Confirmar";
+          document.getElementById("aceite").disabled = false;
+          btn.disabled = false;
+
+          divAlerta.classList.remove('d-none');
+          divAlerta.classList.add('alert-success');
+          divAlerta.innerHTML = "<div class='alert alert-dismissible fade show' role='alert'" +
+                                "<p>" + data.mensagem + "</p>" +
+                                "<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Fechar'></button>" +
+                                "</div>";
+          carregarToken();
+        } else {
+          divAlerta.classList.remove('d-none');
+          divAlerta.classList.add('alert-danger');
+          divAlerta.textContent = data.mensagem;
+        }
+      });
+      frmToken.reset();
+    };
+
+    // Carregar clientes na tabela
+    async function carregarToken() {
+      const res = await fetch(API_URL_LISTA);
+      const tokens = await res.json();
+      listaTokens.innerHTML = "";
+      tokens.forEach(token => {
+        if (token.ativo == 'S'){
+          vData = token.dt_expiracao
+        }else{
+          vData = "-"
+        }
+        listaTokens.innerHTML += `
+          <tr>
+            <td>${token.id}</td>
+            <td>            
+              <span class="token-text">${token.token}</span>
+              <button class="btn btn-sm btn-outline-secondary copy-btn" data-token="${token.token}">
+                <i class="bi bi-clipboard"></i>
+              </button>
+            </td>
+            <td>${vData}</td>
+            <td>${token.ativo}</td>
+          </tr>`;
+      });
+    }
+
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('.copy-btn')) {
+          const token = e.target.closest('.copy-btn').getAttribute('data-token');
+          navigator.clipboard.writeText(token).then(() => {
+              alert('Token copiado!');
+          });
+      }
+    });
+
+    carregarToken();
+  </script>
+  
 </body>
 </html>

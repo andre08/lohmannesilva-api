@@ -126,3 +126,18 @@ footer {
   font-family: 'DIN';
 }
 
+.table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.table td, .table th {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.table th:nth-child(2), 
+.table td:nth-child(2) {
+    width: 200px; /* ou ajuste para o tamanho desejado */
+}
