@@ -3,9 +3,11 @@ from flask import Flask, render_template, session, redirect, url_for, request
 from flask_cors import CORS
 import traceback
 
-# Importando rotas
+# Importando rotas do front-end
 from routes_web.routes_web_usuario import routes_web_usuario
 from routes_web.routes_web_token import routes_web_token
+
+# Importando rotas da API
 from routes_api.routes_api_usuario import routes_api_usuario
 
 app = Flask(__name__)
@@ -56,7 +58,6 @@ def home():
 @app.route('/admin')
 def admin():
     return render_template('admin.html')
-
 
 #iniciando a aplicação
 if __name__ == "__main__":

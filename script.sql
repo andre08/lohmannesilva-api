@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS USUARIO (
     , DT_DESATIVADO DATETIME
     , DT_CADASTRO DATETIME NOT NULL
     , DT_ATUALIZADO DATETIME NOT NULL
+    , TIPO VARCHAR(15) NOT NULL
     , CONSTRAINT FK_USUARIO PRIMARY KEY (IDUSUARIO)
 );
 
@@ -20,6 +21,7 @@ DELIMITER $$
 CREATE TRIGGER TR_USUARIO_BEFORE_INSERT BEFORE INSERT ON USUARIO FOR EACH ROW 
 BEGIN 
     SET NEW.ATIVO = 'N';
+    SET NEW.TIPO = 'NORMAL';
     SET NEW.DT_ATIVACAO = NULL;
     SET NEW.DESATIVADO = 'N';
     SET NEW.DT_DESATIVADO = NULL;
@@ -30,6 +32,9 @@ END $$
 CREATE TRIGGER TR_USUARIO_BEFORE_UPDATE BEFORE UPDATE ON USUARIO FOR EACH ROW 
 BEGIN 
     SET NEW.DT_ATUALIZADO = NOW();
+    IF OLD.IDUSUARIO = 1 THEN
+		SET NEW.TIPO = 'ADMINISTRADOR';
+    END IF;
 END $$
 DELIMITER ;
 
@@ -113,6 +118,26 @@ SELECT
     , DT_CADASTRO
     , DT_ATUALIZADO
     , (SELECT TOKEN FROM VW_TOKEN T WHERE T.IDUSUARIO = U.IDUSUARIO AND ATIVO = 'S' ORDER BY IDTOKEN DESC LIMIT 1) AS TOKEN_ATIVO
+    , TIPO
 FROM
 	USUARIO U
 );
+
+SELECT * FROM VW_USUARIO;
+
+/*
+INSERT INTO USUARIO(NOME, EMAIL, SENHA)VALUES
+('Ana', 'ana@email.com', '123')
+,('Carlos', 'carlos@email.com', '123')
+,('Antorio', 'antonio@email.com', '123')
+,('Anderson', 'anderson@email.com', '123')
+,('Julio', 'julio@email.com', '123')
+,('Joana', 'joana@email.com', '123')
+,('Sabrina', 'sabrina@email.com', '123')
+,('Maria', 'maria@email.com', '123')
+,('Claudia', 'claudia@email.com', '123')
+,('Paula', 'paula@email.com', '123')
+,('Roberto', 'roberto@email.com', '123')
+,('Sandra', 'sandra@email.com', '123')
+,('Simone', 'simone@email.com', '123');
+ */

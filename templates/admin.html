@@ -21,49 +21,11 @@
 </head>
 <body>
 
+    {% include 'menu_admin.html' %}
+
   <div class="container-fluid">
-
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <!-- Botão para abrir o menu no mobile -->
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <!-- Logo + menus -->
-      <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="{{ url_for('home') }}">Principal</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Features</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Bases de dados</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Serviços</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Contato</a>
-          </li>
-
-          <!-- Menu dropdown do usuário -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              {{ session["usuario_nome"] }}
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
-              <li><a class="dropdown-item" href="#">Perfil</a></li>
-              <li><a class="dropdown-item" href="{{ url_for('routes_web_token.admin_token')}}">Tokens</a></li>
-              <li><a class="dropdown-item" href="{{ url_for('routes_web_usuario.logout') }}">Sair</a></li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </nav>
-
-
+    <br>
+  
     <!-- Conteúdo principal -->
     <div style="padding: 20px;">
         <h1>Bem-vindo à Administração</h1>

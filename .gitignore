@@ -1,3 +1,5 @@
 __pycache__/
 banco.db
 .env
+.ipynb_checkpoints
+Backlog.txt

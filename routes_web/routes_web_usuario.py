@@ -3,7 +3,8 @@ from flask import Blueprint, jsonify, redirect, render_template, session, url_fo
 from werkzeug.security import generate_password_hash
 
 # Importando modulos
-from services.usuario_service import criar_usuario, logon_usuario
+from services.usuario_service import criar_usuario, logon_usuario, listar_usuario_paginado, total_usuario
+from util import montaNavegador
 
 #registrando as rotas na aplicação
 routes_web_usuario = Blueprint('routes_web_usuario', __name__)
@@ -57,3 +58,22 @@ def nova_conta():
     
     criar_usuario(nome, email, senha_hash)
     return jsonify({'success': True, 'mensagem':'Conta criada com sucesso!', 'redirect': url_for('routes_web_usuario.login')})
+
+#pagina administração de usuarios
+@routes_web_usuario.route('/admin_usuario')
+def admin_usuario():
+
+    pagina = int(request.args.get("pagina", 1))
+    quantidade = int(request.args.get("quantidade", 4))
+    
+    offset = (pagina - 1) * quantidade
+
+    totalRegistros = total_usuario()
+    ajuste = 1 if (totalRegistros % quantidade) > 0 else 0        
+    totalPaginas = int((totalRegistros // quantidade) + ajuste)
+    if pagina > totalPaginas:
+        pagina = totalPaginas
+
+    usuarios = listar_usuario_paginado(quantidade, offset)
+    return render_template('admin_usuario.html', usuarios=usuarios, offset=offset, quantidade=quantidade, totalRegistros=totalRegistros, pagina=pagina, totalPaginas=totalPaginas, navegadorPagina=montaNavegador(pagina, totalPaginas))
+

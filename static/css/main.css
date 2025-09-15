@@ -1,7 +1,16 @@
 body {
-  background-color: #F2F2F2;
+  background-color: #FFF;
   font-family: Tahoma, sans-serif;
   color: #0D0D0D;
+}
+
+.container-fluid {
+  background-color: #F2F2F2;
+  height: 100vh;
+}
+
+.registro-container {
+  background-color: #FFF !important;
 }
 
 h1, .logo-font {
@@ -9,8 +18,12 @@ h1, .logo-font {
   color: #03588C;
 }
 
-.navbar, 
-.navbar * {
+.bi-clipboard{
+  color: #03588C;
+}
+
+.navbar {
+  background-color: #FFF ;
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -33,8 +46,12 @@ h1, .logo-font {
   color: #03588C !important;
 }
 
-.dropdown-item{
+.dropdown-item {
   color: #C2B279 !important;
+  background-color: #F2F2F2;
+}
+
+.active{
   background-color: #F2F2F2;
 }
 
@@ -60,7 +77,7 @@ h1, .logo-font {
 }
 
 .variable-card {
-  background-color: white;
+  background-color: #FFF;
   border: 1px solid #C2B279;
   border-radius: 10px;
   padding: 15px;
@@ -105,7 +122,7 @@ footer {
 }
 
 .login-container {
-  background-color: #fff;
+  background-color: #FFF;
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -115,11 +132,12 @@ footer {
 }
 
 .registro-container {
-  background-color: #fff;
+  background-color: #fff !important;
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
   width: 100%;
+  font-family: 'DIM';
 }
 
 .form-text-font {
@@ -137,7 +155,31 @@ footer {
     white-space: nowrap;
 }
 
+.tb-token-id {
+  width: 40px;
+}
+
+.tb-token-dt {
+  width: 180px;
+}
+
+.tb-token-ativo {
+  width: 60px;
+}
+
+.tb-token-copiar {
+  width: 75px;
+}
+
 .table th:nth-child(2), 
 .table td:nth-child(2) {
-    width: 200px; /* ou ajuste para o tamanho desejado */
+    max-width: 200px; /* ou ajuste para o tamanho desejado */
+}
+
+.paginacao-item {
+  color: #C2B279;
+}
+
+.page-jump-to{
+  width: 80px;
 }

@@ -17,6 +17,26 @@ def listar_token_usuario(id_usuario):
     
     return [Token(id, idusuario, token, secret_key, dt_criacao, dt_expiracao, ativo, desativado, dt_desativado) for id, idusuario, token, secret_key, dt_criacao, dt_expiracao, ativo, desativado, dt_desativado in dados]
 
+def listar_token_usuario_paginado(id_usuario, pagina, quantidade):
+    
+    offset = (pagina - 1) * quantidade
+    
+    conn = Conectar()
+    cur = conn.cursor()
+    
+    cur.execute("SELECT COUNT(*) AS REGISTROS FROM VW_TOKEN WHERE IDUSUARIO = %s ", (id_usuario,))
+    totalRegistros = cur.fetchone()[0]
+    totalPaginas = (totalRegistros + quantidade - 1) // quantidade  # Arredonda pra cima
+    
+    cur.execute("SELECT IDTOKEN, IDUSUARIO, TOKEN, SECRET_KEY, DT_CRIACAO, DT_EXPIRACAO, ATIVO, DESATIVADO, DT_DESATIVADO FROM VW_TOKEN WHERE IDUSUARIO = %s ORDER BY IDUSUARIO, DT_EXPIRACAO DESC LIMIT %s OFFSET %s", (id_usuario, quantidade, offset))
+    dados = cur.fetchall()
+    
+    cur.close()
+    conn.close()
+    
+    tokens = [Token(id, idusuario, token, secret_key, dt_criacao, dt_expiracao, ativo, desativado, dt_desativado) for id, idusuario, token, secret_key, dt_criacao, dt_expiracao, ativo, desativado, dt_desativado in dados]
+    return {"tokens": tokens, "pagina_atual": pagina, "total_paginas": totalPaginas}
+
 def detalhe_token(id):
     conn = Conectar()
     cur = conn.cursor()
@@ -33,7 +53,7 @@ def desabilitar_todos_tokens(id_usuario):
     conn = Conectar()
     cur = conn.cursor()
     
-    cur.execute("UPDATE TOKEN SET DESATIVADO = 'S', DT_DESATIVADO = NOW() WHERE IDUSUARIO = %s AND DESATIVADO = 'N' ", (id_usuario,))
+    cur.execute("UPDATE TOKEN SET DESATIVADO = 'S', DT_DESATIVADO = NOW() WHERE IDUSUARIO = %s AND DESATIVADO = 'N' AND DT_EXPIRACAO > UTC_TIMESTAMP() ", (id_usuario,))
     conn.commit()
     
     cur.close()

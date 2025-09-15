@@ -3,7 +3,7 @@ class Usuario:
     Classe: Usuario
     Descrição: Classe utilizada para registrar o usuario
     """
-    def __init__(self, id, nome, email, senha, ativo, dt_ativacao, desativado, dt_desativado, dt_cadastro, dt_atualizado, token_ativo):
+    def __init__(self, id, nome, email, senha, ativo, dt_ativacao, desativado, dt_desativado, dt_cadastro, dt_atualizado, token_ativo, tipo):
         self.id = id
         self.nome = nome
         self.email = email
@@ -15,6 +15,7 @@ class Usuario:
         self.dt_cadastro = dt_cadastro
         self.dt_atualizado = dt_atualizado
         self.token_ativo = token_ativo
+        self.tipo = tipo
 
     def to_dict(self):
         return {"id": self.id
@@ -26,4 +27,5 @@ class Usuario:
                 , "dt_desativado":self.dt_desativado
                 , "dt_cadastro":self.dt_cadastro
                 , "dt_atualizado":self.dt_atualizado
-                , "token_ativo": self.token_ativo}
+                , "token_ativo": self.token_ativo
+                , "tipo": self.tipo}
