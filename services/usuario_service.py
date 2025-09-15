@@ -33,7 +33,7 @@ def listar_usuario_paginado(quantidade, offset):
     conn = Conectar()
     cur = conn.cursor()
     
-    cur.execute("SELECT IDUSUARIO, NOME, EMAIL, ATIVO, DT_ATIVACAO, DESATIVADO, DT_DESATIVADO, DT_CADASTRO, DT_ATUALIZADO, TOKEN_ATIVO, TIPO FROM VW_USUARIO ORDER BY IDUSUARIO LIMIT %s OFFSET %s", (quantidade, offset))
+    cur.execute("SELECT IDUSUARIO, NOME, EMAIL, ATIVO, DT_ATIVACAO, DESATIVADO, DT_DESATIVADO, DT_CADASTRO, DT_ATUALIZADO, TOKEN_ATIVO, TIPO FROM VW_USUARIO ORDER BY IDUSUARIO LIMIT ? OFFSET ?", (quantidade, offset))
     dados = cur.fetchall()
     
     cur.close()
@@ -44,7 +44,7 @@ def listar_usuario_paginado(quantidade, offset):
 def detalhe_usuario(id):
     conn = Conectar()
     cur = conn.cursor()
-    cur.execute("SELECT IDUSUARIO, NOME, EMAIL, ATIVO, DT_ATIVACAO, DESATIVADO, DT_DESATIVADO, DT_CADASTRO, DT_ATUALIZADO, TOKEN_ATIVO, TIPO FROM VW_USUARIO WHERE IDUSUARIO = %s", (id,))
+    cur.execute("SELECT IDUSUARIO, NOME, EMAIL, ATIVO, DT_ATIVACAO, DESATIVADO, DT_DESATIVADO, DT_CADASTRO, DT_ATUALIZADO, TOKEN_ATIVO, TIPO FROM VW_USUARIO WHERE IDUSUARIO = ?", (id,))
     dados = cur.fetchall()
     cur.close()
     conn.close()
@@ -54,7 +54,7 @@ def detalhe_usuario(id):
 def criar_usuario(nome, email, senha):
     conn = Conectar()
     cur = conn.cursor()
-    cur.execute("INSERT INTO USUARIO (NOME, EMAIL, SENHA) VALUES (%s, %s, %s)", (nome, email, senha))
+    cur.execute("INSERT INTO USUARIO (NOME, EMAIL, SENHA) VALUES (?, ?, ?)", (nome, email, senha))
     conn.commit()
     cur.close()
     conn.close()
@@ -62,7 +62,7 @@ def criar_usuario(nome, email, senha):
 def alterar_usuario(id, nome, email, senha):
     conn = Conectar()
     cur = conn.cursor()
-    cur.execute("UPDATE USUARIO SET NOME = %s, EMAIL = %s, SENHA = %s WHERE IDUSUARIO = %s", (nome, email, senha, id))
+    cur.execute("UPDATE USUARIO SET NOME = ?, EMAIL = ?, SENHA = ? WHERE IDUSUARIO = ?", (nome, email, senha, id))
     conn.commit()
     cur.close()
     conn.close()
@@ -70,7 +70,7 @@ def alterar_usuario(id, nome, email, senha):
 def alterar_usuario_admin(id, nome, email, senha, tipo, ativo, desativado):
     conn = Conectar()
     cur = conn.cursor()
-    cur.execute("UPDATE USUARIO SET NOME = %s, EMAIL = %s, SENHA = %s, TIPO = %s, ATIVO = %s, DESATIVADO = %s WHERE IDUSUARIO = %s", (nome, email, senha, tipo, ativo, desativado, id))
+    cur.execute("UPDATE USUARIO SET NOME = ?, EMAIL = ?, SENHA = ?, TIPO = ?, ATIVO = ?, DESATIVADO = ? WHERE IDUSUARIO = ?", (nome, email, senha, tipo, ativo, desativado, id))
     conn.commit()
     cur.close()
     conn.close()
@@ -78,7 +78,7 @@ def alterar_usuario_admin(id, nome, email, senha, tipo, ativo, desativado):
 def deletar_usuario(id):
     conn = Conectar()
     cur = conn.cursor()
-    cur.execute("DELETE FROM USUARIO WHERE IDUSUARIO = %s", (id,))
+    cur.execute("DELETE FROM USUARIO WHERE IDUSUARIO = ?", (id,))
     conn.commit()
     cur.close()
     conn.close()
@@ -89,7 +89,7 @@ def logon_usuario(email, senha):
 
     conn = Conectar()
     cur = conn.cursor()
-    cur.execute("SELECT IDUSUARIO, EMAIL, SENHA FROM USUARIO WHERE EMAIL = %s ", (email,))
+    cur.execute("SELECT IDUSUARIO, EMAIL, SENHA FROM USUARIO WHERE EMAIL = ? ", (email,))
     usuarios = cur.fetchall()
     
     for item in usuarios:
