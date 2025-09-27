@@ -7,3 +7,4 @@ marshmallow
 flask-wtf
 PyJWT
 pyodbc
+python-dotenv
