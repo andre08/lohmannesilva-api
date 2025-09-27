@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Registro de contato</title>
+<meta name="description" content="Growth Services - Transforme dados em crescimento mensurável">
+  <meta name="keywords" content="Growth;Services;Resultados;Inferencia Causal;Diff and Diff">
+
+  <!-- Favicons -->
+  <link href="/static/img/simbolo.png" rel="icon">
+  <link href="/static/img/simbolo.png" rel="apple-touch-icon">
+
+  <!-- Main CSS File -->
+  <link href="/static/css/main.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+<body>
+ 
+  <div class="container-fluid">
+  
+    <div class="row justify-content-md-center" style="padding-top: 15px;">
+
+      <div class="col"></div>
+      <div class="col"> 
+        
+        <div class="row justify-content-md-center">
+          <div class="col-md-auto"></div>
+          <div class="col col-12 registro-container">
+            
+            <div class="mb-3 text-center">
+              <h3 class="text-2xl font-bold">Solicitação de contato ou mais informações</h3>
+              <p style="margin-top: -10px;"><small>Preencha os dados abaixo. Campos com <span class="text-danger">*</span> são obrigatórios.</small></p>
+            </div> 
+        
+            <form name="frmRegistro" id="frmRegistro">
+
+              <div class="mb-3">
+                <label for="tipo" class="form-label">Tipo de contato <span class="text-danger">*</span></label>
+                <select id="tipo" name="tipo" class="form-select" required style="margin-top: -10px;">
+                  <option value="">-- selecione --</option>
+                  <option>Quero uma análise diagnóstica gratuita</option>
+                  <option>Analisar minha campanha</option>
+                  <option>Quero ser parceiro growth</option>
+                  <option>Quero uma apresentação agendada</option>
+                </select>
+                <div class="invalid-feedback">Selecione o tipo de contato.</div>
+              </div>              
+
+              <div class="mb-3">
+                <label for="nome" class="form-label">Nome <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="nome" name="nome" maxlength="200" required style="margin-top: -10px;">
+                <div class="invalid-feedback">Por favor, informe seu nome.</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="email" class="form-label">E-mail <span class="text-danger">*</span></label>
+                  <input type="email" class="form-control" id="email" name="email" maxlength="200" required style="margin-top: -10px;">
+                  <div class="invalid-feedback">Informe um e-mail válido.</div>
+                </div>
+
+              <div class="mb-3">
+                <label for="telefone" class="form-label">Telefone com ddd<span class="text-danger">*</span></label>
+                <input type="tel" class="form-control" id="telefone" name="telefone" maxlength="30" inputmode="tel" pattern="^\(\d{2}\)\s?\d{4}-?\d{4}$" required style="margin-top: -10px;">
+                <div class="invalid-feedback">Informe um telefone válido numero com ddd.</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="mensagem" class="form-label">Mensagem</label>
+                <textarea class="form-control" style="margin-top: -10px;" id="mensagem" name="mensagem" rows="4" maxlength="200" placeholder="Deixe aqui uma breve informação ou dúvida"></textarea>
+                <div class="form-text">Máximo 200 caracteres.</div>
+              </div>
+
+              <div class="d-grid mb-4">
+                <button type="submit" id="btnEnviar" class="btn btn-primary">Confirmar</button>
+                <div id="status" class="ms-auto align-self-center"></div>
+              </div>
+
+            </form>
+
+            <div class="container mt-4", id="divbaseAlerta">
+              <div id="mensagem-alerta" class="alert d-none" role="alert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            </div>
+
+          </div>
+          <div class="col-md-auto"></div>
+        </div>
+
+      </div>
+      <div class="col"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "/contato/salvar_contato";
+    const frmRegistro = document.getElementById("frmRegistro");
+    const btn = document.getElementById("btnEnviar");
+    const divAlerta = document.getElementById("mensagem-alerta");
+
+    // Enviar novo ou atualizar
+    frmRegistro.onsubmit = async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (!frmRegistro.checkValidity()) {
+        frmRegistro.classList.add('was-validated');
+        return;
+      }
+
+      const data = Object.fromEntries(new FormData(frmRegistro).entries());
+
+      // Desativa os campos
+      document.getElementById("nome").disabled = true;
+      document.getElementById("email").disabled = true;
+      document.getElementById("telefone").disabled = true;
+      document.getElementById("mensagem").disabled = true;
+      document.getElementById("tipo").disabled = true;
+      btn.disabled = true;      
+      btn.innerText = "Validando...";
+
+      await fetch(API_URL, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+      })
+      .then(res => res.json())
+      .then(data => {
+        divAlerta.classList.add(data.success ? 'alert-success' : 'alert-danger');
+        divAlerta.classList.remove('d-none');
+        divAlerta.textContent = data.mensagem;
+      });
+      btn.innerText = "Confirmar";
+      frmRegistro.reset();
+    };
+
+  </script>
+
+</body>
+</html>

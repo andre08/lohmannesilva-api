@@ -10,6 +10,9 @@
 
 import pyodbc
 import os
+from dotenv import load_dotenv
+
+load_dotenv()  # carrega variáveis do .env
 
 connection_string = (
      "Driver={ODBC Driver 18 for SQL Server};"
