@@ -41,10 +41,10 @@
                 <label for="tipo" class="form-label">Tipo de contato <span class="text-danger">*</span></label>
                 <select id="tipo" name="tipo" class="form-select" required style="margin-top: -10px;">
                   <option value="">-- selecione --</option>
-                  <option>Quero uma análise diagnóstica gratuita</option>
-                  <option>Analisar minha campanha</option>
-                  <option>Quero ser parceiro growth</option>
-                  <option>Quero uma apresentação agendada</option>
+                  <option {% if tipo=="1" %} selected {% endif %}>Quero uma análise diagnóstica gratuita</option>
+                  <option {% if tipo=="2" %} selected {% endif %}>Analisar minha campanha</option>
+                  <option {% if tipo=="3" %} selected {% endif %}>Quero ser parceiro growth</option>
+                  <option {% if tipo=="4" %} selected {% endif %}>Quero uma apresentação agendada</option>
                 </select>
                 <div class="invalid-feedback">Selecione o tipo de contato.</div>
               </div>              

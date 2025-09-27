@@ -14,9 +14,10 @@ routes_web_contato = Blueprint('routes_web_contato', __name__)
 @routes_web_contato.route("/registrar_contato", methods=['GET'])
 def registrar_contato():
     try:
-        acao = request.get("acao")
+        acao = request.args.get("tipo")
     except:
         acao = ""
+    print(acao)
     return render_template('registro_contato.html', tipo=acao)
 
 #pagina para criar uma nova conta de acesso
