@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash
 
 # Importando modulos
 from services.contato_service import *
-from util import montaNavegador
+from util.paginacao import montaNavegador
 
 #registrando as rotas na aplicação
 routes_web_contato = Blueprint('routes_web_contato', __name__)

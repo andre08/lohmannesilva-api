@@ -33,15 +33,15 @@
           <div class="col col-12 registro-container">
             
             <div class="mb-3 text-center">
-              <h3 class="text-2xl font-bold">Solicitação de contato ou mais informações</h3>
-              <p style="margin-top: -10px;"><small>Preencha os dados abaixo. Campos com <span class="text-danger">*</span> são obrigatórios.</small></p>
+              <h3 class="text-2xl font-bold">Solicitação de contato</h3>
+              <p style="margin-top: -5px;"><small>Preencha os dados abaixo. Campos com <span class="text-danger">*</span> são obrigatórios.</small></p>
             </div> 
         
             <form name="frmRegistro" id="frmRegistro">
 
               <div class="mb-3">
                 <label for="tipo" class="form-label">Tipo de contato <span class="text-danger">*</span></label>
-                <select id="tipo" name="tipo" class="form-select" required style="margin-top: -10px;">
+                <select id="tipo" name="tipo" class="form-select" required style="margin-top: -5px;">
                   <option value="">-- selecione --</option>
                   <option {% if tipo=="1" %} selected {% endif %}>Quero uma análise diagnóstica gratuita</option>
                   <option {% if tipo=="2" %} selected {% endif %}>Analisar minha campanha</option>
@@ -71,7 +71,7 @@
 
               <div class="mb-3">
                 <label for="mensagem" class="form-label">Mensagem</label>
-                <textarea class="form-control" style="margin-top: -10px;" id="mensagem" name="mensagem" rows="4" maxlength="200" placeholder="Deixe aqui uma breve informação ou dúvida"></textarea>
+                <textarea class="form-control" style="margin-top: -10px;" id="mensagem" name="mensagem" rows="3" maxlength="200" placeholder="Deixe aqui uma breve informação ou dúvida"></textarea>
                 <div class="form-text">Máximo 200 caracteres.</div>
               </div>
 

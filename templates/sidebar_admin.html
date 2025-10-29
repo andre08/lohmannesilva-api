@@ -1,0 +1,45 @@
+<!-- Barra lateral de ícones -->
+<div class="sidebar-icons position-fixed start-0 vh-100 d-flex flex-column align-items-center py-3">
+  <figure class="figure text-center">
+    <a href="#" class="text-white mb-3"><img class="item-sidebar-icons" src="/static/img/ico_contato.png" alt="Contatos"></a>
+    <figcaption class="figure-caption">Contatos</figcaption>
+  </figure>
+  <figure class="figure text-center">
+    <a href="#" class="text-white mb-3"><img class="item-sidebar-icons" src="/static/img/usuarios.png" alt="Usuários"></a>
+    <figcaption class="figure-caption">Usuários</figcaption>
+  </figure>
+  <figure class="figure text-center">
+    <a href="#" class="text-white mb-3"><img class="item-sidebar-icons" src="/static/img/clientes.png" alt="Clientes"></a>
+    <figcaption class="figure-caption">Clientes</figcaption>
+  </figure>
+  <figure class="figure text-center">
+    <a href="#" class="text-white mb-3"><img class="item-sidebar-icons" src="/static/img/empresas.png" alt="Empresas"></a>
+    <figcaption class="figure-caption">Empresas</figcaption>
+  </figure>
+  <figure class="figure text-center">
+    <a href="#" class="text-white mb-3"><img class="item-sidebar-icons" src="/static/img/arquivos.png" alt="Campanhas"></a>
+    <figcaption class="figure-caption">Campanhas</figcaption>
+  </figure>
+  <!-- Ícone fixado na base -->
+  <div class="mt-auto text-center item-sidebar-logon">
+    <figure class="figure text-center">
+      <a href="{{ url_for('routes_web_usuario.logout')}}" class="text-white mb-3"><img class="item-sidebar-icons" src="/static/img/user_logon.png" alt="Campanhas"></a>
+      <figcaption class="figure-caption">Sair</figcaption>
+    </figure>
+  </div>  
+</div>
+
+<!-- Coluna 2: Lista agrupada -->
+<div class="sidebar-channels position-fixed start-0 vh-100 d-flex flex-column p-3">
+  <!-- Título da seção que serve de botão -->
+  <h6 class="menu-title d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#listaMenu" aria-expanded="true" >
+    Seções
+  </h6>
+  <ul class="list-group list-group-flush collapse show menu-list" id="listaMenu">
+    <li class="list-group-item">Item 1</li>
+    <li class="list-group-item">Item 2</li>
+    <li class="list-group-item">Item 3</li>
+    <li class="list-group-item">Item 4</li>
+    <li class="list-group-item">Item 5</li>
+  </ul>
+</div>

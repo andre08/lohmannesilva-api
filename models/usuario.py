@@ -1,10 +1,35 @@
+from util.sqlbuilder import *
+
 class Usuario:
     """
     Classe: Usuario
     Descrição: Classe utilizada para registrar o usuario
     """
-    def __init__(self, id, nome, email, senha, ativo, dt_ativacao, desativado, dt_desativado, dt_cadastro, dt_atualizado, token_ativo, tipo):
-        self.id = id
+
+    # definição da tabela que vai salvar os dados 
+    __tabela_banco__ = "USUARIO"
+
+    # relacionando nome da classe com o nome do campo na tabela
+    __campos_tabela__ = {
+        "idusuario": "idusuario"
+        , "nome": "nome"
+        , "email": "email"
+        , "senha": "senha"
+        , "ativo": "ativo"
+        , "dt_ativacao": "dt_ativacao"
+        , "desativado": "desativado"
+        , "dt_desativado": "dt_desativado"
+        , "dt_cadastro": "dt_cadastro"
+        , "dt_atualizado": "dt_atualizado"
+        , "token_ativo": "token_ativo"
+        , "tipo": "tipo"
+    }
+
+    # definição dos campos chave da tabela
+    __campos_chave__ = ["idusuario"]
+
+    def __init__(self, idusuario, nome, email, senha, ativo, dt_ativacao, desativado, dt_desativado, dt_cadastro, dt_atualizado, token_ativo, tipo):
+        self.idusuario = idusuario
         self.nome = nome
         self.email = email
         self.senha = senha
@@ -29,21 +54,46 @@ class Usuario:
         exemplo (tupla): (1, "joao")
         """
         if isinstance(row, dict):
-            usuario = cls(row["id"], row["nome"], row["email"], row["ativo"],row["dt_ativacao"], row["desativado"], row["dt_desativado"], row["dt_cadastro"], row["token_ativo"], row["tipo"])
+            usuario = cls(row["idusuario"], row["nome"], row["email"], row["senha"], row["ativo"], row["dt_ativacao"], row["desativado"], row["dt_desativado"], row["dt_cadastro"], row["dt_atualizado"], row["token_ativo"], row["tipo"])
         else:
-            usuario = cls(row[0], row[1], row[2], row[3],row[4], row[5], row[6], row[7], row[8], row[9])
+            usuario = cls(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11])
         return usuario
 
+    def to_insert_db(self):
+        """
+        Esse metodo retorna um tupla com os valores a serem usado para insert do banco de dados, 
+        deve retornar os campos na ordem do insert e não tem o id, porque o id é gerado pelo banco de dados
+        """
+        return (self.nome, self.email, self.senha, self.ativo, self.dt_ativacao, self.desativado, self.dt_desativado, self.dt_cadastro, self.dt_atualizado, self.tipo)
+
+    def to_update_db(self):
+        """
+        Esse metodo retorna um tupla com os valores a serem usado para update do banco de dados, 
+        deve retornar os campos na ordem do update e o id no final, porque o id é usado no where que vem depois dos valores
+        """
+        return (self.nome, self.email, self.senha, self.ativo, self.dt_ativacao, self.desativado, self.dt_desativado, self.dt_cadastro, self.dt_atualizado, self.tipo, self.idusuario)
 
     def to_dict(self):
-        return {"id": self.id
+        dt_ativacao_formatada = self.dt_ativacao.strftime("%d/%m/%Y %H:%M:%S")
+        dt_desativado_formatada = self.dt_desativado.strftime("%d/%m/%Y %H:%M:%S")
+        dt_cadastro_formatada = self.dt_cadastro.strftime("%d/%m/%Y %H:%M:%S")
+        dt_atualizado_formatada = self.dt_atualizado.strftime("%d/%m/%Y %H:%M:%S")
+        return {
+                "idusuario": self.idusuario
                 , "nome": self.nome
                 , "email": self.email
                 , "ativo": self.ativo
-                , "dt_ativacao": self.dt_ativacao
+                , "dt_ativacao": dt_ativacao_formatada
                 , "desativado": self.desativado
-                , "dt_desativado": self.dt_desativado
-                , "dt_cadastro": self.dt_cadastro
-                , "dt_atualizado": self.dt_atualizado
+                , "dt_desativado": dt_desativado_formatada
+                , "dt_cadastro": dt_cadastro_formatada
+                , "dt_atualizado": dt_atualizado_formatada
                 , "token_ativo": self.token_ativo
-                , "tipo": self.tipo}
+                , "tipo": self.tipo
+            }
+
+    def get_SQLBuilder():
+        """
+        Esse metodo retorna objeto que monta os comandos sql de acordo com o nome da tabela e campos declarados no inicio da classe
+        """
+        return SQLBuilder(Usuario.__tabela_banco__, Usuario.__campos_tabela__, Usuario.__campos_chave__)    

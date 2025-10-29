@@ -1,0 +1,99 @@
+body {
+  background-color: #F2F2F2;
+  color: #0D0D0D;
+  height: 100%;
+  margin: 0;
+}
+
+.navbar-custom{
+  background-color: #A6823F;
+  color: #0D0D0D;  
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.navbar-brand img {
+  height: 40px;
+}
+
+.sidebar-icons {
+  top: 56px;
+  width: 85px;
+  background-color: #A6823F;
+  color: #F2F2F2;
+}
+
+.item-sidebar-icons{
+  width: 24px;
+  height: 24px;
+}
+
+.sidebar-icons a {
+  opacity: 0.8;             /* levemente apagado por padrão */
+  transition: opacity 0.1s; /* suaviza a transição */
+}
+
+.sidebar-icons a:hover {
+  opacity: 1.2;             /* 100% visível ao passar o mouse */
+}
+
+.item-sidebar-logon{
+  margin-bottom: 80px;
+}
+
+.figure-caption{
+  color: #F2F2F2;
+}
+
+.sidebar-channels {
+  top: 56px;
+  width: 150px;
+  margin-left: 85px;
+  background-color: #03588C;
+  color: #F2F2F2;
+  overflow-y: auto;
+}
+
+.menu-title {
+  font-size: 0.8rem;        /* reduz tamanho do texto */
+  font-weight: 600;         /* mantém legibilidade */
+  opacity: 0.7;            /* deixa mais transparente */
+  cursor: pointer;
+  margin-bottom: 0.25rem;  /* menos espaço abaixo */
+  transition: opacity 0.2s;
+}
+.menu-title:hover {
+  opacity: 1;             /* destaca ao passar o mouse */
+}
+
+.toggle-icon {
+  font-size: 0.8rem;       /* ícone proporcional ao título */
+  opacity: 0.7;
+  transition: transform 0.2s ease, opacity 0.2s;
+}
+
+.menu-title:hover .toggle-icon {
+  opacity: 1;
+}
+
+.menu-list .list-group-item {
+  padding: 0.25rem 0.5rem;  /* reduz bastante os espaçamentos */
+  font-size: 0.75rem;       /* texto menor */
+  background-color: transparent; /* remove fundo sólido */
+  opacity: 0.8;             /* leve transparência */
+  border: none;             /* remove linhas entre itens */
+  color: #F2F2F2;
+}
+
+.menu-list .list-group-item:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* efeito sutil no hover */
+  opacity: 1;
+}
+
+.main-content {
+  margin-left: calc(100px + 200px);
+  padding: 20px;
+  padding-top: 76px; 
+  min-height: 100vh;
+  background-color: #F2F2F2;
+}

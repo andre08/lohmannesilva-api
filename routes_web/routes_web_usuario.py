@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash
 
 # Importando modulos
 from services.usuario_service import criar_usuario, logon_usuario, listar_usuario_paginado, total_usuario
-from util import montaNavegador
+from util.paginacao import montaNavegador
 
 #registrando as rotas na aplicação
 routes_web_usuario = Blueprint('routes_web_usuario', __name__)
@@ -32,7 +32,7 @@ def logon():
     usuario = logon_usuario(email, senha)
     if usuario:
 
-        session["usuario_id"] = usuario.id           # ID no banco
+        session["usuario_id"] = usuario.idusuario    # ID no banco
         session["usuario_nome"] = usuario.nome       # Nome para exibir na interface
         session["token_id"] = usuario.token_ativo    # ID do token que foi gerado (para controlar no banco)
         session["autenticado"] = True

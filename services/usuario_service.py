@@ -10,9 +10,10 @@ def listar_usuarios():
     cur = conn.cursor()
     cur.execute("SELECT IDUSUARIO, NOME, EMAIL, ATIVO, DT_ATIVACAO, DESATIVADO, DT_DESATIVADO, DT_CADASTRO, DT_ATUALIZADO, TOKEN_ATIVO, TIPO FROM VW_USUARIO")
     dados = cur.fetchall()
+    resultado = [Usuario.from_db(item).to_dict() for item in dados]
     cur.close()
     conn.close()
-    return [Usuario(id, nome, email, None, ativo, dt_ativacao, desativado, dt_desativado, dt_cadastro, dt_atualizado, token_ativo, tipo) for id, nome, email, ativo, dt_ativacao, desativado, dt_desativado, dt_cadastro, dt_atualizado, token_ativo, tipo in dados]
+    return resultado
 
 def total_usuario():
     conn = Conectar()
