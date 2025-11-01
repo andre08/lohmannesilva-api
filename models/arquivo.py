@@ -1,8 +1,28 @@
+from util.sqlbuilder import *
+
 class Arquivo:
     """
     Classe: Arquivo
     Descrição: Classe utilizada para registrar os Arquivos da campanha
     """
+
+    # definição da tabela que vai salvar os dados 
+    __tabela_banco__ = "ARQUIVO"
+
+    # relacionando nome da classe com o nome do campo na tabela
+    __campos_tabela__ = {
+        "idarquivo": "IDARQUIVO"
+        , "idcampanha": "IDCAMPANHA"
+        , "nome": "NOME"
+        , "decricao": "DECRICAO"
+        , "identificacao": "IDENTIFICACAO"
+        , "localizacao_container": "LOCALIZACAO_CONTAINER"
+        , "dt_importacao": "DT_IMPORTACAO"
+    }
+
+    # definição dos campos chave da tabela
+    __campos_chave__ = ["idarquivo"]
+
     def __init__(self, idarquivo, idcampanha, nome, decricao, identificacao, localizacao_container, dt_importacao):
         self.idarquivo = idarquivo
         self.idcampanha = idcampanha
@@ -52,3 +72,9 @@ class Arquivo:
                 , "identificacao": self.identificacao
                 , "localizacao_container": self.localizacao_container
                 , "dt_importacao": dt_importacao_formatada}
+
+    def get_SQLBuilder():
+        """
+        Esse metodo retorna objeto que monta os comandos sql de acordo com o nome da tabela e campos declarados no inicio da classe
+        """
+        return SQLBuilder(Arquivo.__tabela_banco__, Arquivo.__campos_tabela__, Arquivo.__campos_chave__)    

@@ -3,6 +3,26 @@ class Campanha:
     Classe: Campanha
     Descrição: Classe utilizada para montar a lista de Campanha
     """
+
+    # definição da tabela que vai salvar os dados 
+    __tabela_banco__ = "CAMPANHA"
+
+    # relacionando nome da classe com o nome do campo na tabela
+    __campos_tabela__ = {
+        "idcampanha": "IDCAMPANHA"
+        , "idempresa": "IDEMPRESA"
+        , "idusuario_analista": "IDUSUARIO_ANALISTA"
+        , "nome": "NOME"
+        , "objetivo": "OBJETIVO"
+        , "meta": "META"
+        , "descricao": "DECRICAO"
+        , "status": "STATUS"
+        , "status_kambam": "STATUS_KAMBAM"
+    }
+
+    # definição dos campos chave da tabela
+    __campos_chave__ = ["idcampanha"]
+
     def __init__(self, idcampanha, idempresa, idusuario_analista, nome, objetivo, meta, descricao, status, status_kambam):
         self.idcampanha = idcampanha
         self.idempresa = idempresa

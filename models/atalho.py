@@ -3,6 +3,22 @@ class Atalho:
     Classe: Atalho
     Descrição: Classe utilizada para montar os atalhos salvos e acessados recentemente
     """
+
+    # definição da tabela que vai salvar os dados 
+    __tabela_banco__ = "ATALHO"
+
+    # relacionando nome da classe com o nome do campo na tabela
+    __campos_tabela__ = {
+        "idatalho": "IDATALHO"
+        , "idusuario": "IDUSUARIO"
+        , "grupo": "GRUPO"
+        , "nome": "NOME"
+        , "rota": "ROTA"
+    }
+
+    # definição dos campos chave da tabela
+    __campos_chave__ = ["idatalho"]
+
     def __init__(self, idatalho, idusuario, grupo, nome, rota):
         self.idatalho = idatalho
         self.idusuario = idusuario
@@ -47,3 +63,9 @@ class Atalho:
                 , "grupo": self.grupo
                 , "nome": self.nome
                 , "rota": self.rota}
+
+    def get_SQLBuilder():
+        """
+        Esse metodo retorna objeto que monta os comandos sql de acordo com o nome da tabela e campos declarados no inicio da classe
+        """
+        return SQLBuilder(Atalho.__tabela_banco__, Atalho.__campos_tabela__, Atalho.__campos_chave__)    

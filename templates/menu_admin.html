@@ -3,8 +3,20 @@
 	  <nav class="navbar fixed-top navbar-expand-lg navbar-light navbar-custom">
 		  <a class="navbar-brand" href="https://lohmannesilva.com/growth.html">
         <img src="/static/img/Logo_preto.png" alt="Logo" height="24" class="d-inline-block align-text-top">
-    	</a>
+    	</a>sad
       <div class="collapse navbar-collapse" id="navbarNav"></div>
+				<ul class="navbar-nav ms-auto">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Configurações
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Planos</a></li>
+              <li><a class="dropdown-item" href="#">Processos</a></li>
+              <li><a class="dropdown-item" href="#">Token</a></li>
+            </ul>
+          </li>
+        </ul>
         <span class="navbar-text text-right">
           {{ session["usuario_nome"] }}
         </span>

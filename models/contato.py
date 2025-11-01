@@ -88,7 +88,6 @@ class Contato:
                 , "ativo": self.ativo
                 , "dt_contato": dt_contato_formatada}
 
-
     def get_SQLBuilder():
         """
         Esse metodo retorna objeto que monta os comandos sql de acordo com o nome da tabela e campos declarados no inicio da classe
