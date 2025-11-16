@@ -1,8 +1,25 @@
+from util.sqlbuilder import *
+
 class Processo:
     """
     Classe: Processo
     Descrição: Classe utilizada para montar a lista de processo disponiveis
     """
+
+    # definição da tabela que vai salvar os dados 
+    __tabela_banco__ = "PROCESSO"
+
+    # relacionando nome da classe com o nome do campo na tabela
+    __campos_tabela__ = {
+        "idprocesso": "IDPROCESSO"
+        , "nome": "NOME"
+        , "descricao": "DESCRICAO"
+        , "status": "STATUS"
+    }
+
+    # definição dos campos chave da tabela
+    __campos_chave__ = ["idprocesso"]
+
     def __init__(self, idprocesso, nome, descricao, status):
         self.idprocesso = idprocesso
         self.nome = nome
@@ -45,3 +62,9 @@ class Processo:
                 , "nome": self.nome
                 , "descricao": self.descricao
                 , "status": self.status}
+
+    def get_SQLBuilder():
+        """
+        Esse metodo retorna objeto que monta os comandos sql de acordo com o nome da tabela e campos declarados no inicio da classe
+        """
+        return SQLBuilder(Processo.__tabela_banco__, Processo.__campos_tabela__, Processo.__campos_chave__, "?")

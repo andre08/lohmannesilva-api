@@ -1,8 +1,27 @@
+from util.sqlbuilder import *
+
 class EmpresaUsuario:
     """
     Classe: EmpresaUsuario
     Descrição: Classe utilizada para montar a relação entre empresa e usuario
     """
+
+    # definição da tabela que vai salvar os dados 
+    __tabela_banco__ = "EMPRESA_USUARIO"
+
+    # relacionando nome da classe com o nome do campo na tabela
+    __campos_tabela__ = {
+        "idempresa_usuario": "IDEMPRESA_USUARIO"
+        , "idempresa": "IDEMPRESA"
+        , "idusuario": "IDUSUARIO"
+        , "papel": "PAPEL"
+        , "dt_cadastro": "DT_CADASTRO"
+        , "status": "STATUS"
+    }
+
+    # definição dos campos chave da tabela
+    __campos_chave__ = ["idempresa_usuario"]
+
     def __init__(self, idempresa_usuario, idempresa, idusuario, papel, dt_cadastro, status):
         self.idempresa_usuario = idempresa_usuario
         self.idempresa = idempresa
@@ -50,3 +69,9 @@ class EmpresaUsuario:
                 , "papel": self.papel
                 , "status": self.status
                 , "dt_cadastro": dt_cadastro_formatada}
+
+    def get_SQLBuilder():
+        """
+        Esse metodo retorna objeto que monta os comandos sql de acordo com o nome da tabela e campos declarados no inicio da classe
+        """
+        return SQLBuilder(EmpresaUsuario.__tabela_banco__, EmpresaUsuario.__campos_tabela__, EmpresaUsuario.__campos_chave__, "?")

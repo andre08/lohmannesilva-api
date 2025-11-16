@@ -1,105 +1,334 @@
 # Importando bibliotecas
-from werkzeug.security import check_password_hash
-
 from conn import Conectar
 from models.usuario import Usuario
 
+# Localiza o usuario a partir do email para que seja realizao o login
+def usuario_logon(email):
+    #montando o comando sql 
+    builder = Usuario.get_SQLBuilder()
+    comandoSQL, valoresFiltro = builder.select_sql_and_values({"email": email})
 
-def listar_usuarios():
-    conn = Conectar()
-    cur = conn.cursor()
-    cur.execute("SELECT IDUSUARIO, NOME, EMAIL, ATIVO, DT_ATIVACAO, DESATIVADO, DT_DESATIVADO, DT_CADASTRO, DT_ATUALIZADO, TOKEN_ATIVO, TIPO FROM VW_USUARIO")
-    dados = cur.fetchall()
-    resultado = [Usuario.from_db(item).to_dict() for item in dados]
-    cur.close()
-    conn.close()
-    return resultado
+    try:    
+        conexao = Conectar()
+        cursor = conexao.cursor()
+        cursor.execute(comandoSQL, valoresFiltro)
+        dados = cursor.fetchone()
+        registrosAfetados = cursor.rowcount
 
-def total_usuario():
-    conn = Conectar()
-    cur = conn.cursor()
-    
-    cur.execute("SELECT COUNT(*) AS REGISTROS FROM VW_USUARIO")
-    totalRegistros = cur.fetchone()[0]
-    if not totalRegistros:
+        # pegando os dados do banco e convertendo para objeto
+        if dados:
+            resultado = Usuario.from_db(dados)
+        else:
+            resultado = None
+
+        mensagem = f"Foram encontrados {registrosAfetados} registros"
+    except Exception as e:
+        mensagem = f"Erro ao localizar os usuários [Exception: {str(e)}]"
+        resultado = None
+    except TypeError as e:
+        mensagem = f"Erro ao localizar os usuários [TypeError: {str(e)}]"
+        resultado = None
+    except ValueError as e:
+        mensagem = f"Erro ao localizar os usuários [ValueError: {str(e)}]"
+        resultado = None
+    finally:
+        # fechando o cursor
+        cursor.close()
+        # fechando conexão com o banco de dados
+        conexao.close()
+
+    return resultado, mensagem
+
+# retorno o numero total de registros na base
+def usuario_base_total():
+    try:    
+        # criando conexão com o banco de dados
+        conexao = Conectar()
+        # criando cursor para buscar dados de Usuario
+        cursor = conexao.cursor()
+        # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+        cursor.execute("SELECT COUNT(*) AS REGISTROS FROM VW_USUARIO")
+        totalRegistros = cursor.fetchone()[0]
+
+        if not totalRegistros:
+            totalRegistros = 0
+
+    except Exception as e:
+        mensagem = f"Erro ao localizar a quantidade de usuário [Exception: {str(e)}]"
         totalRegistros = 0
-
-    cur.close()
-    conn.close()
+    except TypeError as e:
+        mensagem = f"Erro ao localizar a quantidade de usuário [TypeError: {str(e)}]"
+        totalRegistros = 0
+    except ValueError as e:
+        mensagem = f"Erro ao localizar a quantidade de usuário [ValueError: {str(e)}]"
+        totalRegistros = 0
+    finally:
+        # fechando o cursor
+        cursor.close()
+        # fechando conexão com o banco de dados
+        conexao.close()
     
     return totalRegistros
 
-def listar_usuario_paginado(quantidade, offset):
+# listar todos os registros
+def usuario_listar_todos():
+    #montando o comando SQL 
+    builder = Usuario.get_SQLBuilder()
+    comandoSQL = builder.build_select()
+
+    resultado = []
+    try:    
+        # criando conexão com o banco de dados
+        conexao = Conectar()
+        # criando cursor para buscar dados de usuário
+        cursor = conexao.cursor()
+        # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+        cursor.execute(comandoSQL)
+        # buscando dados
+        dados = cursor.fetchall()
+        # identificando a quantidade de registro retornado
+        registrosAfetados = cursor.rowcount
+
+        # verificando se tem resultado e convertando em lista de dicionario
+        if dados:
+            resultado = [Usuario.from_db(item).to_dict() for item in dados]
+
+        # ajustando a mensagem para quando o comando foi executado com sucesso
+        mensagem = f"Foram encontrados {registrosAfetados} registros"
+    except Exception as e:
+        mensagem = f"Erro ao localizar os usuários [Exception: {str(e)}]"
+    except TypeError as e:
+        mensagem = f"Erro ao localizar os usuários [TypeError: {str(e)}]"
+    except ValueError as e:
+        mensagem = f"Erro ao localizar os usuários [ValueError: {str(e)}]"
+    finally:
+        # fechando o cursor
+        cursor.close()
+        # fechando conexão com o banco de dados
+        conexao.close()
     
-    conn = Conectar()
-    cur = conn.cursor()
+    # Retornando os dados e mensagem
+    return resultado, mensagem
+
+# listar apenas um registro filtrado pela PK
+def usuario_lista_selecionado(idusuario):
+    #montando o comando sql 
+    builder = Usuario.get_SQLBuilder()
+    comandoSQL, valoresFiltro = builder.select_sql_and_values({"idusuario": idusuario})
+
+    try:    
+        # criando conexão com o banco de dados
+        conexao = Conectar()
+        # criando cursor para buscar dados de usuário
+        cursor = conexao.cursor()
+        # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+        cursor.execute(comandoSQL, valoresFiltro)
+        # buscando dados
+        dados = cursor.fetchone()
+        # identificando a quantidade de registro retornado
+        registrosAfetados = cursor.rowcount
+
+        # pegando os dados do banco e convertendo para objeto
+        if dados:
+            resultado = Usuario.from_db(dados)
+        else:
+            resultado = None
+
+        # ajustando a mensagem para quando o comando foi executado com sucesso
+        mensagem = f"Foram encontrados {registrosAfetados} registros"
+    except Exception as e:
+        mensagem = f"Erro ao localizar o usuário #{idusuario} [Exception: {str(e)}]"
+        resultado = None
+    except TypeError as e:
+        mensagem = f"Erro ao localizar o usuário #{idusuario} [TypeError: {str(e)}]"
+        resultado = None
+    except ValueError as e:
+        mensagem = f"Erro ao localizar o usuário #{idusuario} [ValueError: {str(e)}]"
+        resultado = None
+    finally:
+        # fechando o cursor
+        cursor.close()
+        # fechando conexão com o banco de dados
+        conexao.close()
     
-    cur.execute("SELECT IDUSUARIO, NOME, EMAIL, ATIVO, DT_ATIVACAO, DESATIVADO, DT_DESATIVADO, DT_CADASTRO, DT_ATUALIZADO, TOKEN_ATIVO, TIPO FROM VW_USUARIO ORDER BY IDUSUARIO LIMIT ? OFFSET ?", (quantidade, offset))
-    dados = cur.fetchall()
+    # Retornando os dados e mensagem
+    return resultado, mensagem
+
+# listar registros por filtrado e paginado
+def usuario_lista_filtrado_paginado(filtro, ordem="", pagina=1, quantidade=10):
+
+    # verificando se foi informado uma ordem de pagina, caso não tenho será usada a pk
+    if ordem == "" or ordem == None:
+        ordem = " ,".join(Usuario.__campos_chave__)
     
-    cur.close()
-    conn.close()
+    #montando o comando sql 
+    builder = Usuario.get_SQLBuilder()
+    comandoSQL, valoresFiltro = builder.select_sql_and_values(filtro)
+
+    try:
+        # criando conexão com o banco de dados
+        conexao = Conectar()
+        # criando cursor para buscar dados de usuário
+        cursor = conexao.cursor()
+        # inicialmente a consulta vai trazer o numero total de registro do filtro
+        cursor.execute(f"SELECT COUNT(1) AS TOTAL FROM ({comandoSQL}) AS X", valoresFiltro)
+        # buscando o numero de registro
+        totalRegistros = int(cursor.fetchone()[0])
+        totalPagina = round(totalRegistros / quantidade, 0) + 1
+
+        # executando a consulta ordenada e paginada
+        cursor.execute(f" {comandoSQL} ORDER BY {ordem} OFFSET ({pagina} - 1) * {quantidade} ROWS FETCH NEXT {quantidade} ROWS ONLY ", valoresFiltro)
+        # buscando dados
+        dados = cursor.fetchall()
+        # identificando a quantidade de registro retornado
+        registrosAfetados = cursor.rowcount
+        # pegando os dados do banco e convertendo para objeto
+        if dados:
+            resultado = [Usuario.from_db(item).to_dict() for item in dados]
+            registrosAfetados = len(resultado)
+        else:
+            resultado = None
+
+        # ajustando a mensagem para quando o comando foi executado com sucesso
+        mensagem = f"Foram encontrados {totalRegistros} registros, mostrando {pagina} com {registrosAfetados}"
+    except Exception as e:
+        mensagem = f"Erro ao localizar o usuário pelo filtro indicado [Exception: {str(e)}]"
+        resultado = None
+    except TypeError as e:
+        mensagem = f"Erro ao localizar o usuário pelo filtro indicado [TypeError: {str(e)}]"
+        resultado = None
+    except ValueError as e:
+        mensagem = f"Erro ao localizar o usuário pelo filtro indicado [ValueError: {str(e)}]"
+        resultado = None
+    finally:
+        # fechando o cursor
+        cursor.close()
+        # fechando conexão com o banco de dados
+        conexao.close()
     
-    return [Usuario(id, nome, email, None, ativo, dt_ativacao, desativado, dt_desativado, dt_cadastro, dt_atualizado, token_ativo, tipo) for id, nome, email, ativo, dt_ativacao, desativado, dt_desativado, dt_cadastro, dt_atualizado, token_ativo, tipo in dados]
+    # Retornando os dados e mensagem
+    return resultado, totalRegistros, totalPagina, mensagem
 
-def detalhe_usuario(id):
-    conn = Conectar()
-    cur = conn.cursor()
-    cur.execute("SELECT IDUSUARIO, NOME, EMAIL, ATIVO, DT_ATIVACAO, DESATIVADO, DT_DESATIVADO, DT_CADASTRO, DT_ATUALIZADO, TOKEN_ATIVO, TIPO FROM VW_USUARIO WHERE IDUSUARIO = ?", (id,))
-    dados = cur.fetchall()
-    cur.close()
-    conn.close()
-    lista = [Usuario(id, nome, email, None, ativo, dt_ativacao, desativado, dt_desativado, dt_cadastro, dt_atualizado, token_ativo, tipo) for id, nome, email, ativo, dt_ativacao, desativado, dt_desativado, dt_cadastro, dt_atualizado, token_ativo, tipo in dados]
-    return lista[0]
+# salva um novo registro
+def usuario_salvar_novo(usuario):
+    resultado = False
+    if isinstance(usuario, Usuario):
 
-def criar_usuario(nome, email, senha):
-    conn = Conectar()
-    cur = conn.cursor()
-    cur.execute("INSERT INTO USUARIO (NOME, EMAIL, SENHA) VALUES (?, ?, ?)", (nome, email, senha))
-    conn.commit()
-    cur.close()
-    conn.close()
+        #montando o comando sql 
+        builder = Usuario.get_SQLBuilder()
+        comandoSQL, valoresFiltro = builder.insert_sql_and_values(usuario)
 
-def alterar_usuario(id, nome, email, senha):
-    conn = Conectar()
-    cur = conn.cursor()
-    cur.execute("UPDATE USUARIO SET NOME = ?, EMAIL = ?, SENHA = ? WHERE IDUSUARIO = ?", (nome, email, senha, id))
-    conn.commit()
-    cur.close()
-    conn.close()
-    
-def alterar_usuario_admin(id, nome, email, senha, tipo, ativo, desativado):
-    conn = Conectar()
-    cur = conn.cursor()
-    cur.execute("UPDATE USUARIO SET NOME = ?, EMAIL = ?, SENHA = ?, TIPO = ?, ATIVO = ?, DESATIVADO = ? WHERE IDUSUARIO = ?", (nome, email, senha, tipo, ativo, desativado, id))
-    conn.commit()
-    cur.close()
-    conn.close()
+        try:    
+            # criando conexão com o banco de dados
+            conexao = Conectar()
+            # criando cursor para buscar dados de usuário
+            cursor = conexao.cursor()
+            # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+            cursor.execute(comandoSQL, valoresFiltro)
+            # identificando a quantidade de registro afetado pelo comando
+            registrosAfetados = cursor.rowcount
+            # gravando os dados no banco de dados
+            conexao.commit()
 
-def deletar_usuario(id):
-    conn = Conectar()
-    cur = conn.cursor()
-    cur.execute("DELETE FROM USUARIO WHERE IDUSUARIO = ?", (id,))
-    conn.commit()
-    cur.close()
-    conn.close()
-
-def logon_usuario(email, senha):
-
-    id = None
-
-    conn = Conectar()
-    cur = conn.cursor()
-    cur.execute("SELECT IDUSUARIO, EMAIL, SENHA FROM USUARIO WHERE EMAIL = ? ", (email,))
-    usuarios = cur.fetchall()
-    
-    for item in usuarios:
-        if item and check_password_hash(item[2], senha):
-            id = item[0]
-            
-    cur.close()
-    conn.close()
-    if id:
-        return detalhe_usuario(id)
+            mensagem = f"Foram incluídos {registrosAfetados} registros"
+            resultado = True
+        except Exception as e:
+            mensagem = f"Erro ao salvar o usuários [Exception: {str(e)}]"
+            resultado = False
+        except TypeError as e:
+            mensagem = f"Erro ao salvar o usuários [TypeError: {str(e)}]"
+            resultado = False
+        except ValueError as e:
+            mensagem = f"Erro ao salvar o usuários [ValueError: {str(e)}]"
+            resultado = False
+        finally:
+            # fechando o cursor
+            cursor.close()
+            # fechando conexão com o banco de dados
+            conexao.close()
     else:
-        return []
+        mensagem = f"Dados de usuários inválido"
+        resultado = False
+
+    print(mensagem)
+    return resultado, mensagem
+
+# alterar um registro existente
+def usuario_alterar_existente(usuario):
+    
+    if isinstance(usuario, Usuario):
+        #montando o comando sql 
+        builder = Usuario.get_SQLBuilder()
+        comandoSQL, valoresFiltro = builder.update_sql_and_values(usuario)
+
+        try:    
+            # criando conexão com o banco de dados
+            conexao = Conectar()
+            # criando cursor para buscar dados de usuário
+            cursor = conexao.cursor()
+            # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+            cursor.execute(comandoSQL, valoresFiltro)
+            # identificando a quantidade de registro afetado pelo comando
+            registrosAfetados = cursor.rowcount
+            # gravando os dados no banco de dados
+            conexao.commit()
+
+            mensagem = f"Foram alterados {registrosAfetados} registros"
+            resultado = True
+        except Exception as e:
+            mensagem = f"Erro ao salvar o usuários [Exception: {str(e)}]"
+            resultado = False
+        except TypeError as e:
+            mensagem = f"Erro ao salvar o usuários [TypeError: {str(e)}]"
+            resultado = False
+        except ValueError as e:
+            mensagem = f"Erro ao salvar o usuários [ValueError: {str(e)}]"
+            resultado = False
+        finally:
+            # fechando o cursor
+            cursor.close()
+            # fechando conexão com o banco de dados
+            conexao.close()
+    else:
+        mensagem = f"Dados de usuário inválido"
+        resultado = False
+        
+    return resultado, mensagem
+
+# excluir um registro existente
+def usuario_excluir_existente(idusuario):
+    builder = Usuario.get_SQLBuilder()
+    comandoSQL, valoresFiltro = builder.delete_sql_and_values(Usuario(idusuario, None, None, None))
+
+    resultado = False
+    try:    
+        # criando conexão com o banco de dados
+        conexao = Conectar()
+        # criando cursor para buscar dados de Usuario
+        cursor = conexao.cursor()
+        # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+        cursor.execute(comandoSQL, valoresFiltro)
+        registrosAfetados = cursor.rowcount
+        # identificando a quantidade de registro afetado pelo comando
+        registrosAfetados = cursor.rowcount
+        # gravando os dados no banco de dados
+        conexao.commit()
+
+        mensagem = f"Foram excluídos {registrosAfetados} registros"
+        resultado = True
+    except Exception as e:
+        mensagem = f"Erro ao excluir o usuário #{idusuario} [Exception: {str(e)}]"
+        resultado = False
+    except TypeError as e:
+        mensagem = f"Erro ao excluir o usuário #{idusuario} [TypeError: {str(e)}]"
+        resultado = False
+    except ValueError as e:
+        mensagem = f"Erro ao excluir o usuário #{idusuario} [ValueError: {str(e)}]"
+        resultado = False
+    finally:
+        # fechando o cursor
+        cursor.close()
+        # fechando conexão com o banco de dados
+        conexao.close()
+    
+    return resultado, mensagem

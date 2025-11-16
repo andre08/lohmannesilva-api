@@ -18,7 +18,7 @@ body {
 
 .sidebar-icons {
   top: 56px;
-  width: 85px;
+  width: 55px;
   background-color: #A6823F;
   color: #F2F2F2;
 }
@@ -29,12 +29,34 @@ body {
 }
 
 .sidebar-icons a {
-  opacity: 0.8;             /* levemente apagado por padrão */
+  opacity: 0.9;             /* levemente apagado por padrão */
   transition: opacity 0.1s; /* suaviza a transição */
 }
 
 .sidebar-icons a:hover {
-  opacity: 1.2;             /* 100% visível ao passar o mouse */
+  opacity: 1.9;             /* 100% visível ao passar o mouse */
+}
+
+.figure {
+    margin-bottom: 10px !important;
+    line-height: 0px;
+}
+
+.sidebar-icons-btn-rounded{
+    display: block;
+    padding: 8px 8px;
+    background-color: #A6823F;
+    border-radius: 10px; /* bordas arredondadas */
+    transition: 0.3s;
+    width: fit-content;           /* evita esticar demais o botão */
+    margin: 0 auto;
+}
+
+.sidebar-icons-btn-rounded:hover {
+    background-color: #F2F2F2;
+    border: solid;
+    border-color: #C2B279;
+    border-width: 1px;
 }
 
 .item-sidebar-logon{
@@ -48,7 +70,7 @@ body {
 .sidebar-channels {
   top: 56px;
   width: 150px;
-  margin-left: 85px;
+  margin-left: 55px;
   background-color: #03588C;
   color: #F2F2F2;
   overflow-y: auto;
@@ -91,9 +113,20 @@ body {
 }
 
 .main-content {
-  margin-left: calc(100px + 200px);
+  margin-left: calc(55px + 150px);
   padding: 20px;
   padding-top: 76px; 
   min-height: 100vh;
   background-color: #F2F2F2;
+}
+
+.mensagem-alerta {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  border-radius: 0;
+  z-index: 1055;
+  width: 100%;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }

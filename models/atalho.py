@@ -1,3 +1,5 @@
+from util.sqlbuilder import *
+
 class Atalho:
     """
     Classe: Atalho
@@ -68,4 +70,4 @@ class Atalho:
         """
         Esse metodo retorna objeto que monta os comandos sql de acordo com o nome da tabela e campos declarados no inicio da classe
         """
-        return SQLBuilder(Atalho.__tabela_banco__, Atalho.__campos_tabela__, Atalho.__campos_chave__)    
+        return SQLBuilder(Atalho.__tabela_banco__, Atalho.__campos_tabela__, Atalho.__campos_chave__, "?")

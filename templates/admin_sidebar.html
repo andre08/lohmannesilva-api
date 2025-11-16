@@ -1,30 +1,32 @@
 <!-- Barra lateral de ícones -->
 <div class="sidebar-icons position-fixed start-0 vh-100 d-flex flex-column align-items-center py-3">
   <figure class="figure text-center">
-    <a href="#" class="text-white mb-3"><img class="item-sidebar-icons" src="/static/img/ico_contato.png" alt="Contatos"></a>
-    <figcaption class="figure-caption">Contatos</figcaption>
+    <a class="text-white sidebar-icons-btn-rounded" href="#" >
+      <img class="item-sidebar-icons" src="/static/img/ico_contato.png" title="Contatos" alt="Contatos">
+    </a>
   </figure>
   <figure class="figure text-center">
-    <a href="#" class="text-white mb-3"><img class="item-sidebar-icons" src="/static/img/usuarios.png" alt="Usuários"></a>
-    <figcaption class="figure-caption">Usuários</figcaption>
+    <a class="text-white sidebar-icons-btn-rounded" href="{{ url_for('routes_web_usuario.rota_usuario_principal')}}" >
+      <img class="item-sidebar-icons" src="/static/img/usuarios.png" title="Usuários" alt="Usuários">
+    </a>
   </figure>
   <figure class="figure text-center">
-    <a href="#" class="text-white mb-3"><img class="item-sidebar-icons" src="/static/img/clientes.png" alt="Clientes"></a>
-    <figcaption class="figure-caption">Clientes</figcaption>
+    <a class="text-white sidebar-icons-btn-rounded" href="#" >
+      <img class="item-sidebar-icons" src="/static/img/clientes.png" title="Clientes" alt="Clientes">
+    </a>
   </figure>
   <figure class="figure text-center">
-    <a href="#" class="text-white mb-3"><img class="item-sidebar-icons" src="/static/img/empresas.png" alt="Empresas"></a>
-    <figcaption class="figure-caption">Empresas</figcaption>
+    <a href="#" class="text-white sidebar-icons-btn-rounded"><img class="item-sidebar-icons" src="/static/img/empresas.png" title="Empresas" alt="Empresas"></a>
   </figure>
   <figure class="figure text-center">
-    <a href="#" class="text-white mb-3"><img class="item-sidebar-icons" src="/static/img/arquivos.png" alt="Campanhas"></a>
-    <figcaption class="figure-caption">Campanhas</figcaption>
+    <a href="#" class="text-white sidebar-icons-btn-rounded"><img class="item-sidebar-icons" src="/static/img/arquivos.png" title="Campanhas" alt="Campanhas"></a>
   </figure>
   <!-- Ícone fixado na base -->
   <div class="mt-auto text-center item-sidebar-logon">
     <figure class="figure text-center">
-      <a href="{{ url_for('routes_web_usuario.logout')}}" class="text-white mb-3"><img class="item-sidebar-icons" src="/static/img/user_logon.png" alt="Campanhas"></a>
-      <figcaption class="figure-caption">Sair</figcaption>
+      <a href="{{ url_for('routes_web_usuario.rota_usuario_logoff')}}" class="text-white sidebar-icons-btn-rounded">
+        <img class="item-sidebar-icons" src="/static/img/user_logon.png" alt="Campanhas">
+      </a>
     </figure>
   </div>  
 </div>

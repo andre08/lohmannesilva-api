@@ -77,4 +77,4 @@ class Arquivo:
         """
         Esse metodo retorna objeto que monta os comandos sql de acordo com o nome da tabela e campos declarados no inicio da classe
         """
-        return SQLBuilder(Arquivo.__tabela_banco__, Arquivo.__campos_tabela__, Arquivo.__campos_chave__)    
+        return SQLBuilder(Arquivo.__tabela_banco__, Arquivo.__campos_tabela__, Arquivo.__campos_chave__, "?")

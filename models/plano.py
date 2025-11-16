@@ -1,8 +1,29 @@
+from util.sqlbuilder import *
+
 class Plano:
     """
     Classe: Plano
     Descrição: Classe utilizada para montar a lista de planos disponiveis
     """
+
+    # definição da tabela que vai salvar os dados 
+    __tabela_banco__ = "PLANO"
+
+    # relacionando nome da classe com o nome do campo na tabela
+    __campos_tabela__ = {
+        "idplano": "IDPLANO"
+        , "nome": "NOME"
+        , "descricao": "DESCRICAO"
+        , "parceiro_growth": "PARCEIRO_GROWTH"
+        , "valor": "VALOR"
+        , "status": "STATUS"
+        , "dt_inicial_vigencia": "DT_INICIAL_VIGENCIA"
+        , "dt_final_vigencia": "DT_FINAL_VIGENCIA"
+    }
+
+    # definição dos campos chave da tabela
+    __campos_chave__ = ["idplano"]
+
     def __init__(self, idplano, nome, descricao, parceiro_growth, valor, status, dt_inicial_vigencia, dt_final_vigencia):
         self.idplano = idplano
         self.nome = nome
@@ -56,3 +77,9 @@ class Plano:
                 , "dt_inicial_vigencia": dt_inicial_vigencia_formatada
                 , "dt_final_vigencia": dt_final_vigencia_formatada
                 , "status": self.status}
+
+    def get_SQLBuilder():
+        """
+        Esse metodo retorna objeto que monta os comandos sql de acordo com o nome da tabela e campos declarados no inicio da classe
+        """
+        return SQLBuilder(Plano.__tabela_banco__, Plano.__campos_tabela__, Plano.__campos_chave__, "?")

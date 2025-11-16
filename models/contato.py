@@ -74,7 +74,12 @@ class Contato:
         return (self.nome, self.email, self.telefone, self.mensagem, self.tipo, self.visualizado, self.respondido, self.interesse, self.cliente, self.ativo, self.dt_contato, self.idcontato)
 
     def to_dict(self):
-        dt_contato_formatada = self.dt_contato.strftime("%d/%m/%Y %H:%M:%S")
+        #verificando se a data é uma data válida
+        if self.dt_contato:
+            dt_contato_formatada = self.dt_contato.strftime("%d/%m/%Y %H:%M:%S")
+        else:
+            dt_contato_formatada =""
+
         return {"idcontato": self.idcontato
                 , "nome": self.nome
                 , "email": self.email
@@ -92,4 +97,4 @@ class Contato:
         """
         Esse metodo retorna objeto que monta os comandos sql de acordo com o nome da tabela e campos declarados no inicio da classe
         """
-        return SQLBuilder(Contato.__tabela_banco__, Contato.__campos_tabela__, Contato.__campos_chave__)    
+        return SQLBuilder(Contato.__tabela_banco__, Contato.__campos_tabela__, Contato.__campos_chave__, "?")

@@ -183,3 +183,14 @@ footer {
 .page-jump-to{
   width: 80px;
 }
+
+.mensagem-alerta {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  border-radius: 0;
+  z-index: 1055;
+  width: 100%;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}

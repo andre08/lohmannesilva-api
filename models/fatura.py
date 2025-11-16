@@ -1,8 +1,29 @@
+from util.sqlbuilder import *
+
 class Fatura:
     """
     Classe: Fatura
     Descrição: Classe utilizada para montar a lista de Fatura
     """
+
+    # definição da tabela que vai salvar os dados 
+    __tabela_banco__ = "ITEM_FATURA"
+
+    # relacionando nome da classe com o nome do campo na tabela
+    __campos_tabela__ = {
+        "idfatura": "IDFATURA"
+        , "idempresa": "IDEMPRESA"
+        , "nome": "NOME"
+        , "dt_referencia": "DT_REFERENCIA"
+        , "valor": "VALOR"
+        , "dt_vencimento": "DT_VENCIMENTO"
+        , "valor_pago": "VALOR_PAGO"
+        , "dt_pagamento": "DT_PAGAMENTO"
+    }
+
+    # definição dos campos chave da tabela
+    __campos_chave__ = ["idfatura"]
+
     def __init__(self, idfatura, idempresa, nome, dt_referencia, valor, dt_vencimento, valor_pago, dt_pagamento):
         self.idfatura = idfatura
         self.idempresa = idempresa
@@ -56,3 +77,9 @@ class Fatura:
                 , "dt_vencimento": dt_vencimento_formatada
                 , "valor_pago": self.valor_pago
                 , "dt_pagamento": dt_pagamento_formatada}
+
+    def get_SQLBuilder():
+        """
+        Esse metodo retorna objeto que monta os comandos sql de acordo com o nome da tabela e campos declarados no inicio da classe
+        """
+        return SQLBuilder(Fatura.__tabela_banco__, Fatura.__campos_tabela__, Fatura.__campos_chave__, "?")

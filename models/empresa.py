@@ -1,9 +1,9 @@
 from util.sqlbuilder import *
 
-class Processo:
+class Empresa:
     """
-    Classe: Processo
-    Descrição: Classe utilizada para montar a lista de processo disponiveis
+    Classe: Empresa
+    Descrição: Classe utilizada para montar a lista de empresas disponiveis
     """
 
     # definição da tabela que vai salvar os dados 
@@ -74,3 +74,10 @@ class Processo:
                 , "dt_inicio_contrato": dt_inicio_contrato_formatada
                 , "dt_final_contrato": dt_final_contrato_formatada
                 , "status": self.status}
+
+
+    def get_SQLBuilder():
+        """
+        Esse metodo retorna objeto que monta os comandos sql de acordo com o nome da tabela e campos declarados no inicio da classe
+        """
+        return SQLBuilder(Empresa.__tabela_banco__, Empresa.__campos_tabela__, Empresa.__campos_chave__, "?")

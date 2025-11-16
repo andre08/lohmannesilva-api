@@ -1,18 +1,18 @@
 # Importando bibliotecas
 from conn import Conectar
-from models.contato import Contato
+from models.historicoacesso import HistoricoAcesso
 
 # listar todos os registros
-def contato_listar_todos():
+def historio_acesso_listar_todos():
     #montando o comando SQL 
-    builder = Contato.get_SQLBuilder()
+    builder = HistoricoAcesso.get_SQLBuilder()
     comandoSQL = builder.build_select()
 
     resultado = []
     try:    
         # criando conexão com o banco de dados
         conexao = Conectar()
-        # criando cursor para buscar dados de contato
+        # criando cursor para buscar dados
         cursor = conexao.cursor()
         # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
         cursor.execute(comandoSQL)
@@ -23,16 +23,16 @@ def contato_listar_todos():
 
         # verificando se tem resultado e convertando em lista de dicionario
         if dados:
-            resultado = [Contato.from_db(item).to_dict() for item in dados]
+            resultado = [HistoricoAcesso.from_db(item).to_dict() for item in dados]
 
         # ajustando a mensagem para quando o comando foi executado com sucesso
         mensagem = f"Foram encontrados {registrosAfetados} registros"
     except Exception as e:
-        mensagem = f"Erro ao localizar os contatos [Exception: {str(e)}]"
+        mensagem = f"Erro ao localizar os historicos de acesso [Exception: {str(e)}]"
     except TypeError as e:
-        mensagem = f"Erro ao localizar os contatos [TypeError: {str(e)}]"
+        mensagem = f"Erro ao localizar os historicos de acesso [TypeError: {str(e)}]"
     except ValueError as e:
-        mensagem = f"Erro ao localizar os contatos [ValueError: {str(e)}]"
+        mensagem = f"Erro ao localizar os historicos de acesso [ValueError: {str(e)}]"
     finally:
         # fechando o cursor
         cursor.close()
@@ -43,15 +43,15 @@ def contato_listar_todos():
     return resultado, mensagem
 
 # listar apenas um registro filtrado pela PK
-def contato_lista_selecionado(idcontato):
+def historico_acesso_lista_selecionado(idhistorico_acesso):
     #montando o comando sql 
-    builder = Contato.get_SQLBuilder()
-    comandoSQL, valoresFiltro = builder.select_sql_and_values({"idcontato": idcontato})
+    builder = HistoricoAcesso.get_SQLBuilder()
+    comandoSQL, valoresFiltro = builder.select_sql_and_values({"idhistorico_acesso": idhistorico_acesso})
 
     try:    
         # criando conexão com o banco de dados
         conexao = Conectar()
-        # criando cursor para buscar dados de contato
+        # criando cursor para buscar dados
         cursor = conexao.cursor()
         # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
         cursor.execute(comandoSQL, valoresFiltro)
@@ -62,20 +62,20 @@ def contato_lista_selecionado(idcontato):
 
         # pegando os dados do banco e convertendo para objeto
         if dados:
-            resultado = Contato.from_db(dados).to_dict()
+            resultado = HistoricoAcesso.from_db(dados).to_dict()
         else:
             resultado = None
 
         # ajustando a mensagem para quando o comando foi executado com sucesso
         mensagem = f"Foram encontrados {registrosAfetados} registros"
     except Exception as e:
-        mensagem = f"Erro ao localizar o contato #{idcontato} [Exception: {str(e)}]"
+        mensagem = f"Erro ao localizar o historico de acesso #{idhistorico_acesso} [Exception: {str(e)}]"
         resultado = None
     except TypeError as e:
-        mensagem = f"Erro ao localizar o contato #{idcontato} [TypeError: {str(e)}]"
+        mensagem = f"Erro ao localizar o historico de acesso #{idhistorico_acesso} [TypeError: {str(e)}]"
         resultado = None
     except ValueError as e:
-        mensagem = f"Erro ao localizar o contato #{idcontato} [ValueError: {str(e)}]"
+        mensagem = f"Erro ao localizar o historico de acesso #{idhistorico_acesso} [ValueError: {str(e)}]"
         resultado = None
     finally:
         # fechando o cursor
@@ -87,18 +87,18 @@ def contato_lista_selecionado(idcontato):
     return resultado, mensagem
 
 # salva um novo registro
-def contato_salvar_novo(contato):
+def historico_acesso_salvar_novo(historicoAcesso):
     resultado = False
-    if isinstance(contato, Contato):
+    if isinstance(historicoAcesso, HistoricoAcesso):
 
         #montando o comando sql 
-        builder = Contato.get_SQLBuilder()
-        comandoSQL, valoresFiltro = builder.insert_sql_and_values(contato)
+        builder = HistoricoAcesso.get_SQLBuilder()
+        comandoSQL, valoresFiltro = builder.insert_sql_and_values(historicoAcesso)
 
         try:    
             # criando conexão com o banco de dados
             conexao = Conectar()
-            # criando cursor para buscar dados de contato
+            # criando cursor para buscar dados
             cursor = conexao.cursor()
             # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
             cursor.execute(comandoSQL, valoresFiltro)
@@ -110,13 +110,13 @@ def contato_salvar_novo(contato):
             mensagem = f"Foram incluídos {registrosAfetados} registros"
             resultado = True
         except Exception as e:
-            mensagem = f"Erro ao salvar o contato [Exception: {str(e)}]"
+            mensagem = f"Erro ao salvar o historico de acesso [Exception: {str(e)}]"
             resultado = False
         except TypeError as e:
-            mensagem = f"Erro ao salvar o contato [TypeError: {str(e)}]"
+            mensagem = f"Erro ao salvar o historico de acesso [TypeError: {str(e)}]"
             resultado = False
         except ValueError as e:
-            mensagem = f"Erro ao salvar o contato [ValueError: {str(e)}]"
+            mensagem = f"Erro ao salvar o historico de acesso [ValueError: {str(e)}]"
             resultado = False
         finally:
             # fechando o cursor
@@ -124,18 +124,18 @@ def contato_salvar_novo(contato):
             # fechando conexão com o banco de dados
             conexao.close()
     else:
-        mensagem = f"Dados de contato inválido"
+        mensagem = f"Dados de historico de acesso inválido"
         resultado = False
 
     return resultado, mensagem
 
 # alterar um registro existente
-def contato_alterar_existente(contato):
+def historico_acesso_alterar_existente(historicoAcesso):
     
-    if isinstance(contato, Contato):
+    if isinstance(historicoAcesso, HistoricoAcesso):
         #montando o comando sql 
-        builder = Contato.get_SQLBuilder()
-        comandoSQL, valoresFiltro = builder.update_sql_and_values(contato)
+        builder = HistoricoAcesso.get_SQLBuilder()
+        comandoSQL, valoresFiltro = builder.update_sql_and_values(historicoAcesso)
 
         try:    
             # criando conexão com o banco de dados
@@ -152,13 +152,13 @@ def contato_alterar_existente(contato):
             mensagem = f"Foram alterados {registrosAfetados} registros"
             resultado = True
         except Exception as e:
-            mensagem = f"Erro ao salvar o contato [Exception: {str(e)}]"
+            mensagem = f"Erro ao salvar o historico de acesso [Exception: {str(e)}]"
             resultado = False
         except TypeError as e:
-            mensagem = f"Erro ao salvar o contato [TypeError: {str(e)}]"
+            mensagem = f"Erro ao salvar o historico de acesso [TypeError: {str(e)}]"
             resultado = False
         except ValueError as e:
-            mensagem = f"Erro ao salvar o contato [ValueError: {str(e)}]"
+            mensagem = f"Erro ao salvar o historico de acesso [ValueError: {str(e)}]"
             resultado = False
         finally:
             # fechando o cursor
@@ -166,21 +166,21 @@ def contato_alterar_existente(contato):
             # fechando conexão com o banco de dados
             conexao.close()
     else:
-        mensagem = f"Dados de contato inválido"
+        mensagem = f"Dados de historico de acesso inválido"
         resultado = False
         
     return resultado, mensagem
 
 # excluir um registro existente
-def contato_excluir_existente(idcontato):
-    builder = Contato.get_SQLBuilder()
-    comandoSQL, valoresFiltro = builder.delete_sql_and_values(Contato(idcontato, None, None, None))
+def historico_acesso_excluir_existente(idhistorico_acesso):
+    builder = HistoricoAcesso.get_SQLBuilder()
+    comandoSQL, valoresFiltro = builder.delete_sql_and_values(HistoricoAcesso(idhistorico_acesso))
 
     resultado = False
     try:    
         # criando conexão com o banco de dados
         conexao = Conectar()
-        # criando cursor para buscar dados de contato
+        # criando cursor para buscar dados
         cursor = conexao.cursor()
         # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
         cursor.execute(comandoSQL, valoresFiltro)
@@ -193,13 +193,13 @@ def contato_excluir_existente(idcontato):
         mensagem = f"Foram excluídos {registrosAfetados} registros"
         resultado = True
     except Exception as e:
-        mensagem = f"Erro ao excluir o contato #{idcontato} [Exception: {str(e)}]"
+        mensagem = f"Erro ao excluir o historico de acesso #{idhistorico_acesso} [Exception: {str(e)}]"
         resultado = False
     except TypeError as e:
-        mensagem = f"Erro ao excluir o contato #{idcontato} [TypeError: {str(e)}]"
+        mensagem = f"Erro ao excluir o historico de acesso #{idhistorico_acesso} [TypeError: {str(e)}]"
         resultado = False
     except ValueError as e:
-        mensagem = f"Erro ao excluir o contato #{idcontato} [ValueError: {str(e)}]"
+        mensagem = f"Erro ao excluir o historico de acesso #{idhistorico_acesso} [ValueError: {str(e)}]"
         resultado = False
     finally:
         # fechando o cursor

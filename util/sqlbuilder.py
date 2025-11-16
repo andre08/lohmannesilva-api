@@ -1,5 +1,5 @@
 class SQLBuilder:
-    def __init__(self, tabela, depara, campos_chave):
+    def __init__(self, tabela, depara, campos_chave, param_style="%s"):
         """
         tabela: nome da tabela no banco
         depara: dicionário {atributo_da_classe: coluna_no_banco}
@@ -8,10 +8,13 @@ class SQLBuilder:
         self.tabela = tabela
         self.depara = depara
         self.campos_chave = list(campos_chave)
+        self.param_style = param_style
 
     # ------------------------------------------------------------
     # Métodos básicos de construção SQL
     # ------------------------------------------------------------
+    def get_param_style(self):
+        return self.param_style
 
     def build_insert(self, usarChave = False):
         # verifica se é necessario usar a chave, quando tem auto_increment não precisa
@@ -24,7 +27,7 @@ class SQLBuilder:
         campos = ", ".join(colunas)
 
         # criando um paramentro para cada campo do join
-        valores = ", ".join(["%s"] * len(colunas))
+        valores = ", ".join([self.param_style] * len(colunas))
 
         # concatenando o comando com a tabela, os campos, e os indicadores de paramentros
         sql = f"INSERT INTO {self.tabela} ({campos}) VALUES ({valores})"
@@ -34,12 +37,12 @@ class SQLBuilder:
     def build_update(self):
         # criando a parte do set, onde tem a combinação de campo operador de atribuição (=) e o paramentro para ser preenchido
         set_clause = ", ".join([
-            f"{self.depara[c]} = %s" for c in self.depara if c not in self.campos_chave
+            f"{self.depara[c]} = {self.param_style}" for c in self.depara if c not in self.campos_chave
         ])
 
         # criando a parte do where, onde tem a combinação de campo operador (=) e o paramentro para ser preenchido normalmente usando a chave primaria da tabela
         where_clause = " AND ".join([
-            f"{self.depara[c]} = %s" for c in self.campos_chave
+            f"{self.depara[c]} = {self.param_style}" for c in self.campos_chave
         ])
 
         # concatenando o comando com a tabela, os campos e o where
@@ -62,11 +65,11 @@ class SQLBuilder:
             sql += f" WHERE {where}"
 
         return sql
-
+    
     def build_delete(self):
         # criando a parte do where para restringir o comando delete
         where_clause = " AND ".join([
-            f"{self.depara[c]} = %s" for c in self.campos_chave
+            f"{self.depara[c]} = {self.param_style}" for c in self.campos_chave
         ])
 
         #montando o comando delete
@@ -84,7 +87,7 @@ class SQLBuilder:
         filtros = {"nome": "Camiseta", "ativo": True}
         → "NOME = %s AND ATIVO = %s"
         """
-        return " AND ".join([f"{self.depara[c]} = %s" for c in filtros])
+        return " AND ".join([f"{self.depara[c]} = {self.param_style}" for c in filtros])
 
     # ------------------------------------------------------------
     # Geração de SQL + valores

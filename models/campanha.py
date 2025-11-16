@@ -75,3 +75,9 @@ class Campanha:
                 , "descricao": self.descricao
                 , "status": self.status
                 , "status_kambam": self.status_kambam}
+
+    def get_SQLBuilder():
+        """
+        Esse metodo retorna objeto que monta os comandos sql de acordo com o nome da tabela e campos declarados no inicio da classe
+        """
+        return SQLBuilder(Campanha.__tabela_banco__, Campanha.__campos_tabela__, Campanha.__campos_chave__, "?")

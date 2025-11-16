@@ -1,4 +1,5 @@
 from util.sqlbuilder import *
+from datetime import datetime
 
 class Usuario:
     """
@@ -21,14 +22,13 @@ class Usuario:
         , "dt_desativado": "dt_desativado"
         , "dt_cadastro": "dt_cadastro"
         , "dt_atualizado": "dt_atualizado"
-        , "token_ativo": "token_ativo"
         , "tipo": "tipo"
     }
 
     # definição dos campos chave da tabela
     __campos_chave__ = ["idusuario"]
 
-    def __init__(self, idusuario, nome, email, senha, ativo, dt_ativacao, desativado, dt_desativado, dt_cadastro, dt_atualizado, token_ativo, tipo):
+    def __init__(self, idusuario, nome, email, senha, ativo = None, dt_ativacao = None, desativado = None, dt_desativado = None, dt_cadastro = None, dt_atualizado = None, tipo = None):
         self.idusuario = idusuario
         self.nome = nome
         self.email = email
@@ -39,7 +39,6 @@ class Usuario:
         self.dt_desativado = dt_desativado
         self.dt_cadastro = dt_cadastro
         self.dt_atualizado = dt_atualizado
-        self.token_ativo = token_ativo
         self.tipo = tipo
 
     @classmethod
@@ -54,9 +53,10 @@ class Usuario:
         exemplo (tupla): (1, "joao")
         """
         if isinstance(row, dict):
-            usuario = cls(row["idusuario"], row["nome"], row["email"], row["senha"], row["ativo"], row["dt_ativacao"], row["desativado"], row["dt_desativado"], row["dt_cadastro"], row["dt_atualizado"], row["token_ativo"], row["tipo"])
+            usuario = cls(row["idusuario"], row["nome"], row["email"], row["senha"], row["ativo"], row["dt_ativacao"], row["desativado"], row["dt_desativado"], row["dt_cadastro"], row["dt_atualizado"], row["tipo"])            
         else:
-            usuario = cls(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11])
+            usuario = cls(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10])
+
         return usuario
 
     def to_insert_db(self):
@@ -74,10 +74,26 @@ class Usuario:
         return (self.nome, self.email, self.senha, self.ativo, self.dt_ativacao, self.desativado, self.dt_desativado, self.dt_cadastro, self.dt_atualizado, self.tipo, self.idusuario)
 
     def to_dict(self):
-        dt_ativacao_formatada = self.dt_ativacao.strftime("%d/%m/%Y %H:%M:%S")
-        dt_desativado_formatada = self.dt_desativado.strftime("%d/%m/%Y %H:%M:%S")
-        dt_cadastro_formatada = self.dt_cadastro.strftime("%d/%m/%Y %H:%M:%S")
-        dt_atualizado_formatada = self.dt_atualizado.strftime("%d/%m/%Y %H:%M:%S")
+        if self.dt_ativacao:
+            dt_ativacao_formatada = datetime.strftime(self.dt_ativacao, "%Y-%m-%d %H:%M:%S")
+        else:
+            dt_ativacao_formatada = None
+        
+        if self.dt_desativado:
+            dt_desativado_formatada = datetime.strftime(self.dt_desativado, "%Y-%m-%d %H:%M:%S")
+        else:
+            dt_desativado_formatada = None
+
+        if self.dt_cadastro:
+            dt_cadastro_formatada = datetime.strftime(self.dt_cadastro, "%Y-%m-%d %H:%M:%S")
+        else:
+            dt_cadastro_formatada = None
+        
+        if self.dt_atualizado:
+            dt_atualizado_formatada = datetime.strftime(self.dt_atualizado, "%Y-%m-%d %H:%M:%S")
+        else:
+            dt_atualizado_formatada = None
+            
         return {
                 "idusuario": self.idusuario
                 , "nome": self.nome
@@ -88,7 +104,6 @@ class Usuario:
                 , "dt_desativado": dt_desativado_formatada
                 , "dt_cadastro": dt_cadastro_formatada
                 , "dt_atualizado": dt_atualizado_formatada
-                , "token_ativo": self.token_ativo
                 , "tipo": self.tipo
             }
 
@@ -96,4 +111,4 @@ class Usuario:
         """
         Esse metodo retorna objeto que monta os comandos sql de acordo com o nome da tabela e campos declarados no inicio da classe
         """
-        return SQLBuilder(Usuario.__tabela_banco__, Usuario.__campos_tabela__, Usuario.__campos_chave__)    
+        return SQLBuilder(Usuario.__tabela_banco__, Usuario.__campos_tabela__, Usuario.__campos_chave__, "?")

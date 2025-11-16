@@ -1,8 +1,27 @@
+from util.sqlbuilder import *
+
 class Registro:
     """
     Classe: Registro
     Descrição: Classe utilizada para registrar o log de acesso ao programa, deve registrar cada acesso e o token utilizado para acesso
     """
+
+    # definição da tabela que vai salvar os dados 
+    __tabela_banco__ = "REGISTRO"
+
+    # relacionando nome da classe com o nome do campo na tabela
+    __campos_tabela__ = {
+        "idregistro": "IDREGISTRO"
+        , "idusuario": "IDUSUARIO"
+        , "idtoken": "IDTOKEN"
+        , "modelo": "MODULO"
+        , "acao": "ACAO"
+        , "dt_registro": "DT_REGISTRO"
+    }
+
+    # definição dos campos chave da tabela
+    __campos_chave__ = ["idregistro"]
+    
     def __init__(self, idregistro, idusuario, idtoken, modelo, acao, dt_registro):
         self.idregistro = idregistro
         self.idusuario = idusuario
@@ -50,3 +69,9 @@ class Registro:
                 , "modelo": self.modelo
                 , "acao": self.acao
                 , "dt_registro": dt_registro_formatada}
+
+    def get_SQLBuilder():
+        """
+        Esse metodo retorna objeto que monta os comandos sql de acordo com o nome da tabela e campos declarados no inicio da classe
+        """
+        return SQLBuilder(Registro.__tabela_banco__, Registro.__campos_tabela__, Registro.__campos_chave__, "?")

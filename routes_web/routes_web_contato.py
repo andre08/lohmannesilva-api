@@ -10,34 +10,74 @@ from util.paginacao import montaNavegador
 routes_web_contato = Blueprint('routes_web_contato', __name__)
 
 #pagina de criação de nova conta
-@routes_web_contato.route("/")
 @routes_web_contato.route("/registrar_contato", methods=['GET'])
-def registrar_contato():
+def rota_contato_registrar_contato():
     try:
         acao = request.args.get("tipo")
     except:
-        acao = ""
-    print(acao)
+        acao = "1"
     return render_template('registro_contato.html', tipo=acao)
 
-#pagina para criar uma nova conta de acesso
-@routes_web_contato.route('/salvar_contato', methods=['POST'])
-def salvar_contato():
+#rota para pagina principal de contato
+@routes_web_contato.route('/', methods=["GET"])
+def rota_contato_pagina():
+    return render_template("admin_contato.html")
+
+#rota para listar todos os contatos
+@routes_web_contato.route('/contatos', methods=["GET"])
+def rota_contato_listar_todos():    
+    resultado, mensagem = contato_listar_todos()
+    return jsonify({"dados":resultado, "mensagem":mensagem})
+
+#rota para listar um contato selecionado
+@routes_web_contato.route('/contato/<int:id>', methods=["GET"])
+def rota_contato_listar_selecionado(id):
+    resultado, mensagem = contato_lista_selecionado(id)
+    if resultado:
+        return jsonify({"dados":resultado, "mensagem":mensagem})
+    else:
+        return jsonify({"mensagem":mensagem})
+
+#pagina para criar um novo contato
+@routes_web_contato.route('/contato', methods=['POST'])
+def rota_contato_salvar_novo():
     dados = request.get_json()
     nome = dados.get("nome")
     email = dados.get("email")
     telefone = dados.get("telefone")
     mensagem = dados.get("mensagem")
     tipo = dados.get("tipo")
-    retorno = criar_contato(nome, email, telefone, mensagem, tipo)
-    if retorno==True:
+    resultado, mensagem = contato_salvar_novo(Contato(None, nome, email, telefone, mensagem, tipo, None, None, None, None, None, None))
+    if resultado==True:
         mensagem = "Solicitação de contato enviado com sucesso, em breve entraremos em contato, Obrigado!"
     else:
         mensagem = "Erro ao salvar sua solicitação de contato, por favor tente novamente mais tarde"
-    return jsonify({'success': retorno, 'mensagem':mensagem})
+    return jsonify({'success': resultado, 'mensagem':mensagem})
 
-#pagina para listar os contatos
-@routes_web_contato.route("/contatos")
-def listar_contato():
-    resultado = listar_contatos()
-    return jsonify({"Contatos":resultado})
+# rota alterar um registro existente
+@routes_web_contato.route('/contato', methods=["PUT"])
+def rota_contato_alterar_existente():
+
+    dados = request.get_json()
+    id = dados.get("id")
+    nome = dados.get("nome")
+    email = dados.get("email")
+    telefone = dados.get("telefone")
+    mensagem = dados.get("mensagem")
+    tipo = dados.get("tipo")
+    visualizado = dados.get("visualizado")
+    respondido = dados.get("respondido")
+    interesse = dados.get("interesse")
+    cliente = dados.get("cliente")
+    ativo = dados.get("ativo")
+    dt_contato = dados.get("dt_contato")
+    resultado, mensagem = contato_alterar_existente(Contato(id, nome, email, telefone, mensagem, tipo, visualizado, respondido, interesse, cliente, ativo, dt_contato))
+
+    return jsonify({'success': resultado, "mensagem":mensagem})
+
+#rota para excluir um registro existente
+@routes_web_contato.route('/contato/<int:id>', methods=["DELETE"])
+def rota_contato_excluir_existente(id):
+    resultado, mensagem = contato_excluir_existente(id)
+    return jsonify({'success': resultado, "mensagem":mensagem})
+
