@@ -73,26 +73,34 @@ class Usuario:
         """
         return (self.nome, self.email, self.senha, self.ativo, self.dt_ativacao, self.desativado, self.dt_desativado, self.dt_cadastro, self.dt_atualizado, self.tipo, self.idusuario)
 
-    def to_dict(self):
+    def to_dict(self, hieraquia=False):
         if self.dt_ativacao:
             dt_ativacao_formatada = datetime.strftime(self.dt_ativacao, "%Y-%m-%d %H:%M:%S")
+            dt_ativacao_formatada2 = datetime.strftime(self.dt_ativacao, "%d/%m/%Y")
         else:
             dt_ativacao_formatada = None
+            dt_ativacao_formatada2 = None
         
         if self.dt_desativado:
             dt_desativado_formatada = datetime.strftime(self.dt_desativado, "%Y-%m-%d %H:%M:%S")
+            dt_desativado_formatada2 = datetime.strftime(self.dt_desativado, "%d/%m/%Y")
         else:
             dt_desativado_formatada = None
+            dt_desativado_formatada2 = None
 
         if self.dt_cadastro:
             dt_cadastro_formatada = datetime.strftime(self.dt_cadastro, "%Y-%m-%d %H:%M:%S")
+            dt_cadastro_formatada2 = datetime.strftime(self.dt_cadastro, "%d/%m/%Y")
         else:
             dt_cadastro_formatada = None
+            dt_cadastro_formatada2 = None
         
         if self.dt_atualizado:
             dt_atualizado_formatada = datetime.strftime(self.dt_atualizado, "%Y-%m-%d %H:%M:%S")
+            dt_atualizado_formatada2 = datetime.strftime(self.dt_atualizado, "%d/%m/%Y")
         else:
             dt_atualizado_formatada = None
+            dt_atualizado_formatada2 = None
             
         return {
                 "idusuario": self.idusuario
@@ -100,10 +108,14 @@ class Usuario:
                 , "email": self.email
                 , "ativo": self.ativo
                 , "dt_ativacao": dt_ativacao_formatada
+                , "dt_ativacao2": dt_ativacao_formatada2
                 , "desativado": self.desativado
                 , "dt_desativado": dt_desativado_formatada
+                , "dt_desativado2": dt_desativado_formatada2
                 , "dt_cadastro": dt_cadastro_formatada
+                , "dt_cadastro2": dt_cadastro_formatada2
                 , "dt_atualizado": dt_atualizado_formatada
+                , "dt_atualizado2": dt_atualizado_formatada2
                 , "tipo": self.tipo
             }
 

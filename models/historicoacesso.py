@@ -1,3 +1,4 @@
+from datetime import datetime
 from util.sqlbuilder import *
 
 class HistoricoAcesso:
@@ -57,28 +58,29 @@ class HistoricoAcesso:
             historicoAcesso = cls(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10])
         return historicoAcesso
 
-    def to_insert_db(self):
-        """
-        Esse metodo retorna um tupla com os valores a serem usado para insert do banco de dados, 
-        deve retornar os campos na ordem do insert e não tem o id, porque o id é gerado pelo banco de dados
-        """
-        return (self.idusuario, self.rota, self.metodo, self.ip, self.pathServer, self.fullUrl, self.queryString, self.formData, self.jsonData, self.dtAcesso)
+    def to_dict(self, hieraquia=False):
+        from services.usuario_service import usuario_lista_selecionado
 
-    def to_update_db(self):
-        """
-        Esse metodo retorna um tupla com os valores a serem usado para update do banco de dados, 
-        deve retornar os campos na ordem do update e o id no final, porque o id é usado no where que vem depois dos valores
-        """
-        return (self.idusuario, self.rota, self.metodo, self.ip, self.pathServer, self.fullUrl, self.queryString, self.formData, self.jsonData, self.dtAcesso, self.idhistorico_acesso)
-
-    def to_dict(self):
+        # formatando campos data
         if self.dtAcesso:
-            dtAcesso_formatada = self.dtAcesso.strftime("%d/%m/%Y %H:%M:%S") 
+            dtAcesso_formatada = datetime.strftime(self.dtAcesso, "%d/%m/%Y %H:%M:%S") 
+            dtAcesso_formatada2 = datetime.strftime(self.dtAcesso, "%d/%m/%Y")
         else:
-             dtAcesso_formatada = None
+            dtAcesso_formatada = None
+            dtAcesso_formatada2 = None
+        
+        if hieraquia:
+            usuario, mensagemUsuario = usuario_lista_selecionado(self.idusuario)
+            if not usuario:
+                usuario = {}
+        else:
+            usuario = {}
+            mensagemUsuario = ""
 
         return {"idhistorico_acesso": self.idhistorico_acesso
                 , "idusuario": self.idusuario
+                , "usuario": usuario
+                , "usuarioMensagem": mensagemUsuario
                 , "rota": self.rota
                 , "metodo": self.metodo
                 , "ip": self.ip
@@ -87,7 +89,9 @@ class HistoricoAcesso:
                 , "queryString": self.queryString
                 , "formData": self.formData
                 , "jsonData": self.jsonData
-                , "dtAcesso": dtAcesso_formatada}
+                , "dtAcesso": dtAcesso_formatada
+                , "dtAcesso2": dtAcesso_formatada2
+            }
 
     def get_SQLBuilder():
         """

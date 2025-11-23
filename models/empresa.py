@@ -1,3 +1,4 @@
+from datetime import datetime
 from util.sqlbuilder import *
 
 class Empresa:
@@ -23,7 +24,7 @@ class Empresa:
     # definição dos campos chave da tabela
     __campos_chave__ = ["idempresa"]
 
-    def __init__(self, idempresa, nome, idplano_padrao, dt_primeiro_contato, dt_inicio_contrato, dt_final_contrato, status):
+    def __init__(self, idempresa, nome=None, idplano_padrao=None, dt_primeiro_contato=None, dt_inicio_contrato=None, dt_final_contrato=None, status=None):
         self.idempresa = idempresa
         self.nome = nome
         self.idplano_padrao = idplano_padrao
@@ -63,18 +64,51 @@ class Empresa:
         """
         return (self.nome, self.idplano_padrao, self.dt_primeiro_contato, self.dt_inicio_contrato, self.dt_final_contrato, self.status, self.idempresa)
 
-    def to_dict(self):
-        dt_primeiro_contato_formatada = self.dt_primeiro_contato.strftime("%d/%m/%Y %H:%M:%S")
-        dt_inicio_contrato_formatada = self.dt_inicio_contrato.strftime("%d/%m/%Y %H:%M:%S")
-        dt_final_contrato_formatada = self.dt_final_contrato.strftime("%d/%m/%Y %H:%M:%S")
+    def to_dict(self, hieraquia=False):
+        from services.plano_service import plano_lista_selecionado
+        
+        # formatando campos data
+        if self.dt_primeiro_contato:
+            dt_primeiro_contato_formatada = datetime.strftime(self.dt_primeiro_contato, "%d/%m/%Y %H:%M:%S") 
+            dt_primeiro_contato_formatada2 = datetime.strftime(self.dt_primeiro_contato, "%d/%m/%Y")
+        else:
+            dt_primeiro_contato_formatada = None
+            dt_primeiro_contato_formatada2 = None        
+
+        if self.dt_inicio_contrato:
+            dt_inicio_contrato_formatada = datetime.strftime(self.dt_inicio_contrato, "%d/%m/%Y %H:%M:%S") 
+            dt_inicio_contrato_formatada2 = datetime.strftime(self.dt_inicio_contrato, "%d/%m/%Y")
+        else:
+            dt_inicio_contrato_formatada = None
+            dt_inicio_contrato_formatada2 = None        
+
+        if self.dt_final_contrato:
+            dt_final_contrato_formatada = datetime.strftime(self.dt_final_contrato, "%d/%m/%Y %H:%M:%S") 
+            dt_final_contrato_formatada2 = datetime.strftime(self.dt_final_contrato, "%d/%m/%Y")
+        else:
+            dt_final_contrato_formatada = None
+            dt_final_contrato_formatada2 = None 
+
+        if hieraquia:
+            plano, mensagemPlano = plano_lista_selecionado(self.idplano_padrao)
+            if not plano:
+                plano = {}
+        else:
+            plano = {}
+            mensagemPlano = ""
+
         return {"idempresa": self.idempresa
                 , "nome": self.nome
                 , "idplano_padrao": self.idplano_padrao
+                , "plano": plano
+                , "plano_mensage": mensagemPlano
                 , "dt_primeiro_contato": dt_primeiro_contato_formatada
+                , "dt_primeiro_contato2": dt_primeiro_contato_formatada2
                 , "dt_inicio_contrato": dt_inicio_contrato_formatada
+                , "dt_inicio_contrato2": dt_inicio_contrato_formatada2
                 , "dt_final_contrato": dt_final_contrato_formatada
+                , "dt_final_contrato2": dt_final_contrato_formatada2
                 , "status": self.status}
-
 
     def get_SQLBuilder():
         """

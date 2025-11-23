@@ -1,0 +1,96 @@
+  {% include 'admin_header.html' %}
+  {% include 'admin_menu.html' %}
+  {% include 'admin_sidebar.html' %}
+
+  <div class="main-content">
+    
+    <div class="container-fluid">
+      
+      <h3>Gerenciamento de ATALHOS</h3>
+      <p>Aqui vai encontrar todas os ATALHOS associados ao usuário {{ session["usuario_nome"] }}.</p>
+
+      <!-- Tabela de Produtos -->
+      <div class="table-section">
+        <div class="row">
+          <h3 class="mb-4">Lista de atalhos</h3>
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th style="width: 100px;">#</th>
+                  <th>Grupos</th>
+                  <th>Nome</th>
+                  <th class="text-center" style="width: 200px;">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="listaAtalhos"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>      
+    
+    </div>
+
+  </div>
+    
+  <script type="text/javascript" >
+
+    const API_URL_PAGINA = "/atalho/";
+    const lista = document.getElementById('listaAtalhos');  
+  
+    async function CarregarAtalhos(){
+
+      // carregando tabela
+      const resposta = await fetch(API_URL_PAGINA + `usuario/{{ session["usuario_id"] }}`);
+      const retorno = await resposta.json();
+      const atalhos = retorno.dados;      
+
+      if(atalhos){
+          lista.innerHTML = "";
+          atalhos.forEach(atalho => {
+              lista.innerHTML += `
+                    <tr>
+                      <th>${atalho.idatalho}</th>
+                      <th>${atalho.grupo}</th>
+                      <th><a href="${atalho.rota}">${atalho.nome}</a></th>
+                      <th>
+                        <button class="btn btn-sm btn-light" onclick="detalhe(${atalho.idatalho})">Detalhe</button>
+                        <button class="btn btn-sm btn-primary" onclick="editar(${atalho.idatalho})">alterar</button>
+                        <button class="btn btn-sm btn-danger" onclick="excluir(${atalho.idatalho})">Excluir</button>
+                      </th>
+                    </tr>
+                  `;
+          });
+      }else {
+        lista.innerHTML = ``;
+        exibirMensagem(retorno.mensagem);
+      }
+      
+    }
+
+    async function excluir(id) {
+      if(confirm("Deseja realmente excluir o atalho #" + id+ "?")){
+        const resposta = await fetch(API_URL_PAGINA + 'atalho/' + id,{
+          method: "DELETE"
+        });
+        
+        const retorno = await resposta.json();
+        exibirMensagem(retorno.mensagem);
+        CarregarAtalhos();
+        carregarAtalhosSidebar();
+      }
+      
+    }
+
+    async function detalhe(id) {
+      window.location.href = API_URL_PAGINA + 'ver/' + id;     
+    }
+
+    async function editar(id) {
+      window.location.href = API_URL_PAGINA + 'editar/' + id;     
+    }
+
+    CarregarAtalhos();
+  </script>
+
+  {% include 'admin_footer.html' %}

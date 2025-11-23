@@ -2,6 +2,7 @@
 from flask import Flask, render_template, session, redirect, url_for, request, Blueprint
 from flask_cors import CORS
 import traceback
+from datetime import timedelta
 from conn import Conectar
 import json
 
@@ -9,34 +10,66 @@ from models.historicoacesso import HistoricoAcesso
 from services.historicoacesso_service import historico_acesso_salvar_novo
 
 # Importando rotas do front-end
+from routes_web.routes_web_arquivo import routes_web_arquivo
+from routes_web.routes_web_atalho import routes_web_atalho
 from routes_web.routes_web_contato import routes_web_contato
+from routes_web.routes_web_contrato import routes_web_contrato
+from routes_web.routes_web_empresa import routes_web_empresa
+from routes_web.routes_web_empresausuario import routes_web_empresausuario
+from routes_web.routes_web_estudo import routes_web_estudo
+from routes_web.routes_web_fatura import routes_web_fatura
+from routes_web.routes_web_historicoacesso import routes_web_historicoacesso
+from routes_web.routes_web_itemfatura import routes_web_itemfatura
+from routes_web.routes_web_plano import routes_web_plano
+from routes_web.routes_web_processo import routes_web_processo
+from routes_web.routes_web_processoestudo import routes_web_processoestudo
+from routes_web.routes_web_registro import routes_web_registro
+from routes_web.routes_web_relatorio import routes_web_relatorio
+from routes_web.routes_web_token import routes_web_token
 from routes_web.routes_web_usuario import routes_web_usuario
-#from routes_web.routes_web_token import routes_web_token
 
 # Importando rotas da API
 #from routes_api.routes_api_usuario import routes_api_usuario
 
 app = Flask(__name__)
 app.secret_key = 'chave-super-secreta'
+app.permanent_session_lifetime = timedelta(minutes=15)
 CORS(app)
 
 interceptador = Blueprint('interceptador', __name__)
 
 # Registrando as rotas para os modulos WEB
+app.register_blueprint(routes_web_arquivo, url_prefix='/arquivo/')
+app.register_blueprint(routes_web_atalho, url_prefix='/atalho/')
 app.register_blueprint(routes_web_contato, url_prefix='/contato/')
+app.register_blueprint(routes_web_contrato, url_prefix='/contrato/')
+app.register_blueprint(routes_web_empresa, url_prefix='/empresa/')
+app.register_blueprint(routes_web_empresausuario, url_prefix='/empresausuario/')
+app.register_blueprint(routes_web_estudo, url_prefix='/estudo/')
+app.register_blueprint(routes_web_fatura, url_prefix='/fatura/')
+app.register_blueprint(routes_web_historicoacesso, url_prefix='/historicoacesso/')
+app.register_blueprint(routes_web_itemfatura, url_prefix='/itemfatura/')
+app.register_blueprint(routes_web_plano, url_prefix='/plano/')
+app.register_blueprint(routes_web_processo, url_prefix='/processo/')
+app.register_blueprint(routes_web_processoestudo, url_prefix='/processoestudo/')
+app.register_blueprint(routes_web_registro, url_prefix='/registro/')
+app.register_blueprint(routes_web_relatorio, url_prefix='/relatorio/')
+app.register_blueprint(routes_web_token, url_prefix='/token/')
 app.register_blueprint(routes_web_usuario, url_prefix='/usuario/')
-#app.register_blueprint(routes_web_token, url_prefix='/')
 
 # Registrando as rotas para os modulos API
 #app.register_blueprint(routes_api_usuario, url_prefix='/api')
 
 # Lista de rotas que não são necessárias para login
-rotasWebPublicas = ['/'
-                 , 'home'
-                 , 'routes_web_contato.rota_contato_registrar_contato', 'routes_web_contato.rota_contato_salvar_novo'
-                 , 'routes_web_usuario.rota_usuario_login', 'routes_web_usuario.rota_usuario_logon', 'routes_web_usuario.rota_usuario_salvar_novo', 'routes_web_usuario.rota_usuario_registro'
-                 , 'routes_web_usuario.rota_usuario_listar_filtro_paginado'
-                 , 'static']
+rotasWebPublicas = [''
+                    , None
+                    ,'/'
+                    , 'static'
+                    , 'home'
+                    , 'routes_web_contato.rota_contato_registrar_contato', 'routes_web_contato.rota_contato_salvar_novo'
+                    , 'routes_web_usuario.rota_usuario_login', 'routes_web_usuario.rota_usuario_logon', 'routes_web_usuario.rota_usuario_logoff'
+                    , 'routes_web_usuario.rota_usuario_registro', 'routes_web_usuario.rota_usuario_salvar_novo_publico'
+                ]
 
 # Interceptando as rotas para identificar uma rota restrita
 @app.before_request
@@ -56,7 +89,7 @@ def registra_rota():
     # recuperando a rota selecionada
     rota_solicitada = request.endpoint
 
-    if (rota_solicitada not in ['/', 'home', 'static']):
+    if (rota_solicitada not in ['/', None, 'home', 'static', 'routes_web_usuario.rota_usuario_salvar_novo']):
 
         # registrando acesso da rota
         method = request.method

@@ -21,7 +21,7 @@ class Atalho:
     # definição dos campos chave da tabela
     __campos_chave__ = ["idatalho"]
 
-    def __init__(self, idatalho, idusuario, grupo, nome, rota):
+    def __init__(self, idatalho, idusuario=None, grupo=None, nome=None, rota=None):
         self.idatalho = idatalho
         self.idusuario = idusuario
         self.grupo = grupo
@@ -59,9 +59,22 @@ class Atalho:
         """
         return (self.idusuario, self.grupo, self.nome, self.rota, self.idatalho)
 
-    def to_dict(self):
+    def to_dict(self, hieraquia=False):
+        from models.usuario import Usuario
+        from services.usuario_service import usuario_lista_selecionado
+
+        if hieraquia:
+            usuario, mensagemUsuario = usuario_lista_selecionado(self.idusuario)
+            if not usuario:
+                usuario = {}
+        else:
+            usuario = {}
+            mensagemUsuario = ""
+
         return {"idatalho": self.idatalho
                 , "idusuario": self.idusuario
+                , "usuario": usuario
+                , "usuario_mensagem": mensagemUsuario
                 , "grupo": self.grupo
                 , "nome": self.nome
                 , "rota": self.rota}

@@ -1,55 +1,230 @@
 # Importando bibliotecas
+from conn import Conectar
 from flask import current_app
 import jwt
 from datetime import datetime, timedelta
-
-from conn import Conectar
 from models.token import Token
 
-def listar_token_usuario(id_usuario):
-    conn = Conectar()
-    cur = conn.cursor()
-    cur.execute("SELECT IDTOKEN, IDUSUARIO, TOKEN, SECRET_KEY, DT_CRIACAO, DT_EXPIRACAO, ATIVO, DESATIVADO, DT_DESATIVADO FROM VW_TOKEN WHERE IDUSUARIO = %s ORDER BY IDUSUARIO, DT_EXPIRACAO DESC LIMIT 10", (id_usuario,))
-    dados = cur.fetchall()
-    
-    cur.close()
-    conn.close()
-    
-    return [Token(id, idusuario, token, secret_key, dt_criacao, dt_expiracao, ativo, desativado, dt_desativado) for id, idusuario, token, secret_key, dt_criacao, dt_expiracao, ativo, desativado, dt_desativado in dados]
+# listar todos os registros
+def token_listar_todos():
+    #montando o comando SQL 
+    builder = Token.get_SQLBuilder()
+    comandoSQL = builder.build_select()
 
-def listar_token_usuario_paginado(id_usuario, pagina, quantidade):
-    
-    offset = (pagina - 1) * quantidade
-    
-    conn = Conectar()
-    cur = conn.cursor()
-    
-    cur.execute("SELECT COUNT(*) AS REGISTROS FROM VW_TOKEN WHERE IDUSUARIO = %s ", (id_usuario,))
-    totalRegistros = cur.fetchone()[0]
-    totalPaginas = (totalRegistros + quantidade - 1) // quantidade  # Arredonda pra cima
-    
-    cur.execute("SELECT IDTOKEN, IDUSUARIO, TOKEN, SECRET_KEY, DT_CRIACAO, DT_EXPIRACAO, ATIVO, DESATIVADO, DT_DESATIVADO FROM VW_TOKEN WHERE IDUSUARIO = %s ORDER BY IDUSUARIO, DT_EXPIRACAO DESC LIMIT %s OFFSET %s", (id_usuario, quantidade, offset))
-    dados = cur.fetchall()
-    
-    cur.close()
-    conn.close()
-    
-    tokens = [Token(id, idusuario, token, secret_key, dt_criacao, dt_expiracao, ativo, desativado, dt_desativado) for id, idusuario, token, secret_key, dt_criacao, dt_expiracao, ativo, desativado, dt_desativado in dados]
-    return {"tokens": tokens, "pagina_atual": pagina, "total_paginas": totalPaginas}
+    resultado = []
+    try:    
+        # criando conexão com o banco de dados
+        conexao = Conectar()
+        # criando cursor para buscar dados
+        cursor = conexao.cursor()
+        # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+        cursor.execute(comandoSQL)
+        # buscando dados
+        dados = cursor.fetchall()
+        # identificando a quantidade de registro retornado
+        registrosAfetados = cursor.rowcount
 
-def detalhe_token(id):
-    conn = Conectar()
-    cur = conn.cursor()
-    
-    cur.execute("SELECT IDTOKEN, IDUSUARIO, TOKEN, SECRET_KEY, DT_CRIACAO, DT_EXPIRACAO, ATIVO, DESATIVADO, DT_DESATIVADO FROM VW_TOKEN WHERE IDTOKEN = %s ORDER BY IDUSUARIO, DT_EXPIRACAO", (id,))
-    dados = cur.fetchall()
-    
-    cur.close()
-    conn.close()
-    
-    return [Token(id, idusuario, token, secret_key, dt_criacao, dt_expiracao, ativo, desativado, dt_desativado) for id, idusuario, token, secret_key, dt_criacao, dt_expiracao, ativo, desativado, dt_desativado in dados]
+        # verificando se tem resultado e convertando em lista de dicionario
+        if dados:
+            resultado = [Token.from_db(item).to_dict(False) for item in dados]
+            registrosAfetados = len(resultado)
 
-def desabilitar_todos_tokens(id_usuario):
+        # ajustando a mensagem para quando o comando foi executado com sucesso
+        mensagem = f"Foram encontrados {registrosAfetados} registros"
+    except Exception as e:
+        mensagem = f"Erro ao localizar os token [Exception: {str(e)}]"
+    except TypeError as e:
+        mensagem = f"Erro ao localizar os token [TypeError: {str(e)}]"
+    except ValueError as e:
+        mensagem = f"Erro ao localizar os token [ValueError: {str(e)}]"
+    finally:
+        # fechando o cursor
+        cursor.close()
+        # fechando conexão com o banco de dados
+        conexao.close()
+
+    # Retornando os dados e mensagem
+    return resultado, mensagem
+
+# listar apenas um registro filtrado pela PK
+def token_lista_selecionado(id):
+    #montando o comando sql 
+    builder = Token.get_SQLBuilder()
+    comandoSQL, valoresFiltro = builder.select_sql_and_values({"idtoken": id})
+
+    try:    
+        # criando conexão com o banco de dados
+        conexao = Conectar()
+        # criando cursor para buscar dados
+        cursor = conexao.cursor()
+        # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+        cursor.execute(comandoSQL, valoresFiltro)
+        # buscando dados
+        dados = cursor.fetchone()
+        # identificando a quantidade de registro retornado
+        registrosAfetados = cursor.rowcount
+
+        # pegando os dados do banco e convertendo para objeto
+        if dados:
+            resultado = Token.from_db(dados).to_dict(True)
+            registrosAfetados = 1
+        else:
+            resultado = None
+
+        # ajustando a mensagem para quando o comando foi executado com sucesso
+        mensagem = f"Foram encontrados {registrosAfetados} registros"
+    except Exception as e:
+        mensagem = f"Erro ao localizar o token #{id} [Exception: {str(e)}]"
+        resultado = None
+    except TypeError as e:
+        mensagem = f"Erro ao localizar o token #{id} [TypeError: {str(e)}]"
+        resultado = None
+    except ValueError as e:
+        mensagem = f"Erro ao localizar o token #{id} [ValueError: {str(e)}]"
+        resultado = None
+    finally:
+        # fechando o cursor
+        cursor.close()
+        # fechando conexão com o banco de dados
+        conexao.close()
+    
+    # Retornando os dados e mensagem
+    return resultado, mensagem
+
+# salva um novo registro
+def token_salvar_novo(token):
+
+    token.secret_key = current_app.secret_key
+    token.dt_expiracao = datetime.utcnow() + timedelta(hours=2)
+    payload = {
+        "sub": token.idusuario,
+        "exp": token.dt_expiracao
+    }
+    token.token = jwt.encode(payload, current_app.secret_key, algorithm='HS256')
+    token.dt_expiracao = token.dt_expiracao.strftime('%Y-%m-%d %H:%M:%S')
+    
+    resultado = False
+    if isinstance(token, Token):
+
+        #montando o comando sql 
+        builder = Token.get_SQLBuilder()
+        comandoSQL, valoresFiltro = builder.insert_sql_and_values(token)
+
+        try:    
+            # criando conexão com o banco de dados
+            conexao = Conectar()
+            # criando cursor para buscar dados
+            cursor = conexao.cursor()
+            # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+            cursor.execute(comandoSQL, valoresFiltro)
+            # identificando a quantidade de registro afetado pelo comando
+            registrosAfetados = cursor.rowcount
+            # gravando os dados no banco de dados
+            conexao.commit()
+
+            mensagem = f"Foram incluídos {registrosAfetados} registros"
+            resultado = True
+        except Exception as e:
+            mensagem = f"Erro ao salvar o token [Exception: {str(e)}]"
+            resultado = False
+        except TypeError as e:
+            mensagem = f"Erro ao salvar o token [TypeError: {str(e)}]"
+            resultado = False
+        except ValueError as e:
+            mensagem = f"Erro ao salvar o token [ValueError: {str(e)}]"
+            resultado = False
+        finally:
+            # fechando o cursor
+            cursor.close()
+            # fechando conexão com o banco de dados
+            conexao.close()
+    else:
+        mensagem = f"Dados do token inválido"
+        resultado = False
+
+    return resultado, mensagem
+
+# alterar um registro existente
+def token_alterar_existente(token):
+    
+    if isinstance(token, Token):
+        #montando o comando sql 
+        builder = Token.get_SQLBuilder()
+        comandoSQL, valoresFiltro = builder.update_sql_and_values(token)
+
+        try:    
+            # criando conexão com o banco de dados
+            conexao = Conectar()
+            # criando cursor para buscar dados de contato
+            cursor = conexao.cursor()
+            # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+            cursor.execute(comandoSQL, valoresFiltro)
+            # identificando a quantidade de registro afetado pelo comando
+            registrosAfetados = cursor.rowcount
+            # gravando os dados no banco de dados
+            conexao.commit()
+
+            mensagem = f"Foram alterados {registrosAfetados} registros"
+            resultado = True
+        except Exception as e:
+            mensagem = f"Erro ao salvar o token [Exception: {str(e)}]"
+            resultado = False
+        except TypeError as e:
+            mensagem = f"Erro ao salvar o token [TypeError: {str(e)}]"
+            resultado = False
+        except ValueError as e:
+            mensagem = f"Erro ao salvar o token [ValueError: {str(e)}]"
+            resultado = False
+        finally:
+            # fechando o cursor
+            cursor.close()
+            # fechando conexão com o banco de dados
+            conexao.close()
+    else:
+        mensagem = f"Dados de token inválido"
+        resultado = False
+        
+    return resultado, mensagem
+
+# excluir um registro existente
+def token_excluir_existente(id):
+    builder = Token.get_SQLBuilder()
+    comandoSQL, valoresFiltro = builder.delete_sql_and_values(Token(id))
+
+    resultado = False
+    try:    
+        # criando conexão com o banco de dados
+        conexao = Conectar()
+        # criando cursor para buscar dados
+        cursor = conexao.cursor()
+        # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+        cursor.execute(comandoSQL, valoresFiltro)
+        registrosAfetados = cursor.rowcount
+        # identificando a quantidade de registro afetado pelo comando
+        registrosAfetados = cursor.rowcount
+        # gravando os dados no banco de dados
+        conexao.commit()
+
+        mensagem = f"Foram excluídos {registrosAfetados} registros"
+        resultado = True
+    except Exception as e:
+        mensagem = f"Erro ao excluir o token #{id} [Exception: {str(e)}]"
+        resultado = False
+    except TypeError as e:
+        mensagem = f"Erro ao excluir o token #{id} [TypeError: {str(e)}]"
+        resultado = False
+    except ValueError as e:
+        mensagem = f"Erro ao excluir o token #{id} [ValueError: {str(e)}]"
+        resultado = False
+    finally:
+        # fechando o cursor
+        cursor.close()
+        # fechando conexão com o banco de dados
+        conexao.close()
+    
+    return resultado, mensagem
+
+def token_desabilitar_todos(id_usuario):
     conn = Conectar()
     cur = conn.cursor()
     
@@ -59,21 +234,3 @@ def desabilitar_todos_tokens(id_usuario):
     cur.close()
     conn.close()
     
-def criar_token(idusuario):
-    secret_key = current_app.secret_key
-    dt_expiracao = datetime.utcnow() + timedelta(hours=2)
-    payload = {
-        "sub": idusuario,
-        "exp": dt_expiracao
-    }
-    token = jwt.encode(payload, current_app.secret_key, algorithm='HS256')
-    data_formatada = dt_expiracao.strftime('%Y-%m-%d %H:%M:%S')
-
-    conn = Conectar()
-    cur = conn.cursor()
-    
-    cur.execute("INSERT INTO TOKEN (IDUSUARIO, TOKEN, SECRET_KEY, DT_EXPIRACAO) VALUES (%s, %s, %s, %s)", (idusuario, token, secret_key, data_formatada))
-    conn.commit()
-    
-    cur.close()
-    conn.close()

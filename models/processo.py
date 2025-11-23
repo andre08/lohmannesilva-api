@@ -20,7 +20,7 @@ class Processo:
     # definição dos campos chave da tabela
     __campos_chave__ = ["idprocesso"]
 
-    def __init__(self, idprocesso, nome, descricao, status):
+    def __init__(self, idprocesso, nome=None, descricao=None, status=None):
         self.idprocesso = idprocesso
         self.nome = nome
         self.descricao = descricao
@@ -57,7 +57,7 @@ class Processo:
         """
         return (self.nome, self.descricao, self.status, self.idprocesso)
 
-    def to_dict(self):
+    def to_dict(self, hieraquia=False):
         return {"idprocesso": self.idprocesso
                 , "nome": self.nome
                 , "descricao": self.descricao

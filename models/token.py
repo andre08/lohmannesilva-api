@@ -1,5 +1,5 @@
-from util.sqlbuilder import *
 from datetime import datetime
+from util.sqlbuilder import *
 
 class Token:
     """
@@ -26,7 +26,7 @@ class Token:
     # definição dos campos chave da tabela
     __campos_chave__ = ["idtoken"]
 
-    def __init__(self, idtoken, idusuario, token, secret_key, dt_criacao, dt_expiracao, desativado, dt_desativado, dt_atualizado):
+    def __init__(self, idtoken, idusuario=None, token=None, secret_key=None, dt_criacao=None, dt_expiracao=None, desativado=None, dt_desativado=None, dt_atualizado=None):
         self.idtoken = idtoken
         self.idusuario = idusuario
         self.token = token
@@ -68,27 +68,64 @@ class Token:
         """
         return (self.idtoken, self.idusuario, self.token, self.secret_key, self.dt_criacao, self.dt_expiracao, self.desativado, self.dt_desativado, self.dt_atualizado, self.idtoken)
 
-    def to_dict(self):
-        dt_expiracao_formatada = self.dt_expiracao.strftime("%d/%m/%Y %H:%M:%S")
-        dt_criacao_formatada = self.dt_criacao.strftime("%d/%m/%Y %H:%M:%S")
-        dt_atualizado_formatada = self.dt_atualizado.strftime("%d/%m/%Y %H:%M:%S")
+    def to_dict(self, hieraquia=False):
+        from services.usuario_service import usuario_lista_selecionado
+
+        if self.dt_expiracao:
+            dt_expiracao_formatada = datetime.strftime(self.dt_expiracao, "%d/%m/%Y %H:%M:%S") 
+            dt_expiracao_formatada2 = datetime.strftime(self.dt_expiracao, "%d/%m/%Y")
+        else:
+            dt_expiracao_formatada = None
+            dt_expiracao_formatada2 = None        
+
+        if self.dt_criacao:
+            dt_criacao_formatada = datetime.strftime(self.dt_criacao, "%d/%m/%Y %H:%M:%S") 
+            dt_criacao_formatada2 = datetime.strftime(self.dt_criacao, "%d/%m/%Y")
+        else:
+            dt_criacao_formatada = None
+            dt_criacao_formatada2 = None        
+
+        if self.dt_atualizado:
+            dt_atualizado_formatada = datetime.strftime(self.dt_atualizado, "%d/%m/%Y %H:%M:%S") 
+            dt_atualizado_formatada2 = datetime.strftime(self.dt_atualizado, "%d/%m/%Y")
+        else:
+            dt_atualizado_formatada = None
+            dt_atualizado_formatada2 = None
+
         if self.dt_desativado:
-            dt_desativado_formatada = self.dt_desativado.strftime("%d/%m/%Y %H:%M:%S")
+            dt_desativado_formatada = datetime.strftime(self.dt_desativado, "%d/%m/%Y %H:%M:%S") 
+            dt_desativado_formatada2 = datetime.strftime(self.dt_desativado, "%d/%m/%Y")
         else:
             dt_desativado_formatada = None
-        
+            dt_desativado_formatada2 = None   
+
+        if hieraquia:
+            usuario, mensagem = usuario_lista_selecionado(self.idusuario)
+            if not usuario:
+                usuario = {}
+        else:
+            usuario = {}
+            mensagem = ""
+
         return {"idtoken": self.idtoken
                 , "idusuario": self.idusuario
+                , "usuario": usuario
+                , "mensagem_usuario": mensagem
                 , "token": self.token
                 , "secret_key": self.secret_key
                 , "dt_criacao": dt_criacao_formatada
+                , "dt_criacao2": dt_criacao_formatada2
                 , "dt_expiracao": dt_expiracao_formatada
+                , "dt_expiracao2": dt_expiracao_formatada2
                 , "desativado": self.desativado
                 , "dt_desativado": dt_desativado_formatada
-                , "dt_atualizado": dt_atualizado_formatada}
+                , "dt_desativado2": dt_desativado_formatada2
+                , "dt_atualizado": dt_atualizado_formatada
+                , "dt_atualizado2": dt_atualizado_formatada2
+            }
 
     def get_SQLBuilder():
         """
         Esse metodo retorna objeto que monta os comandos sql de acordo com o nome da tabela e campos declarados no inicio da classe
         """
-        return SQLBuilder(Token.__tabela_banco__, Token.__campos_tabela__, Token.__campos_chave__)
+        return SQLBuilder(Token.__tabela_banco__, Token.__campos_tabela__, Token.__campos_chave__, "?")

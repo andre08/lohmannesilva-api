@@ -1,0 +1,37 @@
+  {% include 'admin_header.html' %}
+  {% include 'admin_menu.html' %}
+  {% include 'admin_sidebar.html' %}
+
+  <div class="main-content">
+    <div class="container-fluid">
+        <h3>{{ contato.nome }}</h3>
+        <p style="margin-top: -5px; font-size: x-small;"><em>Detalhe da solicitação de contato realizado em <b>{{ contato.dt_contato2 }}</b></em></p>
+        <p><span class="fw-bold">Nome: </span><span class="fw-normal">{{ contato.nome }}</span></p>
+        <p><span class="fw-bold">Email: </span><span class="fw-normal">{{ contato.email }}</span></p>
+        <p><span class="fw-bold">Telefone: </span><span class="fw-normal">{{ contato.telefone }}</span></p>
+        <p><span class="fw-bold">Mensagem: </span><span class="fw-normal">{{ contato.mensagem }}</span></p>
+        <p><span class="fw-bold">Tipo: </span><span class="fw-normal">{{ contato.tipo }}</span></p>
+        <p>
+          {% if(contato.visualizado == 'S') %}<span class="badge text-bg-primary">Contato visualizado</span>{% else %}<span class="badge text-bg-light">Sem visualização</span>{% endif %}
+          {% if(contato.respondido == 'S') %}<span class="badge text-bg-primary">Contato respondido</span>{% else %}<span class="badge text-bg-light">Pendente resposta</span>{% endif %}
+          {% if(contato.interesse == 'S') %}<span class="badge text-bg-primary">Interesse no produto</span>{% else %}<span class="badge text-bg-light">Sem interesse</span>{% endif %}
+          {% if(contato.cliente == 'S') %}<span class="badge text-bg-primary">Transformado em cliente</span>{% else %}<span class="badge text-bg-light">Aguardo efetivação</span>{% endif %}
+          {% if(contato.ativo == 'S') %}<span class="badge text-bg-primary">Ativo</span>{% else %}<span class="badge text-bg-light">Desativado</span>{% endif %}
+        </p>
+    </div>
+  </div>
+  
+    {% if(aceitaFavoritos) %}
+      {% if(favorito) %}
+  <script type="text/javascript" >
+    document.getElementById("frm_favorito_idatalho").value = `{{ idatalho }}`;
+  </script>
+      {% else %}
+  <script type="text/javascript" >
+    document.getElementById("frm_favorito_idusuario").value = `{{ session["usuario_id"] }}`;
+    document.getElementById("frm_favorito_rota").value = `{{ rota }}`;
+  </script>
+      {% endif %}
+    {% endif %}      
+
+  {% include 'admin_footer.html' %}

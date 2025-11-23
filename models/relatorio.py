@@ -1,3 +1,4 @@
+from datetime import datetime
 from util.sqlbuilder import *
 
 class Relatorio:
@@ -12,7 +13,7 @@ class Relatorio:
     # relacionando nome da classe com o nome do campo na tabela
     __campos_tabela__ = {
         "idrelatorio": "IDRELATORIO"
-        , "idcampanha": "IDCAMPANHA"
+        , "idestudo": "IDESTUDO"
         , "nome": "NOME"
         , "descricao": "DESCRICAO"
         , "identificacao": "IDENTIFICACAO"
@@ -23,9 +24,9 @@ class Relatorio:
     # definição dos campos chave da tabela
     __campos_chave__ = ["idrelatorio"]
 
-    def __init__(self, idrelatorio, idcampanha, nome, descricao, identificacao, localizacao_container, dt_geracao):
+    def __init__(self, idrelatorio, idestudo, nome, descricao, identificacao, localizacao_container, dt_geracao):
         self.idrelatorio = idrelatorio
-        self.idcampanha = idcampanha
+        self.idestudo = idestudo
         self.nome = nome
         self.descricao = descricao
         self.identificacao = identificacao
@@ -44,7 +45,7 @@ class Relatorio:
         exemplo (tupla): (1, "joao")
         """
         if isinstance(row, dict):
-            arquivo  = cls(row["idrelatorio"], row["idcampanha"], row["nome"], row["descricao"], row["identificacao"], row["localizacao_container"], row["dt_geracao"])
+            arquivo  = cls(row["idrelatorio"], row["idestudo"], row["nome"], row["descricao"], row["identificacao"], row["localizacao_container"], row["dt_geracao"])
         else:
             arquivo = cls(row[0], row[1], row[2], row[3], row[4], row[5], row[6])
         return arquivo
@@ -54,24 +55,45 @@ class Relatorio:
         Esse metodo retorna um tupla com os valores a serem usado para insert do banco de dados, 
         deve retornar os campos na ordem do insert e não tem o id, porque o id é gerado pelo banco de dados
         """
-        return (self.idcampanha, self.nome, self.descricao, self.identificacao, self.localizacao_container, self.dt_geracao)
+        return (self.idestudo, self.nome, self.descricao, self.identificacao, self.localizacao_container, self.dt_geracao)
 
     def to_update_db(self):
         """
         Esse metodo retorna um tupla com os valores a serem usado para update do banco de dados, 
         deve retornar os campos na ordem do update e o id no final, porque o id é usado no where que vem depois dos valores
         """
-        return (self.idcampanha, self.nome, self.descricao, self.identificacao, self.localizacao_container, self.dt_geracao, self.idrelatorio)
+        return (self.idestudo, self.nome, self.descricao, self.identificacao, self.localizacao_container, self.dt_geracao, self.idrelatorio)
 
-    def to_dict(self):
-        dt_geracao_formatada = self.dt_geracao.strftime("%d/%m/%Y %H:%M:%S")
+    def to_dict(self, hieraquia=False):
+        from services.plano_service import plano_lista_selecionado
+        
+        # formatando campos data
+        if self.dt_geracao:
+            dt_geracao_formatada = datetime.strftime(self.dt_geracao, "%d/%m/%Y %H:%M:%S") 
+            dt_geracao_formatada2 = datetime.strftime(self.dt_geracao, "%d/%m/%Y")
+        else:
+            dt_geracao_formatada = None
+            dt_geracao_formatada2 = None 
+
+        if hieraquia:
+            estudo, mensagemEstudo = plano_lista_selecionado(self.idestudo)
+            if not estudo:
+                estudo = {}
+        else:
+            estudo = {}
+            mensagemEstudo = ""
+
         return {"idrelatorio": self.idrelatorio
-                , "idcampanha": self.idcampanha
+                , "idestudo": self.idestudo
+                , "estudo": estudo
+                , "mensagemEstudo": mensagemEstudo
                 , "nome": self.nome
                 , "descricao": self.descricao
                 , "identificacao": self.identificacao
                 , "localizacao_container": self.localizacao_container
-                , "dt_geracao": dt_geracao_formatada}
+                , "dt_geracao": dt_geracao_formatada
+                , "dt_geracao2": dt_geracao_formatada2
+            }
 
     def get_SQLBuilder():
         """

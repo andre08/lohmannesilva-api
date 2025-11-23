@@ -1,3 +1,4 @@
+from datetime import datetime
 from util.sqlbuilder import *
 
 class EmpresaUsuario:
@@ -61,14 +62,45 @@ class EmpresaUsuario:
         """
         return (self.idempresa, self.idusuario, self.papel, self.dt_cadastro, self.status, self.idempresa_usuario)
 
-    def to_dict(self):
-        dt_cadastro_formatada = self.dt_cadastro.strftime("%d/%m/%Y %H:%M:%S")
+    def to_dict(self, hieraquia=False):
+        from services.empresa_service import empresa_lista_selecionado
+        from services.usuario_service import usuario_lista_selecionado
+
+        # formatando campos data
+        if self.dt_cadastro:
+            dt_cadastro_formatada = datetime.strftime(self.dt_cadastro, "%d/%m/%Y %H:%M:%S") 
+            dt_cadastro_formatada2 = datetime.strftime(self.dt_cadastro, "%d/%m/%Y")
+        else:
+            dt_cadastro_formatada = None
+            dt_cadastro_formatada2 = None        
+
+        if hieraquia:
+            empresa, mensagemEmpresa = empresa_lista_selecionado(self.idempresa)
+            if not empresa:
+                empresa = {}
+
+            usuario, mensagemUsuario = usuario_lista_selecionado(self.idusuario)
+            if not usuario:
+                usuario = {}
+        else:
+            empresa = {}
+            mensagemEmpresa = ""
+
+            usuario = {}
+            mensagemUsuario = ""
+
         return {"idempresa_usuario": self.idempresa_usuario
                 , "idempresa": self.idempresa
+                , "empresa": empresa
+                , "mensagemEmpresa": mensagemEmpresa
                 , "idusuario": self.idusuario
+                , "usuario": usuario
+                , "mensagemUsuario": mensagemUsuario
                 , "papel": self.papel
                 , "status": self.status
-                , "dt_cadastro": dt_cadastro_formatada}
+                , "dt_cadastro": dt_cadastro_formatada
+                , "dt_cadastro2": dt_cadastro_formatada2
+            }
 
     def get_SQLBuilder():
         """

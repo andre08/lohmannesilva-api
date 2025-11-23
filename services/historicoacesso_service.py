@@ -23,7 +23,8 @@ def historio_acesso_listar_todos():
 
         # verificando se tem resultado e convertando em lista de dicionario
         if dados:
-            resultado = [HistoricoAcesso.from_db(item).to_dict() for item in dados]
+            resultado = [HistoricoAcesso.from_db(item).to_dict(False) for item in dados]
+            registrosAfetados = len(resultado)
 
         # ajustando a mensagem para quando o comando foi executado com sucesso
         mensagem = f"Foram encontrados {registrosAfetados} registros"
@@ -38,7 +39,7 @@ def historio_acesso_listar_todos():
         cursor.close()
         # fechando conexão com o banco de dados
         conexao.close()
-    
+
     # Retornando os dados e mensagem
     return resultado, mensagem
 
@@ -62,7 +63,8 @@ def historico_acesso_lista_selecionado(idhistorico_acesso):
 
         # pegando os dados do banco e convertendo para objeto
         if dados:
-            resultado = HistoricoAcesso.from_db(dados).to_dict()
+            resultado = HistoricoAcesso.from_db(dados).to_dict(True)
+            registrosAfetados = 1
         else:
             resultado = None
 

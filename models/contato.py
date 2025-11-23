@@ -1,3 +1,4 @@
+from datetime import datetime
 from util.sqlbuilder import *
 
 class Contato:
@@ -28,7 +29,7 @@ class Contato:
     # definição dos campos chave da tabela
     __campos_chave__ = ["idcontato"]
 
-    def __init__(self, idcontato, nome, email, telefone, mensagem, tipo, visualizado, respondido, interesse, cliente, ativo, dt_contato):
+    def __init__(self, idcontato, nome=None, email=None, telefone=None, mensagem=None, tipo=None, visualizado=None, respondido=None, interesse=None, cliente=None, ativo=None, dt_contato=None):
         self.idcontato = idcontato
         self.nome = nome
         self.email = email
@@ -73,12 +74,15 @@ class Contato:
         """
         return (self.nome, self.email, self.telefone, self.mensagem, self.tipo, self.visualizado, self.respondido, self.interesse, self.cliente, self.ativo, self.dt_contato, self.idcontato)
 
-    def to_dict(self):
-        #verificando se a data é uma data válida
+    def to_dict(self, hieraquia=False):
+        
         if self.dt_contato:
-            dt_contato_formatada = self.dt_contato.strftime("%d/%m/%Y %H:%M:%S")
+            dt_contato_formatada = datetime.strftime(self.dt_contato, "%d/%m/%Y %H:%M:%S") 
+            dt_contato_formatada2 = datetime.strftime(self.dt_contato, "%d/%m/%Y")
         else:
-            dt_contato_formatada =""
+            dt_contato_formatada = None
+            dt_contato_formatada2 = None
+
 
         return {"idcontato": self.idcontato
                 , "nome": self.nome
@@ -91,7 +95,9 @@ class Contato:
                 , "interesse": self.interesse
                 , "cliente": self.cliente
                 , "ativo": self.ativo
-                , "dt_contato": dt_contato_formatada}
+                , "dt_contato": dt_contato_formatada
+                , "dt_contato2": dt_contato_formatada2
+            }
 
     def get_SQLBuilder():
         """

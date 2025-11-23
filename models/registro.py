@@ -1,3 +1,4 @@
+from datetime import datetime
 from util.sqlbuilder import *
 
 class Registro:
@@ -61,14 +62,44 @@ class Registro:
         """
         return (self.idusuario, self.idtoken, self.modelo, self.acao, self.dt_registro, self.idregistro)
 
-    def to_dict(self):
-        dt_registro_formatada = self.dt_registro.strftime("%d/%m/%Y %H:%M:%S")
+    def to_dict(self, hieraquia=False):
+        from services.usuario_service import usuario_lista_selecionado
+        from services.token_service import token_lista_selecionado
+
+        # formatando campos data
+        if self.dtAcesso:
+            dt_registro_formatada = datetime.strftime(self.dt_registro, "%d/%m/%Y %H:%M:%S") 
+            dt_registro_formatada2 = datetime.strftime(self.dt_registro, "%d/%m/%Y")
+        else:
+            dt_registro_formatada = None
+            dt_registro_formatada2 = None
+        
+        if hieraquia:
+            usuario, mensagemUsuario = usuario_lista_selecionado(self.idusuario)
+            if not usuario:
+                usuario = {}
+
+            token, mensagemToken = token_lista_selecionado(self.idtoken)
+            if not token:
+                token = {}
+        else:
+            usuario = {}
+            mensagemUsuario = ""
+            token = {}
+            mensagemToken = ""
+
         return {"idregistro": self.idregistro
                 , "idusuario": self.idusuario
+                , "usuario": usuario
+                , "mensagemUsuario": mensagemUsuario
                 , "idtoken": self.idtoken
+                , "token": token
+                , "mensagemToken": mensagemToken
                 , "modelo": self.modelo
                 , "acao": self.acao
-                , "dt_registro": dt_registro_formatada}
+                , "dt_registro": dt_registro_formatada
+                , "dt_registro2": dt_registro_formatada2
+            }
 
     def get_SQLBuilder():
         """

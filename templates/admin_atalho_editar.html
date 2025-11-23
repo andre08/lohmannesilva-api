@@ -1,0 +1,95 @@
+  {% include 'admin_header.html' %}
+  {% include 'admin_menu.html' %}
+  {% include 'admin_sidebar.html' %}
+
+  <div class="main-content">
+    <div class="container-fluid">
+      <!-- Formulario de categoria  -->
+      <div class="row">
+        <div class="mb-3 col">
+          <h3>{{ atalho.nome }}</h3>
+          <p style="margin-top: -5px; font-size: x-small;"><em>Edição do atalho</em></p>
+
+          <div class="title-section">
+            <form name="formAtalho" id="formAtalho">
+              <input type="hidden" id="idatalho" name="idatalho" value="{{ atalho.idatalho }}">
+              <input type="hidden" id="idusuario" name="idusuario" value="{{ atalho.idusuario }}">
+              <div class="row">
+                <div class="mb-3">
+                  <label for="nome" class="form-label">Nome: </label>
+                  <input type="text" class="form-control" id="nome" name="nome" value="{{ atalho.nome }}" placeholder="Campanha da empresa X">
+                  <p style="margin-left: 5px; font-size: small;"><em>Não informe um nome muito longo, pois esse nome será usando na sidebar</em></p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="mb-3">
+                  <label for="grupo" class="form-label">Grupo: </label>
+                  <input type="text" class="form-control" id="grupo" name="grupo" value="{{ atalho.grupo }}" placeholder="Campanha">
+                  <p style="margin-left: 5px; font-size: small;"><em>Ao lado direito está a lista de grupo usado atualmente, evite criar grupos desnecessários</em></p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="mb-3">
+                  <label for="rota" class="form-label">Rota: </label>
+                  <input type="text" class="form-control" id="rota" name="rota" value="{{ atalho.rota }}" placeholder="/campanha/ver/2">
+                  <p style="margin-left: 5px; font-size: small;"><em>Está é rota de acesso do atalho, evite alterar se estiver errado, exclua a rota e crie novamente usando o link na parte superior da pagina</em></p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="mb-3 text-end">
+                  <button type="submit" class="btn btn-primary">Salvar</button>
+                  <button type="reset" class="btn btn-secondary">Cancelar</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="mb-3 col-3">
+          <h5>Grupos utilizados</h5>
+          {% for grupo in grupos %}
+            <ul>
+              <li><span>{{ grupo.grupo }}</span> [{{grupo.quantidade}}]</li>
+            </ul>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+   
+  </div>
+  <script type="text/javascript" >
+
+    const API_URL_PAGINA = "/atalho/";
+    const form = document.getElementById('formAtalho');
+
+    form.onreset = async (e) => {
+      e.preventDefault();
+      document.getElementById("idatalho").value = "{{ atalho.idatalho }}";
+      document.getElementById("idusuario").value = "{{ atalho.idusuario }}";      
+      document.getElementById("nome").value = "{{ atalho.nome }}";
+      document.getElementById("grupo").value = "{{ atalho.grupo }}";
+      document.getElementById("rota").value = "{{ atalho.rota }}";
+    }
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const id = document.getElementById("idatalho").value;
+      const idusuario = document.getElementById("idusuario").value;
+      const nome = document.getElementById("nome").value;
+      const grupo = document.getElementById("grupo").value;
+      const rota = document.getElementById("rota").value;
+      const metodo = id ? 'PUT' : 'POST';
+      
+      const resposta = await fetch(API_URL_PAGINA + 'atalho', {
+        method: metodo,
+        headers:{"Content-type":"application/json"},
+        body:JSON.stringify({id, idusuario, nome, grupo, rota})
+      });
+      
+      const retorno = await resposta.json();
+      exibirMensagem(retorno.mensagem);
+      carregarAtalhosSidebar();
+    }    
+  </script>
+  
+  
+  {% include 'admin_footer.html' %}

@@ -62,13 +62,6 @@
               </div>
 
             </form>
-
-            <div class="container mt-4", id="divbaseAlerta">
-              <div id="mensagem-alerta" class="alert d-none" role="alert">
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>
-            </div>
-
           </div>
           <div class="col-md-auto"></div>
         </div>
@@ -79,7 +72,7 @@
   </div>
 
   <script>
-    const API_URL = "/usuario";
+    const API_URL = "/usuario/";
     const frmRegistro = document.getElementById("frmRegistro");
     const btn = document.getElementById("btnEnviar");
     const divAlerta = document.getElementById("mensagem-alerta");
@@ -101,7 +94,7 @@
       btn.disabled = true;      
       btn.innerText = "Validando...";
 
-      await fetch(API_URL + "/nova_conta", {
+      await fetch(API_URL + 'nova_conta', {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({nome, email, senha})
@@ -110,18 +103,11 @@
       .then(data => {
         if (data.success) {
           btn.innerText = "Confirmar";
-          divAlerta.classList.remove('d-none');
-          divAlerta.classList.add('alert-success');
-          divAlerta.innerHTML = "<div class='alert  alert-dismissible fade show' role='alert'" +
-                                "<p>" + data.mensagem + "</p> <a href='" + data.redirect + "' class='alert-link'>Clique aqui para fazer login.</a>" +
-                                "<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Fechar'></button>" +
-                                "</div>";
+          exibirMensagem(data.mensagem);
         } else {
-          divAlerta.classList.remove('d-none');
-          divAlerta.classList.add('alert-danger');
-          divAlerta.textContent = data.mensagem;
+          exibirMensagem(data.mensagem);
         }
-      });
+      })
       frmRegistro.reset();
     };
 

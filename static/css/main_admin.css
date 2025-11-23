@@ -1,3 +1,8 @@
+:root {
+  --bs-body-font-size: 0.875rem;
+  font-size: 0.875rem;
+}
+
 body {
   background-color: #F2F2F2;
   color: #0D0D0D;
@@ -10,6 +15,7 @@ body {
   color: #0D0D0D;  
   padding-left: 15px;
   padding-right: 15px;
+  height: 45px;
 }
 
 .navbar-brand img {
@@ -17,7 +23,7 @@ body {
 }
 
 .sidebar-icons {
-  top: 56px;
+  top: 45px;
   width: 55px;
   background-color: #A6823F;
   color: #F2F2F2;
@@ -68,8 +74,8 @@ body {
 }
 
 .sidebar-channels {
-  top: 56px;
-  width: 150px;
+  top: 45px;
+  width: 250px;
   margin-left: 55px;
   background-color: #03588C;
   color: #F2F2F2;
@@ -113,7 +119,7 @@ body {
 }
 
 .main-content {
-  margin-left: calc(55px + 150px);
+  margin-left: calc(55px + 250px);
   padding: 20px;
   padding-top: 76px; 
   min-height: 100vh;
@@ -129,4 +135,10 @@ body {
   z-index: 1055;
   width: 100%;
   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+ul li a {
+  display: block;     /* mantém a formatação do li */
+  color: inherit;     /* mantém a cor original */
+  text-decoration: none;
 }

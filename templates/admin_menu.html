@@ -22,13 +22,125 @@
             </a>
             <ul class="dropdown-menu" style="left: -50px;">
               <li><a class="dropdown-item" href="#">Perfil</a></li>
-              <li><a class="dropdown-item" href="#">Atalhos</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('routes_web_atalho.rota_atalho_principal')}}">Atalhos</a></li>
               <li><a class="dropdown-item" href="#">Historico de acesso</a></li>
               <li><a class="dropdown-item" href="{{ url_for('routes_web_usuario.rota_usuario_logoff')}}">Sair</a></li>
             </ul>
           </li>
+          {% if(aceitaFavoritos) %}
+          <li class="nav-item" id="btn-atalho">
+
+            {% if(favorito) %}
+            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#remFavoritoModal">
+              <img class="item-sidebar-icons" src="/static/img/atalho.png" title="Remover da lista de acesso rápido" alt="Remover da lista de acesso rápido">
+            </button>
+            {% else %}
+            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#addFavoritoModal">
+              <img class="item-sidebar-icons" src="/static/img/atalho_pendente.png" title="Adicionar na lista de acesso rápido" alt="Adicionar na lista de acesso rápido">
+            </button>
+            {% endif %}
+          </li>
+          {% endif %}
         </ul>
       </nav>
     </nav>
   </div>
 </header>
+
+<div class="modal fade" id="addFavoritoModal" tabindex="-1" aria-labelledby="addFavoritoModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="addFavoritoModal">Adicionar página como atalho</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form name="frmIconeAtalho" id="frmIconeAtalho" >
+          <input type="hidden" class="form-control" id="frm_favorito_idusuario" value="">
+          <input type="hidden" class="form-control" id="frm_favorito_rota" value="">
+          <div class="mb-3">
+            <label for="nome" class="col-form-label">Nome:</label>
+            <input type="text" class="form-control" id="frm_favorito_nome" required>
+          </div>
+          <div class="mb-3">
+            <label for="grupo" class="col-form-label">Grupo:</label>
+            <input type="text" class="form-control" id="frm_favorito_grupo" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="adicionarAtalho()">Salvar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="remFavoritoModal" tabindex="-1" aria-labelledby="remFavoritoModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="remFavoritoModal">Remover página da lista atalho</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form name="frmIconeAtalho" id="frmIconeAtalho" >
+          <input type="hidden" class="form-control" id="frm_favorito_idatalho" value="">
+        </form>
+        <span>Deseja realmente remover está pagina da lista de atalhos?</span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" onclick="removerAtalho()">Excluir</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script type="text/javascript" >
+
+  const API_URL_BOOKMARK = "/atalho/";
+
+  async function removerAtalho (){
+    const idatalho = document.getElementById("frm_favorito_idatalho").value;
+    const resposta = await fetch(API_URL_BOOKMARK + 'atalho/' + idatalho,{
+      method: "DELETE"
+    });
+    
+    const retorno = await resposta.json();
+    exibirMensagem(retorno.mensagem);
+    carregarAtalhosSidebar();
+
+    const modal = bootstrap.Modal.getInstance(document.getElementById('remFavoritoModal'));
+    modal.hide();   
+    setTimeout(() => {
+      location.reload();
+    }, 500); // mesmo tempo da transição no CSS 
+  }  
+
+  async function adicionarAtalho() {
+
+    const idusuario = document.getElementById("frm_favorito_idusuario").value;
+    const nome = document.getElementById("frm_favorito_nome").value;
+    const grupo = document.getElementById("frm_favorito_grupo").value;
+    const rota = document.getElementById("frm_favorito_rota").value;
+    const metodo = 'POST';
+      
+    const resposta = await fetch(API_URL_BOOKMARK + 'atalho', {
+      method: metodo,
+      headers:{"Content-type":"application/json"},
+      body:JSON.stringify({idusuario, nome, grupo, rota})
+    });
+      
+    const retorno = await resposta.json();
+    exibirMensagem(retorno.mensagem);
+    carregarAtalhosSidebar();
+
+    const modal = bootstrap.Modal.getInstance(document.getElementById('addFavoritoModal'));
+    modal.hide();   
+    setTimeout(() => {
+      location.reload();
+    }, 500); // mesmo tempo da transição no CSS 
+  }
+</script>

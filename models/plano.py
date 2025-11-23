@@ -1,3 +1,4 @@
+from datetime import datetime
 from util.sqlbuilder import *
 
 class Plano:
@@ -24,7 +25,7 @@ class Plano:
     # definição dos campos chave da tabela
     __campos_chave__ = ["idplano"]
 
-    def __init__(self, idplano, nome, descricao, parceiro_growth, valor, status, dt_inicial_vigencia, dt_final_vigencia):
+    def __init__(self, idplano, nome=None, descricao=None, parceiro_growth=None, valor=None, status=None, dt_inicial_vigencia=None, dt_final_vigencia=None):
         self.idplano = idplano
         self.nome = nome
         self.descricao = descricao
@@ -65,9 +66,23 @@ class Plano:
         """
         return (self.nome, self.descricao, self.parceiro_growth, self.valor, self.status, self.dt_inicial_vigencia, self.dt_final_vigencia, self.idplano)
 
-    def to_dict(self):
-        dt_inicial_vigencia_formatada = self.dt_inicial_vigencia.strftime("%d/%m/%Y %H:%M:%S")
-        dt_final_vigencia_formatada = self.dt_final_vigencia.strftime("%d/%m/%Y %H:%M:%S")
+    def to_dict(self, hieraquia=False):
+
+        # formatando campos data
+        if self.dt_inicial_vigencia:
+            dt_inicial_vigencia_formatada = datetime.strftime(self.dt_inicial_vigencia, "%d/%m/%Y %H:%M:%S") 
+            dt_inicial_vigencia_formatada2 = datetime.strftime(self.dt_inicial_vigencia, "%d/%m/%Y")
+        else:
+            dt_inicial_vigencia_formatada = None
+            dt_inicial_vigencia_formatada2 = None
+
+        if self.dt_final_vigencia:
+            dt_final_vigencia_formatada = datetime.strftime(self.dt_final_vigencia, "%d/%m/%Y %H:%M:%S") 
+            dt_final_vigencia_formatada2 = datetime.strftime(self.dt_final_vigencia, "%d/%m/%Y")
+        else:
+            dt_final_vigencia_formatada = None
+            dt_final_vigencia_formatada2 = None
+
         return {"idplano": self.idplano
                 , "nome": self.nome
                 , "descricao": self.descricao
@@ -75,7 +90,9 @@ class Plano:
                 , "valor": self.valor
                 , "status": self.status
                 , "dt_inicial_vigencia": dt_inicial_vigencia_formatada
+                , "dt_inicial_vigencia2": dt_inicial_vigencia_formatada2
                 , "dt_final_vigencia": dt_final_vigencia_formatada
+                , "dt_final_vigencia2": dt_final_vigencia_formatada2
                 , "status": self.status}
 
     def get_SQLBuilder():

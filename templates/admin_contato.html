@@ -4,43 +4,82 @@
 
   <div class="main-content">
     <div class="container-fluid">
-      <div class="row justify-content-md-center" style="padding-top: 15px;">
-        <div class="mb-3 text-left">
-          <h3 class="text-2xl font-bold">Gestão de Contato</h3>
-        </div>
-      </div>
-      <div class="row justify-content-md-center">
-        <form name="frmPesquisa" id="frmPesquisa" class="row gy-2 gx-3 align-items-end">
-          <div class="col-auto">
-            <label class="form-label" for="idusuario">Identificação:</label>
-            <input type="text" class="form-control input-sm" id="idusuario" placeholder="">
-          </div>
-          <div class="col-auto">
-            <label class="form-label" for="nome">Nome de usuário:</label>
-            <input type="text" class="form-control" id="nome" placeholder="">
-          </div>
-          <div class="col-auto">
-            <label class="form-label" for="email">E-mail do usuário:</label>
-            <input type="email" class="form-control" id="email" placeholder="">
-          </div>
-          <div class="col-auto">
-            <label class="form-label" for="tipo">Tipo usuário:</label>
-            <select class="form-select" id="tipo">
-              <option selected>Cliente</option>
-              <option value="1">Analista</option>
-              <option value="2">Vendedor</option>
-              <option value="3">Cientista referencia</option>
-            </select>
-          </div>
-          <div class="col-auto">
-            <button type="submit" class="btn btn-sm btn-primary" style="margin-bottom: 4px;">Pesquisar</button>
-          </div>
-        </form>
-      </div>
-      <div class="row justify-content-md-center" style="padding-top: 15px;">
-        
-      </div>
+        <h3>Gerenciamento de Contatos</h3>
+        <p>Aqui vai encontrar todas as solicitações de CONTATOS e qual a situação do atendimento.</p>
+
+      <!-- Tabela de Contatos -->
+      <div class="row row-cols-auto" id="listaContato">
+      </div>      
+
     </div>
   </div>
+    
+  <script type="text/javascript" >
+    const API_URL_PAGINA = "/contato/";
+    const listaContato = document.getElementById('listaContato'); 
+
+    async function carregarContatos() {
+
+      listaContato.innerHTML = ``;
+
+      // carregando tabela
+      const resposta = await fetch(API_URL_PAGINA + `contatos`);
+      const retorno = await resposta.json();
+      const contatos = retorno.dados;      
+
+      if(contatos){
+        
+        contatos.forEach(contato => {
+
+          if(contato.cliente == 'S'){
+            situacao = "Virou um Cliente"
+            bg_color = "background-color: #03588C;"
+          }
+          else if(contato.interesse == 'S'){
+            situacao = "Interesse em parceria"
+            bg_color = "background-color: #A6823F;"
+          }
+          else if(contato.respondido == 'S'){
+            situacao = "Respondido contato"
+            bg_color = "background-color: #F2F2F2;"
+          }
+          else if(contato.visualizado == 'S'){
+            situacao = "Contato visualizado"
+            bg_color = "background-color: #F2F2F2;"
+          }
+          else{
+            situacao = "Novo contato"
+            bg_color = "background-color: #C2B279;"
+          }
+          
+          listaContato.innerHTML += `
+                              <div class="col-md-3">
+                                <div class="card" style="width: 18rem; height: 225px; margin: 3px">
+                                  <div class="card-header" style="${bg_color}">${situacao}</div>
+                                  <div class="card-body" style="padding-left: 15px; padding-right: 5px;">
+                                    <h5 class="card-title">${contato.nome}</h5>
+                                    <h6 class="card-subtitle mb-2">${contato.tipo}</h6>
+                                    <p class="card-text">${contato.mensagem}</p>
+                                  </div>
+                                  <div class="card-footer text-body-secondary text-center">
+                                    <button class="btn btn-sm btn-light" onclick="detalhe(${contato.idcontato})">Detalhe</button>
+                                    <button class="btn btn-sm btn-primary" onclick="editar(${contato.idcontato})">Alterar</button>
+                                  </div>
+                                </div>
+                              </div>`;
+        });
+      }
+    }
+
+    async function detalhe(id) {
+      window.location.href = API_URL_PAGINA + 'ver/' + id;     
+    }
+
+    async function editar(id) {
+      window.location.href = API_URL_PAGINA + 'editar/' + id;     
+    }
+
+    carregarContatos();
+  </script>
 
   {% include 'admin_footer.html' %}

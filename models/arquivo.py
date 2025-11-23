@@ -1,9 +1,10 @@
+from datetime import datetime
 from util.sqlbuilder import *
 
 class Arquivo:
     """
     Classe: Arquivo
-    Descrição: Classe utilizada para registrar os Arquivos da campanha
+    Descrição: Classe utilizada para registrar os Arquivos dos estudos
     """
 
     # definição da tabela que vai salvar os dados 
@@ -12,7 +13,7 @@ class Arquivo:
     # relacionando nome da classe com o nome do campo na tabela
     __campos_tabela__ = {
         "idarquivo": "IDARQUIVO"
-        , "idcampanha": "IDCAMPANHA"
+        , "idestudo": "IDESTUDO"
         , "nome": "NOME"
         , "decricao": "DECRICAO"
         , "identificacao": "IDENTIFICACAO"
@@ -23,9 +24,9 @@ class Arquivo:
     # definição dos campos chave da tabela
     __campos_chave__ = ["idarquivo"]
 
-    def __init__(self, idarquivo, idcampanha, nome, decricao, identificacao, localizacao_container, dt_importacao):
+    def __init__(self, idarquivo, idestudo, nome, decricao, identificacao, localizacao_container, dt_importacao):
         self.idarquivo = idarquivo
-        self.idcampanha = idcampanha
+        self.idestudo = idestudo
         self.nome = nome
         self.decricao = decricao
         self.identificacao = identificacao
@@ -44,7 +45,7 @@ class Arquivo:
         exemplo (tupla): (1, "joao")
         """
         if isinstance(row, dict):
-            arquivo  = cls(row["idarquivo"], row["idcampanha"], row["nome"], row["decricao"], row["identificacao"], row["localizacao_container"], row["dt_importacao"])
+            arquivo  = cls(row["idarquivo"], row["idestudo"], row["nome"], row["decricao"], row["identificacao"], row["localizacao_container"], row["dt_importacao"])
         else:
             arquivo = cls(row[0], row[1], row[2], row[3], row[4], row[5], row[6])
         return arquivo
@@ -54,24 +55,44 @@ class Arquivo:
         Esse metodo retorna um tupla com os valores a serem usado para insert do banco de dados, 
         deve retornar os campos na ordem do insert e não tem o id, porque o id é gerado pelo banco de dados
         """
-        return (self.idcampanha, self.nome, self.decricao, self.identificacao, self.localizacao_container, self.dt_importacao)
+        return (self.idestudo, self.nome, self.decricao, self.identificacao, self.localizacao_container, self.dt_importacao)
 
     def to_update_db(self):
         """
         Esse metodo retorna um tupla com os valores a serem usado para update do banco de dados, 
         deve retornar os campos na ordem do update e o id no final, porque o id é usado no where que vem depois dos valores
         """
-        return (self.idcampanha, self.nome, self.decricao, self.identificacao, self.localizacao_container, self.dt_importacao, self.idarquivo)
+        return (self.idestudo, self.nome, self.decricao, self.identificacao, self.localizacao_container, self.dt_importacao, self.idarquivo)
 
-    def to_dict(self):
-        dt_importacao_formatada = self.dt_importacao.strftime("%d/%m/%Y %H:%M:%S")
+    def to_dict(self, hieraquia=False):
+        from services.estudo_service import estudo_lista_selecionado
+
+        if self.dt_importacao:
+            dt_importacao_formatada = datetime.strftime(self.dt_importacao, "%d/%m/%Y %H:%M:%S") 
+            dt_importacao_formatada2 = datetime.strftime(self.dt_importacao, "%d/%m/%Y")
+        else:
+            dt_importacao_formatada = None
+            dt_importacao_formatada2 = None
+
+        if hieraquia:
+            estudo, mensagemEstudo = estudo_lista_selecionado(self.idestudo)
+            if not estudo:
+                estudo = {}
+        else:
+            estudo = {}
+            mensagemEstudo = ""
+            
         return {"idarquivo": self.idarquivo
-                , "idcampanha": self.idcampanha
+                , "idestudo": self.idestudo
+                , "estudo": estudo
+                , "mensagemEstudo": mensagemEstudo
                 , "nome": self.nome
                 , "decricao": self.decricao
                 , "identificacao": self.identificacao
                 , "localizacao_container": self.localizacao_container
-                , "dt_importacao": dt_importacao_formatada}
+                , "dt_importacao": dt_importacao_formatada
+                , "dt_importacao2": dt_importacao_formatada2
+            }
 
     def get_SQLBuilder():
         """

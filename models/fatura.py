@@ -1,3 +1,4 @@
+from datetime import datetime
 from util.sqlbuilder import *
 
 class Fatura:
@@ -58,25 +59,60 @@ class Fatura:
         """
         return (self.idempresa, self.nome, self.dt_referencia, self.valor, self.dt_vencimento, self.valor_pago, self.dt_pagamento)
 
-    def to_update_db(self):
+    def to_update_db(self, hieraquia=False):
         """
         Esse metodo retorna um tupla com os valores a serem usado para update do banco de dados, 
         deve retornar os campos na ordem do update e o id no final, porque o id é usado no where que vem depois dos valores
         """
         return (self.idempresa, self.nome, self.dt_referencia, self.valor, self.dt_vencimento, self.valor_pago, self.dt_pagamento, self.idfatura)
 
-    def to_dict(self):
-        dt_referencia_formatada = self.dt_referencia.strftime("%d/%m/%Y %H:%M:%S")
-        dt_vencimento_formatada = self.dt_vencimento.strftime("%d/%m/%Y %H:%M:%S")
-        dt_pagamento_formatada = self.dt_pagamento.strftime("%d/%m/%Y %H:%M:%S")
+    def to_dict(self, hieraquia=False):
+        from services.empresa_service import empresa_lista_selecionado
+        
+        # formatando campos data
+        if self.dt_referencia:
+            dt_referencia_formatada = datetime.strftime(self.dt_referencia, "%d/%m/%Y %H:%M:%S") 
+            dt_referencia_formatada2 = datetime.strftime(self.dt_referencia, "%d/%m/%Y")
+        else:
+            dt_referencia_formatada = None
+            dt_referencia_formatada2 = None  
+
+        if self.dt_vencimento:
+            dt_vencimento_formatada = datetime.strftime(self.dt_vencimento, "%d/%m/%Y %H:%M:%S") 
+            dt_vencimento_formatada2 = datetime.strftime(self.dt_vencimento, "%d/%m/%Y")
+        else:
+            dt_vencimento_formatada = None
+            dt_vencimento_formatada2 = None
+
+        if self.dt_pagamento:
+            dt_pagamento_formatada = datetime.strftime(self.dt_pagamento, "%d/%m/%Y %H:%M:%S") 
+            dt_pagamento_formatada2 = datetime.strftime(self.dt_pagamento, "%d/%m/%Y")
+        else:
+            dt_pagamento_formatada = None
+            dt_pagamento_formatada2 = None  
+
+        if hieraquia:
+            empresa, mensagemEmpresa = empresa_lista_selecionado(self.idempresa)
+            if not empresa:
+                empresa = {}
+        else:
+            empresa = {}
+            mensagemEmpresa = ""
+
         return {"idfatura": self.idfatura
                 , "idempresa": self.idempresa
+                , "empresa": empresa
+                , "mensagemEmpresa": mensagemEmpresa
                 , "nome": self.nome
                 , "dt_referencia": dt_referencia_formatada
+                , "dt_referencia2": dt_referencia_formatada2
                 , "valor": self.valor
                 , "dt_vencimento": dt_vencimento_formatada
+                , "dt_vencimento2": dt_vencimento_formatada2
                 , "valor_pago": self.valor_pago
-                , "dt_pagamento": dt_pagamento_formatada}
+                , "dt_pagamento": dt_pagamento_formatada
+                , "dt_pagamento2": dt_pagamento_formatada2
+            }
 
     def get_SQLBuilder():
         """

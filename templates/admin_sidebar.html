@@ -1,7 +1,7 @@
 <!-- Barra lateral de ícones -->
 <div class="sidebar-icons position-fixed start-0 vh-100 d-flex flex-column align-items-center py-3">
   <figure class="figure text-center">
-    <a class="text-white sidebar-icons-btn-rounded" href="#" >
+    <a class="text-white sidebar-icons-btn-rounded" href="{{ url_for('routes_web_contato.rota_contato_principal')}}" >
       <img class="item-sidebar-icons" src="/static/img/ico_contato.png" title="Contatos" alt="Contatos">
     </a>
   </figure>
@@ -32,16 +32,47 @@
 </div>
 
 <!-- Coluna 2: Lista agrupada -->
-<div class="sidebar-channels position-fixed start-0 vh-100 d-flex flex-column p-3">
-  <!-- Título da seção que serve de botão -->
-  <h6 class="menu-title d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#listaMenu" aria-expanded="true" >
-    Seções
-  </h6>
-  <ul class="list-group list-group-flush collapse show menu-list" id="listaMenu">
-    <li class="list-group-item">Item 1</li>
-    <li class="list-group-item">Item 2</li>
-    <li class="list-group-item">Item 3</li>
-    <li class="list-group-item">Item 4</li>
-    <li class="list-group-item">Item 5</li>
-  </ul>
+<div class="sidebar-channels position-fixed start-0 vh-100 d-flex flex-column p-3" id="listaMenu">
 </div>
+
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@mdo">Open modal for @mdo</button>
+
+<script>
+
+  const API_URL_SIDEBAR = `/atalho/usuario/{{ session["usuario_id"] }}`;
+  const listaMenu = document.getElementById("listaMenu");
+
+  async function carregarAtalhosSidebar(){
+    const resposta = await fetch(API_URL_SIDEBAR);
+    const retorno = await resposta.json();      
+    if(retorno){
+      const dados = retorno.dados;
+      const mensagem = retorno.mensagem;
+
+      // identificando os grupos 
+      const grupos = {};      
+      dados.forEach(item => {
+        if (!grupos[item.grupo]) grupos[item.grupo] = [];
+        atalhos = {}
+        atalhos[0] = item.nome
+        atalhos[1] = item.rota
+        atalhos[2] = item.idatalho
+        grupos[item.grupo].push(atalhos);
+      });
+            
+      //
+      let html = "";
+      for (const grupo in grupos) {
+        html += `<h6 class="menu-title d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#side-menu-${grupo}" aria-expanded="true" >${grupo}</h6>`;
+        html += `<ul class="list-group list-group-flush collapse show menu-list" id="side-menu-${grupo}">`;
+        grupos[grupo].forEach(atalho => {
+          html += `<li class="list-group-item"><a href="${atalho[1]}">${atalho[0]}</a></li>`;
+        });
+        html += "</ul>";
+      }
+      listaMenu.innerHTML = html;
+    }      
+  }
+
+  carregarAtalhosSidebar();
+</script>

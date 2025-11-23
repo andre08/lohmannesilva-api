@@ -23,7 +23,8 @@ def contato_listar_todos():
 
         # verificando se tem resultado e convertando em lista de dicionario
         if dados:
-            resultado = [Contato.from_db(item).to_dict() for item in dados]
+            resultado = [Contato.from_db(item).to_dict(False) for item in dados]
+            registrosAfetados = len(resultado)
 
         # ajustando a mensagem para quando o comando foi executado com sucesso
         mensagem = f"Foram encontrados {registrosAfetados} registros"
@@ -62,7 +63,8 @@ def contato_lista_selecionado(idcontato):
 
         # pegando os dados do banco e convertendo para objeto
         if dados:
-            resultado = Contato.from_db(dados).to_dict()
+            resultado = Contato.from_db(dados).to_dict(True)
+            registrosAfetados = 1
         else:
             resultado = None
 
@@ -208,4 +210,3 @@ def contato_excluir_existente(idcontato):
         conexao.close()
     
     return resultado, mensagem
-

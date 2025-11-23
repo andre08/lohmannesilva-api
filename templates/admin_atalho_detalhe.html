@@ -1,0 +1,30 @@
+  {% include 'admin_header.html' %}
+  {% include 'admin_menu.html' %}
+  {% include 'admin_sidebar.html' %}
+
+  <div class="main-content">
+    <div class="container-fluid">
+        <h3>{{ atalho.nome }}</h3>
+        <p style="margin-top: -5px; font-size: x-small;"><em>Detalhe do atalho salvo</em></p>
+        <p><span class="fw-bold">Grupo: </span><span class="fw-normal">{{ atalho.grupo }}</span></p>
+        <p><span class="fw-bold">Rota: </span><span class="fw-normal">{{ atalho.rota }}</span></p>
+        <p><span class="fw-bold">Usuário: </span><span class="fw-normal">{{ atalho.usuario.nome }}</span></p>
+    </div>
+  </div>
+  
+
+    {% if(aceitaFavoritos) %}
+      {% if(favorito) %}
+  <script type="text/javascript" >
+    document.getElementById("frm_favorito_idatalho").value = `{{ idatalho }}`;
+  </script>
+      {% else %}
+  <script type="text/javascript" >
+    document.getElementById("frm_favorito_idusuario").value = `{{ session["usuario_id"] }}`;
+    document.getElementById("frm_favorito_rota").value = `{{ rota }}`;
+  </script>
+      {% endif %}
+    {% endif %}      
+
+
+  {% include 'admin_footer.html' %}
