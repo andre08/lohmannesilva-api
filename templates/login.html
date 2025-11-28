@@ -2,52 +2,43 @@
   {% include 'index_menu.html' %}
 
   <div class="container-fluid">
-    <br>
+    
     <div class="row justify-content-md-center">
 
-      <div class="col"></div>
-      <div class="col"> 
+      <div class="col-12 col-sm-8 col-md-6 col-lg-4 login-container">
         
-        <div class="row justify-content-md-center">
-          <div class="col-md-auto"></div>
-            <div class="col col-8 registro-container ">
-              
-              <div class="mb-3 text-center">
-                <h3 style="font-family: 'DIN';">Acesso a área restrita</h3>
-                <p style="font-family: 'DIN';">Informe seus dados de acesso</p>
-              </div>
+        <div class="mb-3 text-center">
+          <h3 style="font-family: 'DIN';">Acesso a área restrita</h3>
+          <p style="font-family: 'DIN';">Informe seus dados de acesso</p>
+        </div>
 
-              <form id="formLogon">
+        <form id="formLogon">
 
-                <div class="mb-3 form-text-font">
-                  <label for="email" class="form-label">Email</label>
-                  <input type="email" class="form-control" id="email" name="email" placeholder="seuemail@example.com">
-                </div>
-
-                <div class="mb-3 form-text-font">
-                  <label for="senha" class="form-label">Senha</label>
-                  <input type="password" class="form-control" id="senha" name="senha" placeholder="Informe sua senha">
-                </div>
-
-                <div class="d-grid form-text-font">
-                  <div class="row">
-                    <div class="col col-4 text-center">
-                      <button type="submit" class="btn btn-primary btn-sm">Acessar</button>
-                    </div>
-                    <div class="col col-8 text-center">
-                      <a href="{{ url_for('routes_web_usuario.rota_usuario_registro')}}">Nova conta</a>
-                    </div>
-                  </div>
-                </div>
-
-              </form>
-            </div>
-            <div class="col-md-auto"></div>
+          <div class="mb-3 form-text-font">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="seuemail@example.com">
           </div>
 
-        </div>
-      <div class="col"></div>
+          <div class="mb-3 form-text-font">
+            <label for="senha" class="form-label">Senha</label>
+            <input type="password" class="form-control" id="senha" name="senha" placeholder="Informe sua senha">
+          </div>
+
+          <div class="d-grid form-text-font">
+            <div class="row">
+              <div class="col col-4 text-center">
+                <button type="submit" class="btn btn-primary btn-sm">Acessar</button>
+              </div>
+              <div class="col col-8 text-center">
+                <a href="{{ url_for('routes_web_usuario.rota_usuario_registro')}}">Nova conta</a>
+              </div>
+            </div>
+          </div>
+
+        </form>
+      </div>
     </div>
+
   </div>
 
   <script>

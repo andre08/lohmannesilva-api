@@ -122,13 +122,13 @@ footer {
 }
 
 .login-container {
-  background-color: #FFF;
+  background-color: #FFF !important;
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
   max-width: 360px;
-  width: 100%;
-  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .registro-container {
@@ -136,8 +136,9 @@ footer {
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  width: 100%;
-  font-family: 'DIM';
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .form-text-font {

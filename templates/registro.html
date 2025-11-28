@@ -2,72 +2,61 @@
   {% include 'index_menu.html' %}
  
   <div class="container-fluid">
-    <br>
-  
+    
     <div class="row justify-content-md-center">
 
-      <div class="col"></div>
-      <div class="col"> 
-        
-        <div class="row justify-content-md-center">
-          <div class="col-md-auto"></div>
-          <div class="col col-12 registro-container">
+      <div class="registro-container">
             
-            <div class="mb-3 text-center">
-              <h3>Cria uma nova conta de acesso</h3>
-              <p>Você precisa de uma conta para acessar a área restrita</p>
-            </div> 
+        <div class="mb-3 text-center">
+          <h3>Cria uma nova conta de acesso</h3>
+          <p>Você precisa de uma conta para acessar a área restrita</p>
+        </div> 
         
-            <form name="frmRegistro" id="frmRegistro">
+        <form name="frmRegistro" id="frmRegistro">
 
-              <div class="mb-3">
-                <label for="nome" class="form-label">Nome</label>
-                <input type="text" class="form-control" id="nome" name="nome" placeholder="informe seu nome">
-              </div>
-
-              <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="seuemail@example.com">
-              </div>
-
-              <div class="mb-3">
-                <label for="senha" class="form-label">Senha</label>
-                <input type="password" class="form-control" id="senha" name="senha" placeholder="Informe sua senha">
-                <div class="form-text">
-                  Deve ter pelo menos 8 caracteres e incluir letras maiúsculas, minúsculas, números e caracteres especiais
-                </div>
-              </div>
-
-              <div class="mb-3">
-                <label for="senhaconfirmada" class="form-label">Confirme a senha</label>
-                <input type="password" class="form-control" id="senhaconfirmada" name="senhaconfirmada" placeholder="Repita sua senha">
-              </div>
-
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="newsletter">
-                <label class="form-check-label" for="newsletter">
-                  Assine nossa newsletter para ofertas e atualizações exclusivas
-                </label>
-              </div>
-
-              <div class="form-check mb-4">
-                <input class="form-check-input" type="checkbox" id="terms">
-                <label class="form-check-label" for="terms">
-                  Concordo com os <a href="#">Termos de Serviço</a> e <a href="#">Política de Privacidade</a>
-                </label>
-              </div>
-
-              <div class="d-grid mb-4">
-                <button type="submit" id="btnEnviar" class="btn btn-primary">Confirmar</button>
-              </div>
-
-            </form>
+          <div class="mb-3">
+            <label for="nome" class="form-label">Nome</label>
+            <input type="text" class="form-control" id="nome" name="nome" placeholder="informe seu nome">
           </div>
-          <div class="col-md-auto"></div>
-        </div>
 
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="seuemail@example.com">
+          </div>
+
+          <div class="mb-3">
+            <label for="senha" class="form-label">Senha</label>
+            <input type="password" class="form-control" id="senha" name="senha" placeholder="Informe sua senha">
+            <div class="form-text">
+              Deve ter pelo menos 8 caracteres e incluir letras maiúsculas, minúsculas, números e caracteres especiais
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="senhaconfirmada" class="form-label">Confirme a senha</label>
+            <input type="password" class="form-control" id="senhaconfirmada" name="senhaconfirmada" placeholder="Repita sua senha">
+          </div>
+
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="newsletter">
+            <label class="form-check-label" for="newsletter">
+              Assine nossa newsletter para ofertas e atualizações exclusivas
+            </label>
+          </div>
+
+          <div class="form-check mb-4">
+            <input class="form-check-input" type="checkbox" id="terms">
+            <label class="form-check-label" for="terms">
+              Concordo com os <a href="#">Termos de Serviço</a> e <a href="#">Política de Privacidade</a>
+            </label>
+          </div>
+
+          <div class="d-grid mb-4">
+            <button type="submit" id="btnEnviar" class="btn btn-primary">Confirmar</button>
+          </div>
+
+        </form>
       </div>
-      <div class="col"></div>
     </div>
   </div>
 
