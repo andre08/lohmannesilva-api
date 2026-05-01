@@ -1,0 +1,27 @@
+{% macro campo(form_campo) %}
+
+{% if form_campo.type != "HiddenField" %}
+    <label for="{{ form_campo.id }}" class="form-label">
+        {{ form_campo.label.text }}
+    </label>
+{% endif %}
+
+{{ form_campo(
+    class=form_campo.render_kw.get("class"),
+    placeholder=form_campo.render_kw.get("placeholder"),
+    rows=form_campo.render_kw.get("rows")
+) }}
+
+{% if form_campo.description %}
+    <small class="text-muted">{{ form_campo.description }}</small>
+{% endif %}
+
+{% if form_campo.errors %}
+    <div class="text-danger">
+    {% for erro in form_campo.errors %}
+        <div>{{ erro }}</div>
+    {% endfor %}
+    </div>
+{% endif %}
+
+{% endmacro %}

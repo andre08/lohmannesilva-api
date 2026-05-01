@@ -1,16 +1,13 @@
-  {% include 'admin_header.html' %}
-  {% include 'admin_menu.html' %}
-  {% include 'admin_sidebar.html' %}
+  {% include '/admin_header.html' %}
+  {% include '/admin_menu.html' %}
+  {% include '/admin_sidebar.html' %}
 
   <div class="main-content">
     <div class="container-fluid">
-        <h3>Gerenciamento de Contatos</h3>
-        <p>Aqui vai encontrar todas as solicitações de CONTATOS e qual a situação do atendimento.</p>
-
+      <h3>Gerenciamento de Contatos</h3>
+      <p>Aqui vai encontrar todas as solicitações de CONTATOS e qual a situação do atendimento.</p>
       <!-- Tabela de Contatos -->
-      <div class="row row-cols-auto" id="listaContato">
-      </div>      
-
+      <div class="row row-cols-auto" id="listaContato"></div>
     </div>
   </div>
     
@@ -19,7 +16,6 @@
     const listaContato = document.getElementById('listaContato'); 
 
     async function carregarContatos() {
-
       listaContato.innerHTML = ``;
 
       // carregando tabela
@@ -54,7 +50,7 @@
           
           listaContato.innerHTML += `
                               <div class="col-md-3">
-                                <div class="card" style="width: 18rem; height: 225px; margin: 3px">
+                                <div class="card" style="width: 17.7rem; height: 225px; margin: 3px;">
                                   <div class="card-header" style="${bg_color}">${situacao}</div>
                                   <div class="card-body" style="padding-left: 15px; padding-right: 5px;">
                                     <h5 class="card-title">${contato.nome}</h5>
@@ -62,7 +58,7 @@
                                     <p class="card-text">${contato.mensagem}</p>
                                   </div>
                                   <div class="card-footer text-body-secondary text-center">
-                                    <button class="btn btn-sm btn-light" onclick="detalhe(${contato.idcontato})">Detalhe</button>
+                                    <button class="btn btn-sm btn-secondary" onclick="detalhe(${contato.idcontato})">Detalhe</button>
                                     <button class="btn btn-sm btn-primary" onclick="editar(${contato.idcontato})">Alterar</button>
                                   </div>
                                 </div>
@@ -82,4 +78,4 @@
     carregarContatos();
   </script>
 
-  {% include 'admin_footer.html' %}
+  {% include '/admin_footer.html' %}

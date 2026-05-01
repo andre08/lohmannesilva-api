@@ -75,11 +75,11 @@ class Registro:
             dt_registro_formatada2 = None
         
         if hieraquia:
-            usuario, mensagemUsuario = usuario_lista_selecionado(self.idusuario)
+            sucesso, usuario, mensagemUsuario = usuario_lista_selecionado(self.idusuario)
             if not usuario:
                 usuario = {}
 
-            token, mensagemToken = token_lista_selecionado(self.idtoken)
+            sucesso, token, mensagemToken = token_lista_selecionado(self.idtoken)
             if not token:
                 token = {}
         else:

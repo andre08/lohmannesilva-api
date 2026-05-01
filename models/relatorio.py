@@ -76,7 +76,7 @@ class Relatorio:
             dt_geracao_formatada2 = None 
 
         if hieraquia:
-            estudo, mensagemEstudo = plano_lista_selecionado(self.idestudo)
+            sucesso, estudo, mensagemEstudo = plano_lista_selecionado(self.idestudo)
             if not estudo:
                 estudo = {}
         else:

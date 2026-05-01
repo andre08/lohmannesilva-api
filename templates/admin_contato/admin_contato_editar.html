@@ -1,0 +1,82 @@
+  {% include '/admin_header.html' %}
+  {% include '/admin_menu.html' %}
+  {% include '/admin_sidebar.html' %}
+  {% from "/components/campos.html" import campo %}
+
+  <div class="main-content">
+    <div class="container-fluid">
+      <!-- Formulario  -->
+      <div class="row">
+        <div class="mb-3 col">
+          <h3><em>{{ contato.tipo }}</em> solicitado em {{ contato.dt_contato2 }} </h3>
+          <p style="margin-top: -5px; font-size: x-small;"><em>Edição do contato</em></p>
+
+          <div class="title-section">
+            <form name="formContato" id="formContato">
+              {{ form.csrf_token }}
+              <div class="row">
+                <div class="mb-3">
+                  {{ campo(form.idcontato) }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="mb-3">
+                  {{ campo(form.nome) }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="mb-3">
+                  {{ campo(form.email) }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="mb-3">
+                  {{ campo(form.telefone) }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col mb-3">
+                  {{ campo(form.tipo) }}
+                </div>
+                <div class="col-3 mb-3">
+                  {{ campo(form.dt_contato) }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="mb-3">
+                  {{ campo(form.mensagem) }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col mb-3">
+                  {{ campo(form.visualizado) }}
+                </div>
+                <div class="col mb-3">
+                  {{ campo(form.respondido) }}
+                </div>
+                <div class="col mb-3">
+                  {{ campo(form.interesse) }}
+                </div>
+                <div class="col mb-3">
+                  {{ campo(form.cliente) }}
+                </div>
+                <div class="col mb-3">
+                  {{ campo(form.ativo) }}
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="mb-3 col-3">
+          <h5></h5>
+        </div>
+      </div>
+    </div>
+   
+  </div>
+  <script type="text/javascript" >
+
+    
+  </script>
+  
+  {% include '/admin_footer.html' %}

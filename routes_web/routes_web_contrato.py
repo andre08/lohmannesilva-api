@@ -21,7 +21,7 @@ def rota_contrato_pagina_detalhe(id):
     from services.atalho_service import atalho_possui_usuario
     #nesta pagina deve ser possivel adicionar como favorito (atalho) e deve ser verificado se exite a pagina como favorito para o usuario logado
     rota = request.path
-    favorito, idatalho, mensagemFavorito = atalho_possui_usuario(session["usuario_id"], rota)
+    sucesso, favorito, mensagemFavorito, idatalho = atalho_possui_usuario(session["usuario_id"], rota)
     aceitaFavoritos = True
 
     #dados para a visualição
@@ -34,7 +34,7 @@ def rota_contrato_pagina_detalhe(id):
 #rota para pagina de edição
 @routes_web_contrato.route('/editar/<int:id>', methods=["GET"])
 def rota_contrato_pagina_editar(id):
-    resultado, mensagem = contrato_lista_selecionado(id)
+    sucesso, resultado, mensagem = contrato_lista_selecionado(id)
     if not resultado:
         resultado = Contrato(None).to_dict()
     return render_template("admin_contrato_editar.html", contrato=resultado, mensagem=mensagem)
@@ -44,17 +44,14 @@ def rota_contrato_pagina_editar(id):
 #rota para listar todos os registros
 @routes_web_contrato.route('/contratos', methods=["GET"])
 def rota_contrato_listar_todos():
-    resultado, mensagem = contrato_listar_todos()
-    return jsonify({"dados":resultado, "mensagem":mensagem})
+    sucesso, resultado, mensagem = contrato_listar_todos()
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #rota para listar um registro selecionado
 @routes_web_contrato.route('/contrato/<int:id>', methods=["GET"])
 def rota_contrato_listar_selecionado(id):
-    resultado, mensagem = contrato_lista_selecionado(id)
-    if resultado:
-        return jsonify({"dados":resultado, "mensagem":mensagem})
-    else:
-        return jsonify({"mensagem":mensagem})
+    sucesso, resultado, mensagem = contrato_lista_selecionado(id)
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #pagina para criar um novo registro
 @routes_web_contrato.route('/contrato', methods=['POST'])
@@ -71,12 +68,8 @@ def rota_contrato_salvar_novo():
     dt_inicial_vigencia = dados.get("dt_inicial_vigencia")
     dt_final_vigencia = dados.get("dt_final_vigencia")
     
-    resultado, mensagem = contrato_salvar_novo(Contrato(None, idempresa, idusuario_responsavel, idusuario_vendedor, descricao, status, dt_cadastro, dt_assinatura, dt_atualizacao, dt_inicial_vigencia, dt_final_vigencia))
-    if resultado==True:
-        mensagem = "Contrato salva com sucesso"
-    else:
-        mensagem = f"Erro ao salvar a contrato [{mensagem}]"
-    return jsonify({'success': resultado, 'mensagem':mensagem})
+    sucesso, resultado, mensagem = contrato_salvar_novo(Contrato(None, idempresa, idusuario_responsavel, idusuario_vendedor, descricao, status, dt_cadastro, dt_assinatura, dt_atualizacao, dt_inicial_vigencia, dt_final_vigencia))
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 # rota alterar um registro existente
 @routes_web_contrato.route('/contrato', methods=["PUT"])
@@ -94,17 +87,13 @@ def rota_contrato_alterar_existente():
     dt_inicial_vigencia = dados.get("dt_inicial_vigencia")
     dt_final_vigencia = dados.get("dt_final_vigencia")
 
-    resultado, mensagem = contrato_alterar_existente(Contrato(idcontrato, idempresa, idusuario_responsavel, idusuario_vendedor, descricao, status, dt_cadastro, dt_assinatura, dt_atualizacao, dt_inicial_vigencia, dt_final_vigencia))
-    if resultado==True:
-        mensagem = "Contrato alterada com sucesso"
-    else:
-        mensagem = "Erro ao alterar a contrato"
-    return jsonify({'success': resultado, 'mensagem':mensagem})
+    sucesso, resultado, mensagem = contrato_alterar_existente(Contrato(idcontrato, idempresa, idusuario_responsavel, idusuario_vendedor, descricao, status, dt_cadastro, dt_assinatura, dt_atualizacao, dt_inicial_vigencia, dt_final_vigencia))
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #rota para excluir um registro existente
 @routes_web_contrato.route('/contrato/<int:id>', methods=["DELETE"])
 def rota_contrato_excluir_existente(id):
-    resultado, mensagem = contrato_excluir_existente(id)
-    return jsonify({'success': resultado, "mensagem":mensagem})
+    sucesso, resultado, mensagem = contrato_excluir_existente(id)
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 # ROTAS ESPECÍFICAS DO MODULO

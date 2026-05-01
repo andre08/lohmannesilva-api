@@ -90,7 +90,7 @@ class Empresa:
             dt_final_contrato_formatada2 = None 
 
         if hieraquia:
-            plano, mensagemPlano = plano_lista_selecionado(self.idplano_padrao)
+            sucesso, plano, mensagemPlano = plano_lista_selecionado(self.idplano_padrao)
             if not plano:
                 plano = {}
         else:

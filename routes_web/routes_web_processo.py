@@ -22,11 +22,11 @@ def rota_processo_pagina_detalhe(id):
     from services.atalho_service import atalho_possui_usuario
     #nesta pagina deve ser possivel adicionar como favorito (atalho) e deve ser verificado se exite a pagina como favorito para o usuario logado
     rota = request.path
-    favorito, idatalho, mensagemFavorito = atalho_possui_usuario(session["usuario_id"], rota)
+    sucesso, favorito, mensagemFavorito, idatalho = atalho_possui_usuario(session["usuario_id"], rota)
     aceitaFavoritos = True
 
     #dados para a visualição
-    resultado, mensagem = processo_lista_selecionado(id)
+    sucesso, resultado, mensagem = processo_lista_selecionado(id)
     if not resultado:
         resultado = Processo(None).to_dict()
 
@@ -35,7 +35,7 @@ def rota_processo_pagina_detalhe(id):
 #rota para pagina de edição
 @routes_web_processo.route('/editar/<int:id>', methods=["GET"])
 def rota_processo_pagina_editar(id):
-    resultado, mensagem = processo_lista_selecionado(id)
+    sucesso, resultado, mensagem = processo_lista_selecionado(id)
     if not resultado:
         resultado = Processo(None).to_dict()
     return render_template("admin_processo_editar.html", processo=resultado, mensagem=mensagem)
@@ -45,17 +45,14 @@ def rota_processo_pagina_editar(id):
 #rota para listar todos os registros
 @routes_web_processo.route('/processos', methods=["GET"])
 def rota_processo_listar_todos():
-    resultado, mensagem = processo_listar_todos()
-    return jsonify({"dados":resultado, "mensagem":mensagem})
+    sucesso, resultado, mensagem = processo_listar_todos()
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #rota para listar um registro selecionado
 @routes_web_processo.route('/processo/<int:id>', methods=["GET"])
 def rota_processo_listar_selecionado(id):
-    resultado, mensagem = processo_lista_selecionado(id)
-    if resultado:
-        return jsonify({"dados":resultado, "mensagem":mensagem})
-    else:
-        return jsonify({"mensagem":mensagem})
+    sucesso, resultado, mensagem = processo_lista_selecionado(id)
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #pagina para criar um novo registro
 @routes_web_processo.route('/processo', methods=['POST'])
@@ -64,12 +61,9 @@ def rota_processo_salvar_novo():
     nome = dados.get("nome")
     descricao = dados.get("descricao")
     status = dados.get("status")
-    resultado, mensagem = processo_salvar_novo(Processo(None, nome, descricao, status))
-    if resultado==True:
-        mensagem = "Processo salvo com sucesso"
-    else:
-        mensagem = f"Erro ao salvar o Processo [{mensagem}]"
-    return jsonify({'success': resultado, 'mensagem':mensagem})
+    
+    sucesso, resultado, mensagem = processo_salvar_novo(Processo(None, nome, descricao, status))
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 # rota alterar um registro existente
 @routes_web_processo.route('/processo', methods=["PUT"])
@@ -79,15 +73,12 @@ def rota_processo_alterar_existente():
     nome = dados.get("nome")
     descricao = dados.get("descricao")
     status = dados.get("status")
-    resultado, mensagem = processo_alterar_existente(Processo(idprocesso, nome, descricao, status))
-    if resultado==True:
-        mensagem = "Processo alterado com sucesso"
-    else:
-        mensagem = "Erro ao alterar o processo"
-    return jsonify({'success': resultado, 'mensagem':mensagem})
+    
+    sucesso, resultado, mensagem = processo_alterar_existente(Processo(idprocesso, nome, descricao, status))
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #rota para excluir um registro existente
 @routes_web_processo.route('/processo/<int:id>', methods=["DELETE"])
 def rota_processo_excluir_existente(id):
-    resultado, mensagem = processo_excluir_existente(id)
-    return jsonify({'success': resultado, "mensagem":mensagem})
+    sucesso, resultado, mensagem = processo_excluir_existente(id)
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})

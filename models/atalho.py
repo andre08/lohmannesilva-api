@@ -64,7 +64,7 @@ class Atalho:
         from services.usuario_service import usuario_lista_selecionado
 
         if hieraquia:
-            usuario, mensagemUsuario = usuario_lista_selecionado(self.idusuario)
+            sucesso, usuario, mensagemUsuario = usuario_lista_selecionado(self.idusuario)
             if not usuario:
                 usuario = {}
         else:

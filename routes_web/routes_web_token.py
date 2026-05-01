@@ -22,11 +22,11 @@ def rota_token_pagina_detalhe(id):
     from services.atalho_service import atalho_possui_usuario
     #nesta pagina deve ser possivel adicionar como favorito (atalho) e deve ser verificado se exite a pagina como favorito para o usuario logado
     rota = request.path
-    favorito, idatalho, mensagemFavorito = atalho_possui_usuario(session["usuario_id"], rota)
+    sucesso, favorito, mensagemFavorito, idatalho = atalho_possui_usuario(session["usuario_id"], rota)
     aceitaFavoritos = True
 
     #dados para a visualição
-    resultado, mensagem = token_lista_selecionado(id)
+    sucesso, resultado, mensagem = token_lista_selecionado(id)
     if not resultado:
         resultado = Token(None).to_dict()
 
@@ -35,7 +35,7 @@ def rota_token_pagina_detalhe(id):
 #rota para pagina de edição
 @routes_web_token.route('/editar/<int:id>', methods=["GET"])
 def rota_token_pagina_editar(id):
-    resultado, mensagem = token_lista_selecionado(id)
+    sucesso, resultado, mensagem = token_lista_selecionado(id)
     if not resultado:
         resultado = Token(None).to_dict()
     return render_template("admin_token_editar.html", token=resultado, mensagem=mensagem)
@@ -45,17 +45,14 @@ def rota_token_pagina_editar(id):
 #rota para listar todos os registros
 @routes_web_token.route('/tokens', methods=["GET"])
 def rota_token_listar_todos():
-    resultado, mensagem = token_listar_todos()
-    return jsonify({"dados":resultado, "mensagem":mensagem})
+    sucesso, resultado, mensagem = token_listar_todos()
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #rota para listar um registro selecionado
 @routes_web_token.route('/token/<int:id>', methods=["GET"])
 def rota_token_listar_selecionado(id):
-    resultado, mensagem = token_lista_selecionado(id)
-    if resultado:
-        return jsonify({"dados":resultado, "mensagem":mensagem})
-    else:
-        return jsonify({"mensagem":mensagem})
+    sucesso, resultado, mensagem = token_lista_selecionado(id)
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #pagina para criar um novo registro
 @routes_web_token.route('/token', methods=['POST'])
@@ -69,12 +66,9 @@ def rota_token_salvar_novo():
     desativado = dados.get("desativado")
     dt_desativado = dados.get("dt_desativado")
     dt_atualizado = dados.get("dt_atualizado")
-    resultado, mensagem = token_salvar_novo(Token(None, idusuario, token, secret_key, dt_criacao, dt_expiracao, desativado, dt_desativado, dt_atualizado))
-    if resultado==True:
-        mensagem = "Token salvo com sucesso"
-    else:
-        mensagem = f"Erro ao salvar o token [{mensagem}]"
-    return jsonify({'success': resultado, 'mensagem':mensagem})
+    
+    sucesso, resultado, mensagem = token_salvar_novo(Token(None, idusuario, token, secret_key, dt_criacao, dt_expiracao, desativado, dt_desativado, dt_atualizado))
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 # rota alterar um registro existente
 @routes_web_token.route('/token', methods=["PUT"])
@@ -89,17 +83,14 @@ def rota_token_alterar_existente():
     desativado = dados.get("desativado")
     dt_desativado = dados.get("dt_desativado")
     dt_atualizado = dados.get("dt_atualizado")
-    resultado, mensagem = token_alterar_existente(Token(idtoken, idusuario, token, secret_key, dt_criacao, dt_expiracao, desativado, dt_desativado, dt_atualizado))
-    if resultado==True:
-        mensagem = "Token alterado com sucesso"
-    else:
-        mensagem = "Erro ao alterar o token"
-    return jsonify({'success': resultado, 'mensagem':mensagem})
+    
+    sucesso, resultado, mensagem = token_alterar_existente(Token(idtoken, idusuario, token, secret_key, dt_criacao, dt_expiracao, desativado, dt_desativado, dt_atualizado))
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #rota para excluir um registro existente
 @routes_web_token.route('/token/<int:id>', methods=["DELETE"])
 def rota_token_excluir_existente(id):
-    resultado, mensagem = token_excluir_existente(id)
-    return jsonify({'success': resultado, "mensagem":mensagem})
+    sucesso, resultado, mensagem = token_excluir_existente(id)
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 # ROTAS ESPECÍFICAS DO MODULO

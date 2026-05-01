@@ -69,15 +69,15 @@ class ItemFatura:
         from services.plano_service import plano_lista_selecionado
 
         if hieraquia:
-            fatura, mensagemFatura = fatura_lista_selecionado(self.idfatura)
+            sucesso, fatura, mensagemFatura = fatura_lista_selecionado(self.idfatura)
             if not fatura:
                 fatura = {}
 
-            estudo, mensagemEstudo = estudo_lista_selecionado(self.idestudo)
+            sucesso, estudo, mensagemEstudo = estudo_lista_selecionado(self.idestudo)
             if not estudo:
                 estudo = {}
 
-            plano, mensagemPlano = plano_lista_selecionado(self.idplano_padrao)
+            sucesso, plano, mensagemPlano = plano_lista_selecionado(self.idplano_padrao)
             if not plano:
                 plano = {}
         else:

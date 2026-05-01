@@ -21,11 +21,11 @@ def rota_estudo_pagina_detalhe(id):
     from services.atalho_service import atalho_possui_usuario
     #nesta pagina deve ser possivel adicionar como favorito (atalho) e deve ser verificado se exite a pagina como favorito para o usuario logado
     rota = request.path
-    favorito, idatalho, mensagemFavorito = atalho_possui_usuario(session["usuario_id"], rota)
+    sucesso, favorito, mensagemFavorito, idatalho = atalho_possui_usuario(session["usuario_id"], rota)
     aceitaFavoritos = True
 
     #dados para a visualição
-    resultado, mensagem = estudo_lista_selecionado(id)
+    sucesso, resultado, mensagem = estudo_lista_selecionado(id)
     if not resultado:
         resultado = Estudo(None).to_dict()
 
@@ -34,7 +34,7 @@ def rota_estudo_pagina_detalhe(id):
 #rota para pagina de edição
 @routes_web_estudo.route('/editar/<int:id>', methods=["GET"])
 def rota_estudo_pagina_editar(id):
-    resultado, mensagem = estudo_lista_selecionado(id)
+    sucesso, resultado, mensagem = estudo_lista_selecionado(id)
     if not resultado:
         resultado = Estudo(None).to_dict()
     return render_template("admin_estudo_editar.html", estudo=resultado, mensagem=mensagem)
@@ -44,17 +44,14 @@ def rota_estudo_pagina_editar(id):
 #rota para listar todos os registros
 @routes_web_estudo.route('/estudos', methods=["GET"])
 def rota_estudo_listar_todos():
-    resultado, mensagem = estudo_listar_todos()
-    return jsonify({"dados":resultado, "mensagem":mensagem})
+    sucesso, resultado, mensagem = estudo_listar_todos()
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #rota para listar um registro selecionado
 @routes_web_estudo.route('/estudo/<int:id>', methods=["GET"])
 def rota_estudo_listar_selecionado(id):
-    resultado, mensagem = estudo_lista_selecionado(id)
-    if resultado:
-        return jsonify({"dados":resultado, "mensagem":mensagem})
-    else:
-        return jsonify({"mensagem":mensagem})
+    sucesso, resultado, mensagem = estudo_lista_selecionado(id)
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #pagina para criar um novo registro
 @routes_web_estudo.route('/estudo', methods=['POST'])
@@ -70,12 +67,8 @@ def rota_estudo_salvar_novo():
     status = dados.get("status")
     status_kambam = dados.get("status_kambam")
     
-    resultado, mensagem = estudo_salvar_novo(Estudo(None, idempresa, idusuario_analista, tipo, nome, objetivo, meta, descricao, status, status_kambam))
-    if resultado==True:
-        mensagem = "Estudo salva com sucesso"
-    else:
-        mensagem = f"Erro ao salvar a estudo [{mensagem}]"
-    return jsonify({'success': resultado, 'mensagem':mensagem})
+    sucesso, resultado, mensagem = estudo_salvar_novo(Estudo(None, idempresa, idusuario_analista, tipo, nome, objetivo, meta, descricao, status, status_kambam))
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 # rota alterar um registro existente
 @routes_web_estudo.route('/estudo', methods=["PUT"])
@@ -92,17 +85,13 @@ def rota_estudo_alterar_existente():
     status = dados.get("status")
     status_kambam = dados.get("status_kambam")
 
-    resultado, mensagem = estudo_alterar_existente(Estudo(idestudo, idempresa, idusuario_analista, tipo, nome, objetivo, meta, descricao, status, status_kambam))
-    if resultado==True:
-        mensagem = "Estudo alterado com sucesso"
-    else:
-        mensagem = "Erro ao alterar o estudo"
-    return jsonify({'success': resultado, 'mensagem':mensagem})
+    sucesso, resultado, mensagem = estudo_alterar_existente(Estudo(idestudo, idempresa, idusuario_analista, tipo, nome, objetivo, meta, descricao, status, status_kambam))
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #rota para excluir um registro existente
 @routes_web_estudo.route('/estudo/<int:id>', methods=["DELETE"])
 def rota_estudo_excluir_existente(id):
-    resultado, mensagem = estudo_excluir_existente(id)
-    return jsonify({'success': resultado, "mensagem":mensagem})
+    sucesso, resultado, mensagem = estudo_excluir_existente(id)
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 # ROTAS ESPECÍFICAS DO MODULO

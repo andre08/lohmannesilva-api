@@ -75,11 +75,11 @@ class EmpresaUsuario:
             dt_cadastro_formatada2 = None        
 
         if hieraquia:
-            empresa, mensagemEmpresa = empresa_lista_selecionado(self.idempresa)
+            sucesso, empresa, mensagemEmpresa = empresa_lista_selecionado(self.idempresa)
             if not empresa:
                 empresa = {}
 
-            usuario, mensagemUsuario = usuario_lista_selecionado(self.idusuario)
+            sucesso, usuario, mensagemUsuario = usuario_lista_selecionado(self.idusuario)
             if not usuario:
                 usuario = {}
         else:

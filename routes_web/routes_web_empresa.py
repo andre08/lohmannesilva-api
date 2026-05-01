@@ -14,7 +14,7 @@ routes_web_empresa = Blueprint('routes_web_empresa', __name__)
 #rota para pagina principal 
 @routes_web_empresa.route('/', methods=["GET"])
 def rota_empresa_principal():
-    return render_template("admin_empresa.html")
+    return render_template("admin_empresa/admin_empresa.html")
 
 #rota para pagina visualização 
 @routes_web_empresa.route('/ver/<int:id>', methods=["GET"])
@@ -22,11 +22,11 @@ def rota_empresa_pagina_detalhe(id):
     from services.atalho_service import atalho_possui_usuario
     #nesta pagina deve ser possivel adicionar como favorito (atalho) e deve ser verificado se exite a pagina como favorito para o usuario logado
     rota = request.path
-    favorito, idatalho, mensagemFavorito = atalho_possui_usuario(session["usuario_id"], rota)
+    sucesso, favorito, mensagemFavorito, idatalho = atalho_possui_usuario(session["usuario_id"], rota)
     aceitaFavoritos = True
 
     #dados para a visualição
-    resultado, mensagem = empresa_lista_selecionado(id)
+    sucesso, resultado, mensagem = empresa_lista_selecionado(id)
     if not resultado:
         resultado = Empresa(None).to_dict()
 
@@ -35,7 +35,7 @@ def rota_empresa_pagina_detalhe(id):
 #rota para pagina de edição
 @routes_web_empresa.route('/editar/<int:id>', methods=["GET"])
 def rota_empresa_pagina_editar(id):
-    resultado, mensagem = empresa_lista_selecionado(id)
+    sucesso, resultado, mensagem = empresa_lista_selecionado(id)
     if not resultado:
         resultado = Empresa(None).to_dict()
     return render_template("admin_empresa_editar.html", empresa=resultado, mensagem=mensagem)
@@ -45,17 +45,14 @@ def rota_empresa_pagina_editar(id):
 #rota para listar todos os registros
 @routes_web_empresa.route('/empresas', methods=["GET"])
 def rota_empresa_listar_todos():
-    resultado, mensagem = empresa_listar_todos()
-    return jsonify({"dados":resultado, "mensagem":mensagem})
+    sucesso, resultado, mensagem = empresa_listar_todos()
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #rota para listar um registro selecionado
 @routes_web_empresa.route('/empresa/<int:id>', methods=["GET"])
 def rota_empresa_listar_selecionado(id):
-    resultado, mensagem = empresa_lista_selecionado(id)
-    if resultado:
-        return jsonify({"dados":resultado, "mensagem":mensagem})
-    else:
-        return jsonify({"mensagem":mensagem})
+    sucesso, resultado, mensagem = empresa_lista_selecionado(id)
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #pagina para criar um novo registro
 @routes_web_empresa.route('/empresa', methods=['POST'])
@@ -66,12 +63,9 @@ def rota_empresa_salvar_novo():
     dt_primeiro_contrato = dados.get("dt_primeiro_contrato")
     dt_inicio_contrato = dados.get("dt_inicio_contrato")
     dt_final_contrato = dados.get("dt_final_contrato")
-    resultado, mensagem = empresa_salvar_novo(Empresa(None, nome, idplano, dt_primeiro_contrato, dt_inicio_contrato, dt_final_contrato))
-    if resultado==True:
-        mensagem = "Empresa salva com sucesso"
-    else:
-        mensagem = f"Erro ao salvar a empresa [{mensagem}]"
-    return jsonify({'success': resultado, 'mensagem':mensagem})
+    
+    sucesso, resultado, mensagem = empresa_salvar_novo(Empresa(None, nome, idplano, dt_primeiro_contrato, dt_inicio_contrato, dt_final_contrato))
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 # rota alterar um registro existente
 @routes_web_empresa.route('/empresa', methods=["PUT"])
@@ -83,18 +77,15 @@ def rota_empresa_alterar_existente():
     dt_primeiro_contrato = dados.get("dt_primeiro_contrato")
     dt_inicio_contrato = dados.get("dt_inicio_contrato")
     dt_final_contrato = dados.get("dt_final_contrato")
-    resultado, mensagem = empresa_alterar_existente(Empresa(idempresa, nome, idplano, dt_primeiro_contrato, dt_inicio_contrato, dt_final_contrato))
-    if resultado==True:
-        mensagem = "Empresa alterada com sucesso"
-    else:
-        mensagem = "Erro ao alterar a empresa"
-    return jsonify({'success': resultado, 'mensagem':mensagem})
+    
+    sucesso, resultado, mensagem = empresa_alterar_existente(Empresa(idempresa, nome, idplano, dt_primeiro_contrato, dt_inicio_contrato, dt_final_contrato))
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #rota para excluir um registro existente
 @routes_web_empresa.route('/empresa/<int:id>', methods=["DELETE"])
 def rota_empresa_excluir_existente(id):
-    resultado, mensagem = empresa_excluir_existente(id)
-    return jsonify({'success': resultado, "mensagem":mensagem})
+    sucesso, resultado, mensagem = empresa_excluir_existente(id)
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 
 # ROTAS ESPECÍFICAS DO MODULO

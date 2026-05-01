@@ -1,0 +1,174 @@
+  {% include 'admin_header.html' %}
+  {% include 'admin_menu.html' %}
+  {% include 'admin_sidebar.html' %}
+
+  <div class="main-content">
+    <div class="container-fluid">
+      <div class="row justify-content-md-center" style="padding-top: 15px;">
+        <div class="mb-3 text-left">
+          <h3 class="text-2xl font-bold">Localizar de usuários</h3>
+        </div>
+      </div>
+      <div class="row justify-content-md-center">
+        <form name="frmPesquisa" id="frmPesquisa" class="row gy-2 gx-3 align-items-end">
+          <div class="col-auto">
+            <label class="form-label" for="idusuario">Identificação:</label>
+            <input type="text" class="form-control input-sm" id="idusuario" placeholder="">
+          </div>
+          <div class="col-auto">
+            <label class="form-label" for="nome">Nome de usuário:</label>
+            <input type="text" class="form-control" id="nome" placeholder="">
+          </div>
+          <div class="col-auto">
+            <label class="form-label" for="email">E-mail do usuário:</label>
+            <input type="email" class="form-control" id="email" placeholder="">
+          </div>
+          <div class="col-auto">
+            <label class="form-label" for="tipo">Tipo usuário:</label>
+            <select class="form-select" id="tipo">
+              <option value="Cliente" selected>Cliente</option>
+              <option value="Analista">Analista</option>
+              <option value="Vendedor">Vendedor</option>
+              <option value="Cientista referencia">Cientista referencia</option>
+              <option value="Normal">Normal</option>
+              <option value="Administrador">Administrador</option>
+            </select>
+          </div>
+          <div class="col-auto">
+            <button type="button" class="btn btn-sm btn-primary" style="margin-bottom: 4px;" onclick="CarregarPesquisa()">Pesquisar</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="row justify-content-md-center" style="padding-top: 50px;">
+        <div class="col mb-3 justify-content-start">
+          <label class="form-label" for="qtde">qtde:</label>
+          <input type="text" class="form-control" id="qtde" placeholder="">
+          <label class="form-label" for="pagina">pagina:</label>
+          <input type="text" class="form-control" id="pagina" placeholder="">
+        </div>
+        <div class="col mb-3 justify-content-center"></div>
+        <div class="col mb-3 justify-content-right">
+
+          <nav aria-label="...">
+            <ul class="pagination pagination-sm justify-content-end" id="navegadorResultado">
+              <li class="page-item"><a class="page-link" href="#">1</a></li>
+              <li class="page-item"><a class="page-link" href="#">X-1</a></li>
+              <li class="page-item"><a class="page-link" aria-current="page">X</a></li>
+              <li class="page-item"><a class="page-link" href="#">X+1</a></li>
+              <li class="page-item"><a class="page-link" href="#">Z</a></li>
+            </ul>
+          </nav>              
+        </div>
+      </div>      
+
+      <div class="row justify-content-md-center">
+
+        <!-- Tabela de Produtos -->
+        <div class="table-section">
+          <div class="row">
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th style="width: 100px;">#</th>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Tipo</th>
+                    <th class="text-center" style="width: 200px;">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="lista"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>   
+
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript" >
+    const API_URL_PAGINA = "/usuario";
+    const lista = document.getElementById('lista');  
+  
+    async function CarregarPesquisa(){
+      // Carregando filtros
+      const filtros = {
+        idusuario: document.getElementById("idusuario").value,
+        nome: document.getElementById("nome").value,
+        email: document.getElementById("email").value,
+        tipo: document.getElementById("tipo").value,
+      };
+      // remove campos vazios, null ou undefined
+      Object.keys(filtros).forEach(key => {
+        if (
+          filtros[key] === "" ||
+          filtros[key] === null ||
+          filtros[key] === undefined
+        ) {
+          delete filtros[key];
+        }
+      });
+
+      const pagina = document.getElementById("pagina").value;
+      const quantidade = document.getElementById("qtde").value;
+
+      // carregando tabela
+      const resposta = await fetch(API_URL_PAGINA + '/filtro_paginado', {
+        method: 'POST',
+        headers:{ "Content-type":"application/json",
+                  "X-CSRFToken": "{{ form.csrf_token._value() }}"},
+        body:JSON.stringify({filtro:filtros, pagina, quantidade})
+      });
+
+      const retorno = await resposta.json();
+      const itens = retorno.dados;
+
+      if(itens){
+          lista.innerHTML = "";
+          itens.forEach(item => {
+              lista.innerHTML += `
+                    <tr>
+                      <th>${item.idusuario}</th>
+                      <th>${item.nome}</th>
+                      <th>${item.email}</th>
+                      <th>${item.tipo}</th>
+                      <th>
+                        <button class="btn btn-sm btn-light" onclick="detalhe(${item.idusuario})">Detalhe</button>
+                        <button class="btn btn-sm btn-primary" onclick="editar(${item.idusuario})">alterar</button>
+                        <button class="btn btn-sm btn-danger" onclick="excluir(${item.idusuario})">Excluir</button>
+                      </th>
+                    </tr>
+                  `;
+          });
+      }else {
+        lista.innerHTML = ``;
+        exibirMensagem(retorno.mensagem);
+      }
+    }
+
+    async function excluir(id) {
+      if(confirm("Deseja realmente excluir o atalho #" + id+ "?")){
+        const resposta = await fetch(API_URL_PAGINA + API_URL_PAGINA + '/' + id,{
+          method: "DELETE"
+        });
+        
+        const retorno = await resposta.json();
+        exibirMensagem(retorno.mensagem);
+        CarregarAtalhos();
+        carregarAtalhosSidebar();
+      }
+      
+    }
+
+    async function detalhe(id) {
+      window.location.href = API_URL_PAGINA + '/ver/' + id;     
+    }
+
+    async function editar(id) {
+      window.location.href = API_URL_PAGINA + '/editar/' + id;     
+    }
+  </script>
+
+  {% include 'admin_footer.html' %}

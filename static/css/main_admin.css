@@ -121,7 +121,7 @@ body {
 .main-content {
   margin-left: calc(55px + 250px);
   padding: 20px;
-  padding-top: 76px; 
+  padding-top: 36px; 
   min-height: 100vh;
   background-color: #F2F2F2;
 }

@@ -112,15 +112,15 @@ class Contrato:
             dt_final_vigencia_formatada2 = None
 
         if hieraquia:
-            usuarioResponsavel, mensagemUsuarioResponsavel = usuario_lista_selecionado(self.idusuario_responsavel)
+            sucesso, usuarioResponsavel, mensagemUsuarioResponsavel = usuario_lista_selecionado(self.idusuario_responsavel)
             if not usuarioResponsavel:
                 usuarioResponsavel = {}
 
-            usuarioVendedor, mensagemUsuarioVendedor = usuario_lista_selecionado(self.idusuario_responsavel)
+            sucesso, usuarioVendedor, mensagemUsuarioVendedor = usuario_lista_selecionado(self.idusuario_responsavel)
             if not usuarioVendedor:
                 usuarioVendedor = {}
 
-            empresa, mensagemEmpresa = empresa_lista_selecionado(self.idempresa)
+            sucesso, empresa, mensagemEmpresa = empresa_lista_selecionado(self.idempresa)
             if not empresa:
                 empresa = {}
         else:

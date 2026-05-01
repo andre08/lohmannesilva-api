@@ -1,0 +1,81 @@
+  {% include '/admin_header.html' %}
+  {% include '/admin_menu.html' %}
+  {% include '/admin_sidebar.html' %}
+
+  <div class="main-content">
+    <div class="container-fluid">
+      <h3>Gerenciamento de empresas</h3>
+      <p>Aqui vai encontrar toda as EMPRESA atendidas.</p>
+
+      <!-- Tabela de Empresa -->
+      <div class="table-section">
+        <div class="row">
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th style="width: 100px;">#</th>
+                  <th>Nome</th>
+                  <th>Plano</th>
+                  <th>Cliente desde</th>
+                  <th>Termino do Contrato</th>
+                  <th>Status</th>
+                  <th class="text-center" style="width: 200px;">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="listaEmpresa"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>  
+
+    </div>
+  </div>
+    
+  <script type="text/javascript" >
+    const API_URL_PAGINA = "/empresa/";
+    const listaEmpresa = document.getElementById('listaEmpresa'); 
+
+    async function carregarEmpresas() {
+
+      // carregando tabela
+      const resposta = await fetch(API_URL_PAGINA + `empresas`);
+      const retorno = await resposta.json();
+      const empresas = retorno.dados;      
+
+      if(empresas){
+        
+        listaEmpresas.innerHTML = "";
+          empresas.forEach(empresa => {
+              listaUsuario.innerHTML += `
+                    <tr>
+                      <th>${empresa.idempresa}</th>
+                      <th>${empresa.nome}</th>
+                      <th>${empresa.plano.nome}</th>
+                      <th>${empresa.dt_primeiro_contato_formatada2}</th>
+                      <th>${empresa.dt_final_contrato_formatada2}</th>
+                      <th>${empresa.status}</th>
+                      <th>
+                        <button class="btn btn-sm btn-light" onclick="detalhe(${empresa.idempresa})">Detalhe</button>
+                        <button class="btn btn-sm btn-primary" onclick="editar(${empresa.idempresa})">alterar</button>
+                        <button class="btn btn-sm btn-danger" onclick="excluir(${empresa.idempresa})">Excluir</button>
+                      </th>
+                    </tr>
+                  `;
+          });
+
+      }
+    }
+
+    async function detalhe(id) {
+      window.location.href = API_URL_PAGINA + 'ver/' + id;     
+    }
+
+    async function editar(id) {
+      window.location.href = API_URL_PAGINA + 'editar/' + id;     
+    }
+
+    carregarEmpresas();
+  </script>
+
+  {% include '/admin_footer.html' %}

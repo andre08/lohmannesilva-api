@@ -74,11 +74,11 @@ class Estudo:
         from services.usuario_service import usuario_lista_selecionado
 
         if hieraquia:
-            empresa, mensagemEmpresa = empresa_lista_selecionado(self.idempresa)
+            sucesso, empresa, mensagemEmpresa = empresa_lista_selecionado(self.idempresa)
             if not empresa:
                 empresa = {}
 
-            usuario, mensagemUsuario = usuario_lista_selecionado(self.idusuario_analista)
+            sucesso, usuario, mensagemUsuario = usuario_lista_selecionado(self.idusuario_analista)
             if not usuario:
                 usuario = {}
         else:

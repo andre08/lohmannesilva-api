@@ -92,7 +92,7 @@ class Fatura:
             dt_pagamento_formatada2 = None  
 
         if hieraquia:
-            empresa, mensagemEmpresa = empresa_lista_selecionado(self.idempresa)
+            sucesso, empresa, mensagemEmpresa = empresa_lista_selecionado(self.idempresa)
             if not empresa:
                 empresa = {}
         else:

@@ -21,11 +21,11 @@ def rota_relatorio_pagina_detalhe(id):
     from services.atalho_service import atalho_possui_usuario
     #nesta pagina deve ser possivel adicionar como favorito (atalho) e deve ser verificado se exite a pagina como favorito para o usuario logado
     rota = request.path
-    favorito, idatalho, mensagemFavorito = atalho_possui_usuario(session["usuario_id"], rota)
+    sucesso, favorito, mensagemFavorito, idatalho = atalho_possui_usuario(session["usuario_id"], rota)
     aceitaFavoritos = True
 
     #dados para a visualição
-    resultado, mensagem = relatorio_lista_selecionado(id)
+    sucesso, resultado, mensagem = relatorio_lista_selecionado(id)
     if not resultado:
         resultado = Relatorio(None).to_dict()
 
@@ -34,7 +34,7 @@ def rota_relatorio_pagina_detalhe(id):
 #rota para pagina de edição
 @routes_web_relatorio.route('/editar/<int:id>', methods=["GET"])
 def rota_relatorio_pagina_editar(id):
-    resultado, mensagem = relatorio_lista_selecionado(id)
+    sucesso, resultado, mensagem = relatorio_lista_selecionado(id)
     if not resultado:
         resultado = Relatorio(None).to_dict()
     return render_template("admin_relatorio_editar.html", relatorio=resultado, mensagem=mensagem)
@@ -44,17 +44,14 @@ def rota_relatorio_pagina_editar(id):
 #rota para listar todos os registros
 @routes_web_relatorio.route('/relatorios', methods=["GET"])
 def rota_relatorio_listar_todos():
-    resultado, mensagem = relatorio_listar_todos()
-    return jsonify({"dados":resultado, "mensagem":mensagem})
+    sucesso, resultado, mensagem = relatorio_listar_todos()
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #rota para listar um registro selecionado
 @routes_web_relatorio.route('/relatorio/<int:id>', methods=["GET"])
 def rota_relatorio_listar_selecionado(id):
-    resultado, mensagem = relatorio_lista_selecionado(id)
-    if resultado:
-        return jsonify({"dados":resultado, "mensagem":mensagem})
-    else:
-        return jsonify({"mensagem":mensagem})
+    sucesso, resultado, mensagem = relatorio_lista_selecionado(id)
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #pagina para criar um novo registro
 @routes_web_relatorio.route('/relatorio', methods=['POST'])
@@ -68,12 +65,8 @@ def rota_relatorio_salvar_novo():
     localizacao_container = dados.get("localizacao_container")
     dt_geracao = dados.get("dt_geracao")
     
-    resultado, mensagem = relatorio_salvar_novo(Relatorio(None, idestudo, nome, descricao, identificacao, localizacao_container, dt_geracao))
-    if resultado==True:
-        mensagem = "Relatório salvo com sucesso"
-    else:
-        mensagem = f"Erro ao salvar o relatório [{mensagem}]"
-    return jsonify({'success': resultado, 'mensagem':mensagem})
+    sucesso, resultado, mensagem = relatorio_salvar_novo(Relatorio(None, idestudo, nome, descricao, identificacao, localizacao_container, dt_geracao))
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 # rota alterar um registro existente
 @routes_web_relatorio.route('/relatorio', methods=["PUT"])
@@ -88,17 +81,13 @@ def rota_relatorio_alterar_existente():
     localizacao_container = dados.get("localizacao_container")
     dt_geracao = dados.get("dt_geracao")
 
-    resultado, mensagem = relatorio_alterar_existente(Relatorio(idrelatorio, idestudo, nome, descricao, identificacao, localizacao_container, dt_geracao))
-    if resultado==True:
-        mensagem = "Relatório alterado com sucesso"
-    else:
-        mensagem = "Erro ao alterar o relatório"
-    return jsonify({'success': resultado, 'mensagem':mensagem})
+    sucesso, resultado, mensagem = relatorio_alterar_existente(Relatorio(idrelatorio, idestudo, nome, descricao, identificacao, localizacao_container, dt_geracao))
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #rota para excluir um registro existente
 @routes_web_relatorio.route('/relatorio/<int:id>', methods=["DELETE"])
 def rota_relatorio_excluir_existente(id):
-    resultado, mensagem = relatorio_excluir_existente(id)
-    return jsonify({'success': resultado, "mensagem":mensagem})
+    sucesso, resultado, mensagem = relatorio_excluir_existente(id)
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 # ROTAS ESPECÍFICAS DO MODULO

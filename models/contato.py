@@ -77,7 +77,7 @@ class Contato:
     def to_dict(self, hieraquia=False):
         
         if self.dt_contato:
-            dt_contato_formatada = datetime.strftime(self.dt_contato, "%d/%m/%Y %H:%M:%S") 
+            dt_contato_formatada = datetime.strftime(self.dt_contato, "%Y-%m-%d") 
             dt_contato_formatada2 = datetime.strftime(self.dt_contato, "%d/%m/%Y")
         else:
             dt_contato_formatada = None
@@ -95,7 +95,7 @@ class Contato:
                 , "interesse": self.interesse
                 , "cliente": self.cliente
                 , "ativo": self.ativo
-                , "dt_contato": dt_contato_formatada
+                , "dt_contato": self.dt_contato
                 , "dt_contato2": dt_contato_formatada2
             }
 

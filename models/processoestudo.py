@@ -84,15 +84,15 @@ class ProcessoEstudo:
             dt_final_execucao_formatada2 = None 
 
         if hieraquia:
-            estudo, mensagemEstudo = estudo_lista_selecionado(self.idestudo)
+            sucesso, estudo, mensagemEstudo = estudo_lista_selecionado(self.idestudo)
             if not estudo:
                 estudo = {}
 
-            processso, mensagemProcesso = processo_lista_selecionado(self.idprocesso)
+            sucesso, processso, mensagemProcesso = processo_lista_selecionado(self.idprocesso)
             if not estudo:
                 estudo = {}
 
-            usuario, mensagemUsuario = usuario_lista_selecionado(self.idusuario_responsavel)
+            sucesso, usuario, mensagemUsuario = usuario_lista_selecionado(self.idusuario_responsavel)
             if not estudo:
                 estudo = {}
         else:

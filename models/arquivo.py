@@ -24,11 +24,11 @@ class Arquivo:
     # definição dos campos chave da tabela
     __campos_chave__ = ["idarquivo"]
 
-    def __init__(self, idarquivo, idestudo, nome, decricao, identificacao, localizacao_container, dt_importacao):
+    def __init__(self, idarquivo, idestudo, nome, descricao, identificacao, localizacao_container, dt_importacao):
         self.idarquivo = idarquivo
         self.idestudo = idestudo
         self.nome = nome
-        self.decricao = decricao
+        self.descricao = descricao
         self.identificacao = identificacao
         self.localizacao_container = localizacao_container
         self.dt_importacao = dt_importacao
@@ -45,7 +45,7 @@ class Arquivo:
         exemplo (tupla): (1, "joao")
         """
         if isinstance(row, dict):
-            arquivo  = cls(row["idarquivo"], row["idestudo"], row["nome"], row["decricao"], row["identificacao"], row["localizacao_container"], row["dt_importacao"])
+            arquivo  = cls(row["idarquivo"], row["idestudo"], row["nome"], row["descricao"], row["identificacao"], row["localizacao_container"], row["dt_importacao"])
         else:
             arquivo = cls(row[0], row[1], row[2], row[3], row[4], row[5], row[6])
         return arquivo
@@ -55,14 +55,14 @@ class Arquivo:
         Esse metodo retorna um tupla com os valores a serem usado para insert do banco de dados, 
         deve retornar os campos na ordem do insert e não tem o id, porque o id é gerado pelo banco de dados
         """
-        return (self.idestudo, self.nome, self.decricao, self.identificacao, self.localizacao_container, self.dt_importacao)
+        return (self.idestudo, self.nome, self.descricao, self.identificacao, self.localizacao_container, self.dt_importacao)
 
     def to_update_db(self):
         """
         Esse metodo retorna um tupla com os valores a serem usado para update do banco de dados, 
         deve retornar os campos na ordem do update e o id no final, porque o id é usado no where que vem depois dos valores
         """
-        return (self.idestudo, self.nome, self.decricao, self.identificacao, self.localizacao_container, self.dt_importacao, self.idarquivo)
+        return (self.idestudo, self.nome, self.descricao, self.identificacao, self.localizacao_container, self.dt_importacao, self.idarquivo)
 
     def to_dict(self, hieraquia=False):
         from services.estudo_service import estudo_lista_selecionado
@@ -75,7 +75,7 @@ class Arquivo:
             dt_importacao_formatada2 = None
 
         if hieraquia:
-            estudo, mensagemEstudo = estudo_lista_selecionado(self.idestudo)
+            sucesso, estudo, mensagemEstudo = estudo_lista_selecionado(self.idestudo)
             if not estudo:
                 estudo = {}
         else:
@@ -87,7 +87,7 @@ class Arquivo:
                 , "estudo": estudo
                 , "mensagemEstudo": mensagemEstudo
                 , "nome": self.nome
-                , "decricao": self.decricao
+                , "descricao": self.descricao
                 , "identificacao": self.identificacao
                 , "localizacao_container": self.localizacao_container
                 , "dt_importacao": dt_importacao_formatada

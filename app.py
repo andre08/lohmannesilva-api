@@ -1,11 +1,13 @@
 # Importando bibliotecas
 from flask import Flask, render_template, session, redirect, url_for, request, Blueprint
 from flask_cors import CORS
+from flask_wtf import CSRFProtect
+import pyodbc
 import traceback
 from datetime import timedelta
-from conn import Conectar
 import json
 
+from conn import Conectar
 from models.historicoacesso import HistoricoAcesso
 from services.historicoacesso_service import historico_acesso_salvar_novo
 
@@ -34,6 +36,7 @@ from routes_web.routes_web_usuario import routes_web_usuario
 app = Flask(__name__)
 app.secret_key = 'chave-super-secreta'
 app.permanent_session_lifetime = timedelta(minutes=15)
+csrf = CSRFProtect(app)
 CORS(app)
 
 interceptador = Blueprint('interceptador', __name__)
@@ -101,6 +104,7 @@ def registra_rota():
         form_data = request.form.to_dict() if request.form else None
         form_data = json.dumps(form_data, ensure_ascii=False) if form_data else None
         remote_addr = request.remote_addr
+        
         # Raw body como fallback
         raw_body = None
         if not json_data and not form_data:
@@ -124,14 +128,14 @@ def registra_rota():
         )
 
         #salvando historico de acesso
-        resultado, mensagem = historico_acesso_salvar_novo(HistoricoAcesso(None, idusuario, rota_solicitada, method, remote_addr, path, full_url, query, form_data, json_data))
+        sucesso, resultado, mensagem = historico_acesso_salvar_novo(HistoricoAcesso(None, idusuario, rota_solicitada, method, remote_addr, path, full_url, query, form_data, json_data))
 
 app.register_blueprint(interceptador)
 
 # Página personalizada para erro 404
 @app.errorhandler(404)
 def pagina_nao_encontrada(error):
-    return render_template('404.html'), 404  # ou apenas return "<h1>Página não encontrada</h1>", 404
+    return render_template('404.html'), 404
 
 # Tratamento de erro 500 (erro interno do servidor)
 @app.errorhandler(500)
@@ -143,17 +147,7 @@ def erro_interno(error):
 # rota para a pagina principal
 @app.route('/')
 def home():
-    conexao_db = False
-    try:
-        conn = Conectar()
-        cur = conn.cursor()
-        cur.close()
-        conn.close()
-        conexao_db = True
-    except:
-        conexao_db = False
-    
-    return render_template('index.html', conexao_db=conexao_db)
+    return render_template('index.html')
 
 # rota para o panel de administração
 @app.route('/admin')

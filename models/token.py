@@ -100,7 +100,7 @@ class Token:
             dt_desativado_formatada2 = None   
 
         if hieraquia:
-            usuario, mensagem = usuario_lista_selecionado(self.idusuario)
+            sucesso, usuario, mensagem = usuario_lista_selecionado(self.idusuario)
             if not usuario:
                 usuario = {}
         else:

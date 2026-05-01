@@ -1,4 +1,5 @@
 # Importando bibliotecas
+import pyodbc
 from conn import Conectar
 from models.fatura import Fatura
 
@@ -9,39 +10,38 @@ def fatura_listar_todos():
     comandoSQL = builder.build_select()
 
     resultado = []
+    sucesso = False
+    mensagem = f"Não foram localizados registros"
     try:    
         # criando conexão com o banco de dados
-        conexao = Conectar()
-        # criando cursor para buscar dados
-        cursor = conexao.cursor()
-        # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
-        cursor.execute(comandoSQL)
-        # buscando dados
-        dados = cursor.fetchall()
-        # identificando a quantidade de registro retornado
-        registrosAfetados = cursor.rowcount
+        with Conectar() as conexao:
+            # criando cursor para buscar dados
+            with conexao.cursor() as cursor:
+                # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+                cursor.execute(comandoSQL)
+                # buscando dados
+                dados = cursor.fetchall()
+                # identificando a quantidade de registro retornado
+                registrosAfetados = cursor.rowcount
 
-        # verificando se tem resultado e convertando em lista de dicionario
-        if dados:
-            resultado = [Fatura.from_db(item).to_dict(False) for item in dados]
-            registrosAfetados = len(resultado)
-
-        # ajustando a mensagem para quando o comando foi executado com sucesso
-        mensagem = f"Foram encontrados {registrosAfetados} registros"
+                # verificando se tem resultado e convertando em lista de dicionario
+                if dados:
+                    resultado = [Fatura.from_db(item).to_dict(False) for item in dados]
+                    registrosAfetados = len(resultado)
+                    # ajustando a mensagem para quando o comando foi executado com sucesso
+                    mensagem = f"Foram encontrados {registrosAfetados} registros"
+                    sucesso = True
     except Exception as e:
         mensagem = f"Erro ao localizar as faturas [Exception: {str(e)}]"
     except TypeError as e:
         mensagem = f"Erro ao localizar as faturas [TypeError: {str(e)}]"
     except ValueError as e:
         mensagem = f"Erro ao localizar as fatura [ValueError: {str(e)}]"
-    finally:
-        # fechando o cursor
-        cursor.close()
-        # fechando conexão com o banco de dados
-        conexao.close()
+    except pyodbc.Error as e:
+        mensagem = f"Erro de banco de dados: {str(e)}"
 
     # Retornando os dados e mensagem
-    return resultado, mensagem
+    return sucesso, resultado, mensagem
 
 # listar apenas um registro filtrado pela PK
 def fatura_lista_selecionado(id):
@@ -49,87 +49,78 @@ def fatura_lista_selecionado(id):
     builder = Fatura.get_SQLBuilder()
     comandoSQL, valoresFiltro = builder.select_sql_and_values({"idfatura": id})
 
+    resultado = None
+    sucesso = False
+    mensagem = f"Não foram localizados registros"
     try:    
-        # criando conexão com o banco de dados
-        conexao = Conectar()
-        # criando cursor para buscar dados
-        cursor = conexao.cursor()
-        # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
-        cursor.execute(comandoSQL, valoresFiltro)
-        # buscando dados
-        dados = cursor.fetchone()
-        # identificando a quantidade de registro retornado
-        registrosAfetados = cursor.rowcount
+         # criando conexão com o banco de dados
+        with Conectar() as conexao:
+            # criando cursor para buscar dados
+            with conexao.cursor() as cursor:
+                # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+                cursor.execute(comandoSQL, valoresFiltro)
+                # buscando dados
+                dados = cursor.fetchone()
+                # identificando a quantidade de registro retornado
+                registrosAfetados = cursor.rowcount
 
-        # pegando os dados do banco e convertendo para objeto
-        if dados:
-            resultado = Fatura.from_db(dados).to_dict(True)
-            registrosAfetados = 1
-        else:
-            resultado = None
-
-        # ajustando a mensagem para quando o comando foi executado com sucesso
-        mensagem = f"Foram encontrados {registrosAfetados} registros"
+                # pegando os dados do banco e convertendo para objeto
+                if dados:
+                    resultado = Fatura.from_db(dados).to_dict(True)
+                    registrosAfetados = 1
+                    # ajustando a mensagem para quando o comando foi executado com sucesso
+                    mensagem = f"Foram encontrados {registrosAfetados} registros"
+                    sucesso = True
     except Exception as e:
         mensagem = f"Erro ao localizar a fatura #{id} [Exception: {str(e)}]"
-        resultado = None
     except TypeError as e:
         mensagem = f"Erro ao localizar a fatura #{id} [TypeError: {str(e)}]"
-        resultado = None
     except ValueError as e:
         mensagem = f"Erro ao localizar a fatura #{id} [ValueError: {str(e)}]"
-        resultado = None
-    finally:
-        # fechando o cursor
-        cursor.close()
-        # fechando conexão com o banco de dados
-        conexao.close()
+    except pyodbc.Error as e:
+        mensagem = f"Erro de banco de dados: {str(e)}"
     
     # Retornando os dados e mensagem
-    return resultado, mensagem
+    return sucesso, resultado, mensagem
 
 # salva um novo registro
 def fatura_salvar_novo(fatura):
-    resultado = False
+    
     if isinstance(fatura, Fatura):
-
         #montando o comando sql 
         builder = Fatura.get_SQLBuilder()
         comandoSQL, valoresFiltro = builder.insert_sql_and_values(fatura)
 
+        resultado = None
+        sucesso = False
+        mensagem = f"Não foram localizados registros"
         try:    
             # criando conexão com o banco de dados
-            conexao = Conectar()
-            # criando cursor para buscar dados
-            cursor = conexao.cursor()
-            # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
-            cursor.execute(comandoSQL, valoresFiltro)
-            # identificando a quantidade de registro afetado pelo comando
-            registrosAfetados = cursor.rowcount
-            # gravando os dados no banco de dados
-            conexao.commit()
-
-            mensagem = f"Foram incluídos {registrosAfetados} registros"
-            resultado = True
+            with Conectar() as conexao:
+                # criando cursor para buscar dados
+                with conexao.cursor() as cursor:
+                    # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+                    cursor.execute(comandoSQL, valoresFiltro)
+                    # identificando a quantidade de registro afetado pelo comando
+                    registrosAfetados = cursor.rowcount
+                    # gravando os dados no banco de dados
+                    conexao.commit()
+                    mensagem = f"Foram incluídos {registrosAfetados} registros"
+                    sucesso = True
         except Exception as e:
             mensagem = f"Erro ao salvar a fatura [Exception: {str(e)}]"
-            resultado = False
         except TypeError as e:
             mensagem = f"Erro ao salvar a fatura [TypeError: {str(e)}]"
-            resultado = False
         except ValueError as e:
             mensagem = f"Erro ao salvar a fatura [ValueError: {str(e)}]"
-            resultado = False
-        finally:
-            # fechando o cursor
-            cursor.close()
-            # fechando conexão com o banco de dados
-            conexao.close()
+        except pyodbc.Error as e:
+            mensagem = f"Erro de banco de dados: {str(e)}"
     else:
-        mensagem = f"Dados da fatura inválido"
-        resultado = False
+        mensagem = f"Dados do inválido"
+        resultado = None
+        sucesso = False
 
-    return resultado, mensagem
+    return sucesso, resultado, mensagem
 
 # alterar um registro existente
 def fatura_alterar_existente(fatura):
@@ -139,74 +130,66 @@ def fatura_alterar_existente(fatura):
         builder = Fatura.get_SQLBuilder()
         comandoSQL, valoresFiltro = builder.update_sql_and_values(fatura)
 
+        resultado = None
+        sucesso = False
+        mensagem = f"Não foram localizados registros"
         try:    
             # criando conexão com o banco de dados
-            conexao = Conectar()
-            # criando cursor para buscar dados de contato
-            cursor = conexao.cursor()
-            # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
-            cursor.execute(comandoSQL, valoresFiltro)
-            # identificando a quantidade de registro afetado pelo comando
-            registrosAfetados = cursor.rowcount
-            # gravando os dados no banco de dados
-            conexao.commit()
-
-            mensagem = f"Foram alterados {registrosAfetados} registros"
-            resultado = True
+            with Conectar() as conexao:
+                # criando cursor para buscar dados
+                with conexao.cursor() as cursor:
+                    # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+                    cursor.execute(comandoSQL, valoresFiltro)
+                    # identificando a quantidade de registro afetado pelo comando
+                    registrosAfetados = cursor.rowcount
+                    # gravando os dados no banco de dados
+                    conexao.commit()
+                    mensagem = f"Foram alterados {registrosAfetados} registros"
+                    sucesso = True
         except Exception as e:
             mensagem = f"Erro ao salvar a fatura [Exception: {str(e)}]"
-            resultado = False
         except TypeError as e:
             mensagem = f"Erro ao salvar a fatura [TypeError: {str(e)}]"
-            resultado = False
         except ValueError as e:
             mensagem = f"Erro ao salvar a fatura [ValueError: {str(e)}]"
-            resultado = False
-        finally:
-            # fechando o cursor
-            cursor.close()
-            # fechando conexão com o banco de dados
-            conexao.close()
+        except pyodbc.Error as e:
+            mensagem = f"Erro de banco de dados: {str(e)}"
     else:
-        mensagem = f"Dados da fatura inválido"
-        resultado = False
+        mensagem = f"Dados inválido"
+        resultado = None
+        sucesso = False
         
-    return resultado, mensagem
+    return sucesso, resultado, mensagem
 
 # excluir um registro existente
 def fatura_excluir_existente(id):
     builder = Fatura.get_SQLBuilder()
     comandoSQL, valoresFiltro = builder.delete_sql_and_values(Fatura(id))
 
-    resultado = False
+    resultado = None
+    sucesso = False
+    mensagem = f"Não foram localizados registros"
     try:    
         # criando conexão com o banco de dados
-        conexao = Conectar()
-        # criando cursor para buscar dados
-        cursor = conexao.cursor()
-        # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
-        cursor.execute(comandoSQL, valoresFiltro)
-        registrosAfetados = cursor.rowcount
-        # identificando a quantidade de registro afetado pelo comando
-        registrosAfetados = cursor.rowcount
-        # gravando os dados no banco de dados
-        conexao.commit()
-
-        mensagem = f"Foram excluídos {registrosAfetados} registros"
-        resultado = True
+        with Conectar() as conexao:
+            # criando cursor para buscar dados
+            with conexao.cursor() as cursor:
+                # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+                cursor.execute(comandoSQL, valoresFiltro)
+                registrosAfetados = cursor.rowcount
+                # identificando a quantidade de registro afetado pelo comando
+                registrosAfetados = cursor.rowcount
+                # gravando os dados no banco de dados
+                conexao.commit()
+                mensagem = f"Foram excluídos {registrosAfetados} registros"
+                sucesso = True
     except Exception as e:
         mensagem = f"Erro ao excluir a fatura #{id} [Exception: {str(e)}]"
-        resultado = False
     except TypeError as e:
         mensagem = f"Erro ao excluir a fatura #{id} [TypeError: {str(e)}]"
-        resultado = False
     except ValueError as e:
         mensagem = f"Erro ao excluir a fatura #{id} [ValueError: {str(e)}]"
-        resultado = False
-    finally:
-        # fechando o cursor
-        cursor.close()
-        # fechando conexão com o banco de dados
-        conexao.close()
+    except pyodbc.Error as e:
+        mensagem = f"Erro de banco de dados: {str(e)}"
     
-    return resultado, mensagem
+    return sucesso, resultado, mensagem

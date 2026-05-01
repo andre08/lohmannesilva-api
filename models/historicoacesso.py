@@ -70,7 +70,7 @@ class HistoricoAcesso:
             dtAcesso_formatada2 = None
         
         if hieraquia:
-            usuario, mensagemUsuario = usuario_lista_selecionado(self.idusuario)
+            sucesso, usuario, mensagemUsuario = usuario_lista_selecionado(self.idusuario)
             if not usuario:
                 usuario = {}
         else:

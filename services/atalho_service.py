@@ -1,4 +1,5 @@
 # Importando bibliotecas
+import pyodbc
 from conn import Conectar
 from models.atalho import Atalho
 
@@ -9,39 +10,39 @@ def atalho_listar_todos():
     comandoSQL = builder.build_select()
 
     resultado = []
+    sucesso = False
+    mensagem = f"Não foram localizados registros"
     try:    
         # criando conexão com o banco de dados
-        conexao = Conectar()
-        # criando cursor para buscar dados
-        cursor = conexao.cursor()
-        # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
-        cursor.execute(comandoSQL)
-        # buscando dados
-        dados = cursor.fetchall()
-        # identificando a quantidade de registro retornado
-        registrosAfetados = cursor.rowcount
+        with Conectar() as conexao:
+            # criando cursor para buscar dados
+            with conexao.cursor() as cursor:
+                # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+                cursor.execute(comandoSQL)
+                # buscando dados
+                dados = cursor.fetchall()
+                # identificando a quantidade de registro retornado
+                registrosAfetados = cursor.rowcount
 
-        # verificando se tem resultado e convertando em lista de dicionario
-        if dados:
-            resultado = [Atalho.from_db(item).to_dict(False) for item in dados]
-            registrosAfetados = len(resultado)
+                # verificando se tem resultado e convertando em lista de dicionario
+                if dados:
+                    resultado = [Atalho.from_db(item).to_dict(False) for item in dados]
+                    registrosAfetados = len(resultado)
+                    # ajustando a mensagem para quando o comando foi executado com sucesso
+                    mensagem = f"Foram encontrados {registrosAfetados} registros"
+                    sucesso = True
 
-        # ajustando a mensagem para quando o comando foi executado com sucesso
-        mensagem = f"Foram encontrados {registrosAfetados} registros"
     except Exception as e:
         mensagem = f"Erro ao localizar os atalhos [Exception: {str(e)}]"
     except TypeError as e:
         mensagem = f"Erro ao localizar os atalhos [TypeError: {str(e)}]"
     except ValueError as e:
         mensagem = f"Erro ao localizar os atalhos [ValueError: {str(e)}]"
-    finally:
-        # fechando o cursor
-        cursor.close()
-        # fechando conexão com o banco de dados
-        conexao.close()
+    except pyodbc.Error as e:
+        mensagem = f"Erro de banco de dados: {str(e)}"
 
     # Retornando os dados e mensagem
-    return resultado, mensagem
+    return sucesso, resultado, mensagem
 
 # listar apenas um registro filtrado pela PK
 def atalho_lista_selecionado(id):
@@ -49,44 +50,39 @@ def atalho_lista_selecionado(id):
     builder = Atalho.get_SQLBuilder()
     comandoSQL, valoresFiltro = builder.select_sql_and_values({"idatalho": id})
 
+    resultado = None
+    sucesso = False
+    mensagem = f"Não foram localizados registros"
     try:    
-        # criando conexão com o banco de dados
-        conexao = Conectar()
-        # criando cursor para buscar dados
-        cursor = conexao.cursor()
-        # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
-        cursor.execute(comandoSQL, valoresFiltro)
-        # buscando dados
-        dados = cursor.fetchone()
-        # identificando a quantidade de registro retornado
-        registrosAfetados = cursor.rowcount
+         # criando conexão com o banco de dados
+        with Conectar() as conexao:
+            # criando cursor para buscar dados
+            with conexao.cursor() as cursor:
+                # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+                cursor.execute(comandoSQL, valoresFiltro)
+                # buscando dados
+                dados = cursor.fetchone()
+                # identificando a quantidade de registro retornado
+                registrosAfetados = cursor.rowcount
 
-        # pegando os dados do banco e convertendo para objeto
-        if dados:
-            resultado = Atalho.from_db(dados).to_dict(True)
-            registrosAfetados = 1
-        else:
-            resultado = None
-
-        # ajustando a mensagem para quando o comando foi executado com sucesso
-        mensagem = f"Foram encontrados {registrosAfetados} registros"
+                # pegando os dados do banco e convertendo para objeto
+                if dados:
+                    resultado = Atalho.from_db(dados).to_dict(True)
+                    registrosAfetados = 1
+                    # ajustando a mensagem para quando o comando foi executado com sucesso
+                    mensagem = f"Foram encontrados {registrosAfetados} registros"
+                    sucesso = True
     except Exception as e:
         mensagem = f"Erro ao localizar o atalho #{id} [Exception: {str(e)}]"
-        resultado = None
     except TypeError as e:
         mensagem = f"Erro ao localizar o atalho #{id} [TypeError: {str(e)}]"
-        resultado = None
     except ValueError as e:
         mensagem = f"Erro ao localizar o atalho #{id} [ValueError: {str(e)}]"
-        resultado = None
-    finally:
-        # fechando o cursor
-        cursor.close()
-        # fechando conexão com o banco de dados
-        conexao.close()
+    except pyodbc.Error as e:
+        mensagem = f"Erro de banco de dados: {str(e)}"
     
     # Retornando os dados e mensagem
-    return resultado, mensagem
+    return sucesso, resultado, mensagem
 
 # listar apenas um registro filtrado pela PK
 def atalho_lista_usuario_selecionado(idusuario):
@@ -94,86 +90,120 @@ def atalho_lista_usuario_selecionado(idusuario):
     builder = Atalho.get_SQLBuilder()
     comandoSQL, valoresFiltro = builder.select_sql_and_values({"idusuario": idusuario})
 
+    resultado = []
+    sucesso = False
+    mensagem = f"Não foram localizados registros"
     try:    
-        # criando conexão com o banco de dados
-        conexao = Conectar()
-        # criando cursor para buscar dados
-        cursor = conexao.cursor()
-        # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
-        cursor.execute(f" {comandoSQL} ORDER BY GRUPO, NOME" , valoresFiltro)
-        # buscando dados
-        dados = cursor.fetchall()
-        registrosAfetados = cursor.rowcount
+         # criando conexão com o banco de dados
+        with Conectar() as conexao:
+            # criando cursor para buscar dados
+            with conexao.cursor() as cursor:
+                # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+                cursor.execute(f" {comandoSQL} ORDER BY GRUPO, NOME" , valoresFiltro)
+                # buscando dados
+                dados = cursor.fetchall()
+                registrosAfetados = cursor.rowcount
 
-        # pegando os dados do banco e convertendo para objeto
-        if dados:
-            resultado = [Atalho.from_db(item).to_dict(False) for item in dados]
-            registrosAfetados = len(resultado)
-        else:
-            resultado = None
-
-        # ajustando a mensagem para quando o comando foi executado com sucesso
-        mensagem = f"Foram encontrados {registrosAfetados} registros"
+                # pegando os dados do banco e convertendo para objeto
+                if dados:
+                    resultado = [Atalho.from_db(item).to_dict(False) for item in dados]
+                    registrosAfetados = len(resultado)
+                    # ajustando a mensagem para quando o comando foi executado com sucesso
+                    mensagem = f"Foram encontrados {registrosAfetados} registros"
+                    sucesso = True
     except Exception as e:
         mensagem = f"Erro ao localizar o atalho do usuario #{idusuario} [Exception: {str(e)}]"
-        resultado = None
     except TypeError as e:
         mensagem = f"Erro ao localizar o atalho do usuario #{idusuario} [TypeError: {str(e)}]"
-        resultado = None
     except ValueError as e:
         mensagem = f"Erro ao localizar o atalho do usuario #{idusuario} [ValueError: {str(e)}]"
-        resultado = None
-    finally:
-        # fechando o cursor
-        cursor.close()
-        # fechando conexão com o banco de dados
-        conexao.close()
+    except pyodbc.Error as e:
+        mensagem = f"Erro de banco de dados: {str(e)}"
     
     # Retornando os dados e mensagem
-    return resultado, mensagem
+    return sucesso, resultado, mensagem
+
+
+# listar apenas um registro filtrado pela PK
+def atalho_lista_filtrado():
+    #montando o comando sql 
+    builder = Atalho.get_SQLBuilder()
+    comandoSQL, valoresFiltro = builder.select_sql_and_values({"idusuario": idusuario})
+
+    resultado = []
+    sucesso = False
+    mensagem = f"Não foram localizados registros"
+    try:    
+         # criando conexão com o banco de dados
+        with Conectar() as conexao:
+            # criando cursor para buscar dados
+            with conexao.cursor() as cursor:
+                # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+                cursor.execute(f" {comandoSQL} ORDER BY GRUPO, NOME" , valoresFiltro)
+                # buscando dados
+                dados = cursor.fetchall()
+                registrosAfetados = cursor.rowcount
+
+                # pegando os dados do banco e convertendo para objeto
+                if dados:
+                    resultado = [Atalho.from_db(item).to_dict(False) for item in dados]
+                    registrosAfetados = len(resultado)
+                    # ajustando a mensagem para quando o comando foi executado com sucesso
+                    mensagem = f"Foram encontrados {registrosAfetados} registros"
+                    sucesso = True
+    except Exception as e:
+        mensagem = f"Erro ao localizar o atalho do usuario #{idusuario} [Exception: {str(e)}]"
+    except TypeError as e:
+        mensagem = f"Erro ao localizar o atalho do usuario #{idusuario} [TypeError: {str(e)}]"
+    except ValueError as e:
+        mensagem = f"Erro ao localizar o atalho do usuario #{idusuario} [ValueError: {str(e)}]"
+    except pyodbc.Error as e:
+        mensagem = f"Erro de banco de dados: {str(e)}"
+    
+    # Retornando os dados e mensagem
+    return sucesso, resultado, mensagem
 
 # salva um novo registro
 def atalho_salvar_novo(atalho):
-    resultado = False
+    
     if isinstance(atalho, Atalho):
-
         #montando o comando sql 
         builder = Atalho.get_SQLBuilder()
         comandoSQL, valoresFiltro = builder.insert_sql_and_values(atalho)
 
+        resultado = None
+        sucesso = False
+        mensagem = f"Não foi possivel salvar o atalho"
         try:    
             # criando conexão com o banco de dados
-            conexao = Conectar()
-            # criando cursor para buscar dados
-            cursor = conexao.cursor()
-            # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
-            cursor.execute(comandoSQL, valoresFiltro)
-            # identificando a quantidade de registro afetado pelo comando
-            registrosAfetados = cursor.rowcount
-            # gravando os dados no banco de dados
-            conexao.commit()
-
-            mensagem = f"Foram incluídos {registrosAfetados} registros"
-            resultado = True
+            with Conectar() as conexao:
+                # criando cursor para buscar dados
+                with conexao.cursor() as cursor:
+                    # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+                    cursor.execute(comandoSQL, valoresFiltro)
+                    # identificando a quantidade de registro afetado pelo comando
+                    registrosAfetados = cursor.rowcount
+                    # gravando os dados no banco de dados
+                    conexao.commit()
+                    if registrosAfetados >= 1:
+                        mensagem = f"Atalho salvo com sucesso "
+                    else:
+                        mensagem = f"Não possivel salvar o atalho"
+                    sucesso = True
         except Exception as e:
             mensagem = f"Erro ao salvar o atalho [Exception: {str(e)}]"
-            resultado = False
         except TypeError as e:
             mensagem = f"Erro ao salvar o atalho [TypeError: {str(e)}]"
-            resultado = False
         except ValueError as e:
             mensagem = f"Erro ao salvar o atalho [ValueError: {str(e)}]"
-            resultado = False
-        finally:
-            # fechando o cursor
-            cursor.close()
-            # fechando conexão com o banco de dados
-            conexao.close()
+        except pyodbc.Error as e:
+            mensagem = f"Erro de banco de dados: {str(e)}"
     else:
         mensagem = f"Dados do atalho inválido"
-        resultado = False
+        resultado = None
+        sucesso = False
 
-    return resultado, mensagem
+    return sucesso, resultado, mensagem
 
 # alterar um registro existente
 def atalho_alterar_existente(atalho):
@@ -183,77 +213,69 @@ def atalho_alterar_existente(atalho):
         builder = Atalho.get_SQLBuilder()
         comandoSQL, valoresFiltro = builder.update_sql_and_values(atalho)
 
+        resultado = None
+        sucesso = False
+        mensagem = f"Não foram localizados registros"
         try:    
             # criando conexão com o banco de dados
-            conexao = Conectar()
-            # criando cursor para buscar dados de contato
-            cursor = conexao.cursor()
-            # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
-            cursor.execute(comandoSQL, valoresFiltro)
-            # identificando a quantidade de registro afetado pelo comando
-            registrosAfetados = cursor.rowcount
-            # gravando os dados no banco de dados
-            conexao.commit()
-
-            mensagem = f"Foram alterados {registrosAfetados} registros"
-            resultado = True
+            with Conectar() as conexao:
+                # criando cursor para buscar dados
+                with conexao.cursor() as cursor:
+                    # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+                    cursor.execute(comandoSQL, valoresFiltro)
+                    # identificando a quantidade de registro afetado pelo comando
+                    registrosAfetados = cursor.rowcount
+                    # gravando os dados no banco de dados
+                    conexao.commit()
+                    mensagem = f"Foram alterados {registrosAfetados} registros"
+                    sucesso = True
         except Exception as e:
-            mensagem = f"Erro ao salvar o atalho [Exception: {str(e)}]"
-            resultado = False
+            mensagem = f"Erro ao salvar o arquivo [Exception: {str(e)}]"
         except TypeError as e:
-            mensagem = f"Erro ao salvar o atalho [TypeError: {str(e)}]"
-            resultado = False
+            mensagem = f"Erro ao salvar o arquivo [TypeError: {str(e)}]"
         except ValueError as e:
-            mensagem = f"Erro ao salvar o atalho [ValueError: {str(e)}]"
-            resultado = False
-        finally:
-            # fechando o cursor
-            cursor.close()
-            # fechando conexão com o banco de dados
-            conexao.close()
+            mensagem = f"Erro ao salvar o arquivo [ValueError: {str(e)}]"
+        except pyodbc.Error as e:
+            mensagem = f"Erro de banco de dados: {str(e)}"
     else:
-        mensagem = f"Dados de atalho inválido"
-        resultado = False
+        mensagem = f"Dados inválido"
+        resultado = None
+        sucesso = False
         
-    return resultado, mensagem
+    return sucesso, resultado, mensagem
 
 # excluir um registro existente
 def atalho_excluir_existente(id):
     builder = Atalho.get_SQLBuilder()
     comandoSQL, valoresFiltro = builder.delete_sql_and_values(Atalho(id))
 
-    resultado = False
+    resultado = None
+    sucesso = False
+    mensagem = f"Não foram localizados registros"
     try:    
         # criando conexão com o banco de dados
-        conexao = Conectar()
-        # criando cursor para buscar dados
-        cursor = conexao.cursor()
-        # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
-        cursor.execute(comandoSQL, valoresFiltro)
-        registrosAfetados = cursor.rowcount
-        # identificando a quantidade de registro afetado pelo comando
-        registrosAfetados = cursor.rowcount
-        # gravando os dados no banco de dados
-        conexao.commit()
-
-        mensagem = f"Foram excluídos {registrosAfetados} registros"
-        resultado = True
+        with Conectar() as conexao:
+            # criando cursor para buscar dados
+            with conexao.cursor() as cursor:
+                # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+                cursor.execute(comandoSQL, valoresFiltro)
+                registrosAfetados = cursor.rowcount
+                # identificando a quantidade de registro afetado pelo comando
+                registrosAfetados = cursor.rowcount
+                # gravando os dados no banco de dados
+                conexao.commit()
+                mensagem = f"Foram excluídos {registrosAfetados} registros"
+                sucesso = True
     except Exception as e:
-        mensagem = f"Erro ao excluir atalho #{id} [Exception: {str(e)}]"
-        resultado = False
+        mensagem = f"Erro ao excluir arquivo #{id} [Exception: {str(e)}]"
     except TypeError as e:
-        mensagem = f"Erro ao excluir o atalho #{id} [TypeError: {str(e)}]"
-        resultado = False
+        mensagem = f"Erro ao excluir o arquivo #{id} [TypeError: {str(e)}]"
     except ValueError as e:
-        mensagem = f"Erro ao excluir o atalho #{id} [ValueError: {str(e)}]"
-        resultado = False
-    finally:
-        # fechando o cursor
-        cursor.close()
-        # fechando conexão com o banco de dados
-        conexao.close()
+        mensagem = f"Erro ao excluir o arquivo #{id} [ValueError: {str(e)}]"
+    except pyodbc.Error as e:
+        mensagem = f"Erro de banco de dados: {str(e)}"
     
-    return resultado, mensagem
+    return sucesso, resultado, mensagem
 
 # listar apenas um registro filtrado pela PK
 def atalho_possui_usuario(idusuario, rota=None):
@@ -261,47 +283,37 @@ def atalho_possui_usuario(idusuario, rota=None):
     builder = Atalho.get_SQLBuilder()
     comandoSQL, valoresFiltro = builder.select_sql_and_values({"idusuario": idusuario, "rota":rota})
 
+    idatalho = None
+    resultado = None
+    sucesso = False
+    mensagem = f"Não foram localizados registros"
     try:    
         # criando conexão com o banco de dados
-        conexao = Conectar()
-        # criando cursor para buscar dados
-        cursor = conexao.cursor()
-        # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
-        cursor.execute(f" SELECT COUNT(IDATALHO) AS QTDE, MAX(IDATALHO) AS IDATALHO FROM ({comandoSQL} ) AS b" , valoresFiltro)
-        # buscando dados
-        dados = cursor.fetchone()
+        with Conectar() as conexao:
+            # criando cursor para buscar dados
+            with conexao.cursor() as cursor:
+                # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+                cursor.execute(f" SELECT COUNT(IDATALHO) AS QTDE, MAX(IDATALHO) AS IDATALHO FROM ({comandoSQL} ) AS b" , valoresFiltro)
+                # buscando dados
+                dados = cursor.fetchone()
+                # pegando os dados do banco e convertendo para objeto
+                if dados:
+                    resultado = dados[0] >= 1 
+                    registrosAfetados = dados[0]
+                    idatalho = dados[1]
+                    # ajustando a mensagem para quando o comando foi executado com sucesso
+                    mensagem = f"Foram encontrados {registrosAfetados} registros"
 
-        # pegando os dados do banco e convertendo para objeto
-        if dados:
-            resultado = dados[0] >= 1 
-            registrosAfetados = dados[0]
-            idatalho = dados[1]
-        else:
-            resultado = False
-            idatalho = None
-
-        # ajustando a mensagem para quando o comando foi executado com sucesso
-        mensagem = f"Foram encontrados {registrosAfetados} registros"
     except Exception as e:
         mensagem = f"Erro ao localizar o atalho do usuario #{idusuario} [Exception: {str(e)}]"
-        resultado = False
-        idatalho = None
     except TypeError as e:
         mensagem = f"Erro ao localizar o atalho do usuario #{idusuario} [TypeError: {str(e)}]"
-        resultado = False
-        idatalho = None
     except ValueError as e:
         mensagem = f"Erro ao localizar o atalho do usuario #{idusuario} [ValueError: {str(e)}]"
-        resultado = False
-        idatalho = None
-    finally:
-        # fechando o cursor
-        cursor.close()
-        # fechando conexão com o banco de dados
-        conexao.close()
+    except pyodbc.Error as e:
+        mensagem = f"Erro de banco de dados: {str(e)}"
     
-    # Retornando os dados e mensagem
-    return resultado, idatalho, mensagem
+    return sucesso, resultado, mensagem, idatalho
 
 # listar apenas os grupos de atalho do usuario
 def atalho_grupos_usuario(idusuario):
@@ -309,39 +321,31 @@ def atalho_grupos_usuario(idusuario):
     builder = Atalho.get_SQLBuilder()
     comandoSQL, valoresFiltro = builder.select_sql_and_values({"idusuario": idusuario})
 
+    resultado = None
+    sucesso = False
+    mensagem = f"Não foram localizados registros"
     try:    
         # criando conexão com o banco de dados
-        conexao = Conectar()
-        # criando cursor para buscar dados
-        cursor = conexao.cursor()
-        # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
-        cursor.execute(f" SELECT GRUPO, COUNT(IDATALHO) AS QTDE FROM ({comandoSQL} ) AS B GROUP BY GRUPO" , valoresFiltro)
-        # buscando dados
-        dados = cursor.fetchall()
-
-        # pegando os dados do banco e convertendo para objeto
-        if dados:
-            resultado = [{"grupo":item[0],"quantidade":item[1]} for item in dados]
-            registrosAfetados = len(resultado)
-        else:
-            resultado = False
-
-        # ajustando a mensagem para quando o comando foi executado com sucesso
-        mensagem = f"Foram encontrados {registrosAfetados} registros"
+        with Conectar() as conexao:
+            # criando cursor para buscar dados
+            with conexao.cursor() as cursor:
+                # a consulta deve trazer todos os cados e na ordem de criação que deve refletir a mesma ordem da classe
+                cursor.execute(f" SELECT GRUPO, COUNT(IDATALHO) AS QTDE FROM ({comandoSQL} ) AS B GROUP BY GRUPO" , valoresFiltro)
+                # buscando dados
+                dados = cursor.fetchall()
+                # pegando os dados do banco e convertendo para objeto
+                if dados:
+                    resultado = [{"grupo":item[0],"quantidade":item[1]} for item in dados]
+                    registrosAfetados = len(resultado)
+                    # ajustando a mensagem para quando o comando foi executado com sucesso
+                    mensagem = f"Foram encontrados {registrosAfetados} registros"
     except Exception as e:
         mensagem = f"Erro ao localizar o grupo de atalho do usuario #{idusuario} [Exception: {str(e)}]"
-        resultado = False
     except TypeError as e:
         mensagem = f"Erro ao localizar o grupo de atalho do usuario #{idusuario} [TypeError: {str(e)}]"
-        resultado = False
     except ValueError as e:
         mensagem = f"Erro ao localizar o grupo de atalho do usuario #{idusuario} [ValueError: {str(e)}]"
-        resultado = False
-    finally:
-        # fechando o cursor
-        cursor.close()
-        # fechando conexão com o banco de dados
-        conexao.close()
+    except pyodbc.Error as e:
+        mensagem = f"Erro de banco de dados: {str(e)}"
     
-    # Retornando os dados e mensagem
-    return resultado, mensagem
+    return sucesso, resultado, mensagem

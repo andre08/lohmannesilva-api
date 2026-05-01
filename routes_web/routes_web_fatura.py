@@ -21,11 +21,11 @@ def rota_fatura_pagina_detalhe(id):
     from services.atalho_service import atalho_possui_usuario
     #nesta pagina deve ser possivel adicionar como favorito (atalho) e deve ser verificado se exite a pagina como favorito para o usuario logado
     rota = request.path
-    favorito, idatalho, mensagemFavorito = atalho_possui_usuario(session["usuario_id"], rota)
+    sucesso, favorito, mensagemFavorito, idatalho = atalho_possui_usuario(session["usuario_id"], rota)
     aceitaFavoritos = True
 
     #dados para a visualição
-    resultado, mensagem = fatura_lista_selecionado(id)
+    sucesso, resultado, mensagem = fatura_lista_selecionado(id)
     if not resultado:
         resultado = Fatura(None).to_dict()
 
@@ -34,7 +34,7 @@ def rota_fatura_pagina_detalhe(id):
 #rota para pagina de edição
 @routes_web_fatura.route('/editar/<int:id>', methods=["GET"])
 def rota_fatura_pagina_editar(id):
-    resultado, mensagem = fatura_lista_selecionado(id)
+    sucesso, resultado, mensagem = fatura_lista_selecionado(id)
     if not resultado:
         resultado = Fatura(None).to_dict()
     return render_template("admin_fatura_editar.html", fatura=resultado, mensagem=mensagem)
@@ -44,17 +44,14 @@ def rota_fatura_pagina_editar(id):
 #rota para listar todos os registros
 @routes_web_fatura.route('/faturas', methods=["GET"])
 def rota_fatura_listar_todos():
-    resultado, mensagem = fatura_listar_todos()
-    return jsonify({"dados":resultado, "mensagem":mensagem})
+    sucesso, resultado, mensagem = fatura_listar_todos()
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #rota para listar um registro selecionado
 @routes_web_fatura.route('/fatura/<int:id>', methods=["GET"])
 def rota_fatura_listar_selecionado(id):
-    resultado, mensagem = fatura_lista_selecionado(id)
-    if resultado:
-        return jsonify({"dados":resultado, "mensagem":mensagem})
-    else:
-        return jsonify({"mensagem":mensagem})
+    sucesso, resultado, mensagem = fatura_lista_selecionado(id)
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #pagina para criar um novo registro
 @routes_web_fatura.route('/fatura', methods=['POST'])
@@ -68,12 +65,8 @@ def rota_fatura_salvar_novo():
     valor_pago = dados.get("valor_pago")
     dt_pagamento = dados.get("dt_pagamento")
     
-    resultado, mensagem = fatura_salvar_novo(Fatura(None, idempresa, nome, dt_referencia, valor, dt_vencimento, valor_pago, dt_pagamento))
-    if resultado==True:
-        mensagem = "Fatura salva com sucesso"
-    else:
-        mensagem = f"Erro ao salvar a fatura [{mensagem}]"
-    return jsonify({'success': resultado, 'mensagem':mensagem})
+    sucesso, resultado, mensagem = fatura_salvar_novo(Fatura(None, idempresa, nome, dt_referencia, valor, dt_vencimento, valor_pago, dt_pagamento))
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 # rota alterar um registro existente
 @routes_web_fatura.route('/fatura', methods=["PUT"])
@@ -88,17 +81,13 @@ def rota_fatura_alterar_existente():
     valor_pago = dados.get("valor_pago")
     dt_pagamento = dados.get("dt_pagamento")
 
-    resultado, mensagem = fatura_alterar_existente(Fatura(idfatura, idempresa, nome, dt_referencia, valor, dt_vencimento, valor_pago, dt_pagamento))
-    if resultado==True:
-        mensagem = "Fatura alterada com sucesso"
-    else:
-        mensagem = "Erro ao alterar a fatura"
-    return jsonify({'success': resultado, 'mensagem':mensagem})
+    sucesso, resultado, mensagem = fatura_alterar_existente(Fatura(idfatura, idempresa, nome, dt_referencia, valor, dt_vencimento, valor_pago, dt_pagamento))
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #rota para excluir um registro existente
 @routes_web_fatura.route('/fatura/<int:id>', methods=["DELETE"])
 def rota_fatura_excluir_existente(id):
-    resultado, mensagem = fatura_excluir_existente(id)
-    return jsonify({'success': resultado, "mensagem":mensagem})
+    sucesso, resultado, mensagem = fatura_excluir_existente(id)
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 # ROTAS ESPECÍFICAS DO MODULO

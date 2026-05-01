@@ -22,11 +22,11 @@ def rota_hitoricoacesso_pagina_detalhe(id):
     from services.atalho_service import atalho_possui_usuario
     #nesta pagina deve ser possivel adicionar como favorito (atalho) e deve ser verificado se exite a pagina como favorito para o usuario logado
     rota = request.path
-    favorito, idatalho, mensagemFavorito = atalho_possui_usuario(session["usuario_id"], rota)
+    sucesso, favorito, mensagemFavorito, idatalho = atalho_possui_usuario(session["usuario_id"], rota)
     aceitaFavoritos = True
 
     #dados para a visualição
-    resultado, mensagem = historico_acesso_lista_selecionado(id)
+    sucesso, resultado, mensagem = historico_acesso_lista_selecionado(id)
     if not resultado:
         resultado = HistoricoAcesso(None).to_dict()
 
@@ -35,7 +35,7 @@ def rota_hitoricoacesso_pagina_detalhe(id):
 #rota para pagina de edição
 @routes_web_historicoacesso.route('/editar/<int:id>', methods=["GET"])
 def rota_hitoricoacesso_pagina_editar(id):
-    resultado, mensagem = historico_acesso_lista_selecionado(id)
+    sucesso, resultado, mensagem = historico_acesso_lista_selecionado(id)
     if not resultado:
         resultado = HistoricoAcesso(None).to_dict()
     return render_template("admin_hitoricoacesso_editar.html", hitoricoacesso=resultado, mensagem=mensagem)
@@ -45,17 +45,14 @@ def rota_hitoricoacesso_pagina_editar(id):
 #rota para listar todos os registros
 @routes_web_historicoacesso.route('/historicosacesso', methods=["GET"])
 def rota_historicoacesso_listar_todos():
-    resultado, mensagem = historio_acesso_listar_todos()
-    return jsonify({"dados":resultado, "mensagem":mensagem})
+    sucesso, resultado, mensagem = historio_acesso_listar_todos()
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #rota para listar um registro selecionado
 @routes_web_historicoacesso.route('/historicoacesso/<int:id>', methods=["GET"])
 def rota_historicoacesso_listar_selecionado(id):
-    resultado, mensagem = historico_acesso_lista_selecionado(id)
-    if resultado:
-        return jsonify({"dados":resultado, "mensagem":mensagem})
-    else:
-        return jsonify({"mensagem":mensagem})
+    sucesso, resultado, mensagem = historico_acesso_lista_selecionado(id)
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #pagina para criar um novo registro
 @routes_web_historicoacesso.route('/historicoacesso', methods=['POST'])
@@ -71,12 +68,9 @@ def rota_historicoacesso_salvar_novo():
     formData = dados.get("formData")
     jsonData = dados.get("jsonData")
     dtAcesso = dados.get("dtAcesso")
-    resultado, mensagem = historico_acesso_salvar_novo(HistoricoAcesso(None, idusuario, rota, metodo, ip, pathServer, fullUrl, queryString, formData, jsonData, dtAcesso))
-    if resultado==True:
-        mensagem = "Historico de acesso registro com sucesso"
-    else:
-        mensagem = f"Erro ao salvar o historico de acesso [{mensagem}]"
-    return jsonify({'success': resultado, 'mensagem':mensagem})
+    
+    sucesso, resultado, mensagem = historico_acesso_salvar_novo(HistoricoAcesso(None, idusuario, rota, metodo, ip, pathServer, fullUrl, queryString, formData, jsonData, dtAcesso))
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 # rota alterar um registro existente
 @routes_web_historicoacesso.route('/historicoacesso', methods=["PUT"])
@@ -93,17 +87,14 @@ def rota_historicoacesso_alterar_existente():
     formData = dados.get("formData")
     jsonData = dados.get("jsonData")
     dtAcesso = dados.get("dtAcesso")
-    resultado, mensagem = historico_acesso_alterar_existente(HistoricoAcesso(idhistorico_acesso, idusuario, rota, metodo, ip, pathServer, fullUrl, queryString, formData, jsonData, dtAcesso))
-    if resultado==True:
-        mensagem = "Historico de acesso alterado com sucesso"
-    else:
-        mensagem = "Erro ao alterar o historico de acesso"
-    return jsonify({'success': resultado, 'mensagem':mensagem})
+    
+    sucesso, resultado, mensagem = historico_acesso_alterar_existente(HistoricoAcesso(idhistorico_acesso, idusuario, rota, metodo, ip, pathServer, fullUrl, queryString, formData, jsonData, dtAcesso))
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 #rota para excluir um registro existente
 @routes_web_historicoacesso.route('/historicoacesso/<int:id>', methods=["DELETE"])
 def rota_historicoacesso_excluir_existente(id):
-    resultado, mensagem = historico_acesso_excluir_existente(id)
-    return jsonify({'success': resultado, "mensagem":mensagem})
+    sucesso, resultado, mensagem = historico_acesso_excluir_existente(id)
+    return jsonify({"success":sucesso, "dados":resultado, "mensagem":mensagem})
 
 # ROTAS ESPECÍFICAS DO MODULO

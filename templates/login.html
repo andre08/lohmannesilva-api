@@ -1,5 +1,6 @@
   {% include 'index_header.html' %}    
   {% include 'index_menu.html' %}
+  {% from "components/campos.html" import campo %}
 
   <div class="container-fluid">
     
@@ -13,15 +14,14 @@
         </div>
 
         <form id="formLogon">
+          {{ form.csrf_token }}
 
           <div class="mb-3 form-text-font">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="seuemail@example.com">
+            {{ campo(form.email) }}
           </div>
 
           <div class="mb-3 form-text-font">
-            <label for="senha" class="form-label">Senha</label>
-            <input type="password" class="form-control" id="senha" name="senha" placeholder="Informe sua senha">
+            {{ campo(form.senha) }}
           </div>
 
           <div class="d-grid form-text-font">
@@ -54,7 +54,10 @@
 
       await fetch(API_URL + 'logon', {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          "Content-Type": "application/json"
+          , "X-CSRFToken": "{{ form.csrf_token._value() }}"
+        },
         body: JSON.stringify({email, senha})
       })
       .then(res => res.json())

@@ -50,7 +50,7 @@ class SQLBuilder:
 
         return sql
 
-    def build_select(self, filtros=None):
+    def build_select(self, filtros=None, useLike=None):
         """
         filtros: dicionário opcional {atributo: valor}
         """
@@ -61,7 +61,7 @@ class SQLBuilder:
 
         # se foi informado um filtro é construido com campo operador e parametro
         if filtros:
-            where = self._build_where_clause(filtros)
+            where = self._build_where_clause(filtros, useLike)
             sql += f" WHERE {where}"
 
         return sql
@@ -81,13 +81,16 @@ class SQLBuilder:
     # Auxiliares
     # ------------------------------------------------------------
 
-    def _build_where_clause(self, filtros):
+    def _build_where_clause(self, filtros, useLike=None):
         """
         Monta cláusula WHERE dinâmica.
         filtros = {"nome": "Camiseta", "ativo": True}
         → "NOME = %s AND ATIVO = %s"
         """
-        return " AND ".join([f"{self.depara[c]} = {self.param_style}" for c in filtros])
+        if useLike == True:
+            return " AND ".join([f"upper({self.depara[c]}) like upper(concat('%', {self.param_style}, '%'))" for c in filtros])
+        else:
+            return " AND ".join([f"{self.depara[c]} = {self.param_style}" for c in filtros])
 
     # ------------------------------------------------------------
     # Geração de SQL + valores
@@ -123,9 +126,9 @@ class SQLBuilder:
         valores = [getattr(obj, c) for c in self.campos_chave]
         return sql, valores
 
-    def select_sql_and_values(self, filtros=None):
+    def select_sql_and_values(self, filtros=None, useLike=None):
         # chama a função que monta o comando SQL
-        sql = self.build_select(filtros)
+        sql = self.build_select(filtros, useLike)
 
         # cria uma lista na ordem necessaria com o valores  da classe que vão substituir os paramentros dos comandos
         valores = [filtros[c] for c in filtros] if filtros else []
